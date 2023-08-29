@@ -1,0 +1,168 @@
+﻿@model Telerik.ReportServer.Web.Models.Scheduling.AddSubscribersModel
+@{
+    Layout = null;
+}
+
+<div id="addSubscribersView" class="k-edit-form-container">
+    <div class="rs-window">
+        <label class="window__item -top-label">
+            <span class="window__label" rs-localization="addUsers"></span>
+            <span class="window__field">
+                <select id="subscribers" /> 
+            </span>
+        </label>
+        <label class="window__item -top-label">
+            <span class="window__label" rs-localization="externalUsers"></span>
+            <span class="window__field -textarea">
+                <textarea id="externalSubscribers" rows="5" class="k-textbox" />
+            </span>
+        </label>
+
+        <label class="window__item -text" rs-localization="externalUsersHint"></label>
+    </div>
+
+    <div class="k-edit-buttons k-state-default">
+        <a id="addSubscribersOkButton" 
+           class="k-button k-button-icontext k-primary k-grid-update"
+           rs-localization="buttons.done"
+           href="#"></a>
+        <a id="addSubscribersCancelButton" 
+           class="k-button k-button-icontext k-grid-cancel"
+           rs-localization="buttons.cancel"
+           href="#"></a>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function setUsers() {
+        var subscribers =
+            $("#subscribers").data("kendoMultiSelect");
+
+        return $.ajax({
+            type: "POST",
+            url: "@Url.Action("SetSubscribers", "Scheduling")",
+            data: {
+                TaskId: "@Model.TaskId",
+                UserIds: subscribers.value(),
+                ExternalSubscribers: $("#externalSubscribers").val()
+            }
+        });
+    }
+
+    function onSetUsersOk(data) {
+        closeApplyUsersWindow();
+        controller.updateSubscribersView();
+    }
+
+    function onSetUsersFail(req, status, error) {
+        MessageBox.show({
+            title: getLocalizationString("dialogWindows.titles.errorWindow"),
+            message: error,
+        });
+    }
+
+    $("#addSubscribersOkButton")
+        .on("click", function () {
+            ga('send', 'event', 'scheduling', 'add subscribers', 'ok');
+            $
+                .when(setUsers())
+                .then(onSetUsersOk, onSetUsersFail);
+        });
+
+    $("#addSubscribersCancelButton")
+        .on("click", function (e) {
+            ga('send', 'event', 'scheduling', 'add subscribers', 'cancel');
+            closeApplyUsersWindow();
+            // isCanceled = true;
+        });
+
+    function closeApplyUsersWindow() {
+        $("#addSubscriberWindow")
+            .data("kendoWindow")
+            .close();
+    }
+
+    function initAddSubscribers() {
+        $("#subscribers").kendoMultiSelect({
+            //placeholder: "Select subscribers...",
+            dataTextField: "Username",
+            dataValueField: "Id",
+            //headerTemplate: '<div><span>First Name</span> <span>Last Name</span> <span>Email</span></div>',
+            itemTemplate: '<div><span>#:data.FirstName != null ? data.FirstName: ""#</span><span> #:data.LastName != null ? data.LastName: ""#</span><span><i> #:data.Email#</i></span></div>',
+            tagTemplate: '<span>#:data.FirstName == null && data.LastName == null ? data.Email : data.FirstName + " " + data.LastName#</span>',
+            dataSource: {
+                transport: {
+                    read: function (options) {
+                        var callOne = $.ajax({
+                            url: '@Url.Action("Read_AllSubscribers", "Scheduling")',
+                            cache: false
+                        });
+                        $.when(callOne).then(function (firstResponse) {
+							// Get current user login
+                            var currentUsername = $("#currentUsername").html();
+
+                            // To define list of orgranizations (username's prefix)
+                            var organizationPrefix = [
+                                "trsau-",
+                                "colau-"
+                            ];
+							
+							// Check if current user login is in the checking list
+                            var needToCheckPrefix = false;
+                            $.each(organizationPrefix, function (index, value) {
+                                if (currentUsername.startsWith(value)) {
+                                    needToCheckPrefix = true;
+                                }
+                            });
+
+                            var listOfUsers = firstResponse;
+							
+							// Apply filter if needed
+                            if (needToCheckPrefix) {
+                                var index = currentUsername.indexOf("-");
+                                var currentUserPrefix = currentUsername.substring(0, index + 1);
+                                listOfUsers = listOfUsers.filter(x => x.Username.startsWith(currentUserPrefix));
+
+                            }
+                            options.success(listOfUsers);
+                        })
+                    },
+                    type: "POST",
+                    dataType: "json"
+                }
+            },
+            dataBound: function(e) {
+                var addSubscribersWindow = $(e.sender.element).closest('[data-role="window"]').data("kendoWindow");
+                addSubscribersWindow.center();
+            }
+        });
+        var subscribers = $("#subscribers")
+            .data("kendoMultiSelect");
+
+        subscribers.wrapper.attr("id", "subscribers-list");
+
+        var value =  @Html.Raw(Json.Encode(Model.UserIds));
+
+        subscribers.value(value);
+
+        $("#externalSubscribers").val('@Model.ExternalSubscribers');
+
+        var resourceAddSubscribersWindowLabels = window.telerikReportServer.resourceDialogWindowLabels;
+
+        $.each($("#addSubscribersView [rs-localization]"), function (k, v) {
+            var $el = $(v),
+                locStr = $el.attr("rs-localization"),
+                str = resourceAddSubscribersWindowLabels.get(locStr);
+
+            if (str && str.length) {
+                $el.html(str);
+            };
+        });
+    }
+
+    $(document)
+        .ready(initAddSubscribers);
+
+</script>
+
+

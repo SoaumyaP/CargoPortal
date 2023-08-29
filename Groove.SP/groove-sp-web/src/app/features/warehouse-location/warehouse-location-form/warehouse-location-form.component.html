@@ -1,0 +1,431 @@
+<div class="content__header">
+    <div class="typing_loader" *ngIf="!isInitDataLoaded else mainTemplate"></div>
+
+    <ng-template #mainTemplate>
+        <div class="header-group">
+            <div class="row">
+                <div class="col-sm-7">
+                    <button attr.data-balloon="{{'tooltip.backToList' | translate }}" data-balloon-pos="up"
+                        type="button" class="btn btn-default back-button" (click)="backToList()">
+                        <i class="ei ei-arrow_left"></i>
+                    </button>
+
+                    <ng-container *ngIf="!isAddMode else addNewWHLocationLabel">
+                        <label class="form-header">{{'label.warehouseLocation' | translate}} #{{model.code}}</label>
+                    </ng-container>
+
+                    <ng-template #addNewWHLocationLabel>
+                        <label class="form-header"> {{'label.addNewWarehouseLocation' | translate }} </label>
+                    </ng-template>
+                </div>
+
+                <div class="col-sm-5 text-right" *hasPermission="[AppPermissions.Organization_WarehouseLocation_Detail_Edit]" [hidden]="!isViewMode">
+                    <button attr.data-balloon="{{'label.edit' | translate}}" data-balloon-pos="up" type="button"
+                        class="btn edit-icon-button" (click)="editWarehouseLocation()">
+                        <fa-icon [icon]="faPencilAlt"></fa-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <ng-container *ngIf="isViewMode; then viewModeTemplate else AddOrEditTemplate"></ng-container>
+    </ng-template>
+</div>
+
+<!-- Add/Edit mode -->
+<ng-template #AddOrEditTemplate>
+    <div class="col" *ngIf="!isViewMode && isInitDataLoaded">
+        <form class="row" #mainForm="ngForm" (ngSubmit)="onSubmit()">
+            <div class="col-12 panel-group mt-0">
+                <label class="panel-header">{{'label.warehouseLocationDetail' | translate}}</label>
+
+                <div class="row form-group">
+                    <div class="col-md-6">
+                        <label for="code" class="required">{{'label.warehouseCode' | translate}}</label>
+                        <input type="text" class="form-control" name="code" [(ngModel)]="model.code" required maxlength="128" />
+                        <div *ngIf="formErrors['code']" class="k-invalid-msg">
+                            {{ formErrors.code }}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="name" class="required">{{'label.warehouseName' | translate}}</label>
+                        <input type="text" class="form-control" name="name" [(ngModel)]="model.name" required maxlength="128" />
+                        <div *ngIf="formErrors['name']" class="k-invalid-msg">
+                            {{ formErrors.name }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-md-6">
+                        <label for="addressLine1" class="required">{{'label.addressLine1' | translate}}</label>
+                        <input type="text" class="form-control" name="addressLine1" [(ngModel)]="model.addressLine1" required maxlength="256" />
+                        <div *ngIf="formErrors['addressLine1']" class="k-invalid-msg">
+                            {{ formErrors.addressLine1 }}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label class="form-label required">{{'label.country' | translate}}</label>
+                        <kendo-dropdownlist #countryIdElement
+                            name="countryId"
+                            [data]="countrySourceFilter"
+                            [defaultItem]="defaultDropDownItem"
+                            [disabled]="isViewMode"
+                            [(ngModel)]="model.countryId"
+                            [valuePrimitive]="true"
+                            [textField]="'label'"
+                            [valueField]="'value'"
+                            (valueChange)="onCountryValueChanged($event)"
+                            (filterChange)="onCountryFilterChanged($event)"
+                            [filterable]="true"
+                            class="form-control"
+                            required
+                            >
+                            <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                {{ dataItem.label | translate }}
+                            </ng-template>
+                            <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                {{ dataItem.label | translate }}
+                            </ng-template>
+                        </kendo-dropdownlist>
+                        <div *ngIf="formErrors['countryId']" class="k-invalid-msg">
+                            {{ formErrors.countryId }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-md-6">
+                        <label for="addressLine2" class="">{{'label.addressLine2' | translate}}</label>
+                        <input type="text" class="form-control" name="addressLine2" [(ngModel)]="model.addressLine2"  maxlength="256" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label required">{{'label.city' | translate}}</label>
+                        <kendo-dropdownlist #locationIdElement
+                            name="locationId"
+                            [data]="locationSourceFilter"
+                            [defaultItem]="defaultDropDownItem"
+                            [disabled]="isViewMode"
+                            [(ngModel)]="model.locationId"
+                            [valuePrimitive]="true"
+                            [textField]="'label'"
+                            [valueField]="'value'"
+                            (filterChange)="onLocationFilterChanged($event)"
+                            [filterable]="true"
+                            class="form-control"
+                            required
+                            >
+                            <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                {{ dataItem.label | translate }}
+                            </ng-template>
+                            <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                {{ dataItem.label | translate }}
+                            </ng-template>
+                        </kendo-dropdownlist>
+                        <div *ngIf="formErrors['locationId']" class="k-invalid-msg">
+                            {{ formErrors.locationId }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-md-6">
+                        <label for="addressLine3" class="">{{'label.addressLine3' | translate}}</label>
+                        <input type="text" class="form-control" name="addressLine3" [(ngModel)]="model.addressLine3" maxlength="256" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="contactPerson" class="">{{'label.contactName' | translate}}</label>
+                        <input type="text" class="form-control" name="contactPerson" [(ngModel)]="model.contactPerson" maxlength="256" />
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-md-6">
+                        <label for="addressLine4" class="">{{'label.addressLine4' | translate}}</label>
+                        <input type="text" class="form-control" name="addressLine4" [(ngModel)]="model.addressLine4" maxlength="256" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="contactNumber" class="">{{'label.contactNumber' | translate}}</label>
+                        <input type="text" class="form-control" name="contactNumber" [(ngModel)]="model.contactPhone" maxlength="32" />
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-md-6">
+                        <label for="organizationId" class="required">{{'label.provider' | translate}}</label>
+                        <kendo-autocomplete #OrganizationIdElement
+                            required
+                            name="organizationId"
+                            (filterChange)="onOrganizationFilterChanged($event)"
+                            (valueChange)="onOrganizationValueChanged($event)"
+                            [(ngModel)]="model.organizationName"
+                            [valueField]="'text'"
+                            [disabled]="isViewMode"
+                            [data]="organizationSourceFilter"
+                            [filterable]="true"
+                            [placeholder]="'placeholder.egThing' | translate: {thing: ('label.organizationName' | translate)}"
+                            class="form-control">
+                        </kendo-autocomplete>
+                        <div *ngIf="formErrors['organizationId']" class="k-invalid-msg">
+                            {{ formErrors.organizationId }}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="contactEmail" class="">{{'label.contactEmail' | translate}}</label>
+                        <input type="text" class="form-control" name="contactEmail" [(ngModel)]="model.contactEmail" (ngModelChange)="onContactEmailValueChanged($event)" maxlength="128" />
+                        <div *ngIf="formErrors['contactEmail']" class="k-invalid-msg">
+                            {{ formErrors.contactEmail }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-md-6">
+                        <label for="workingHours" class="">{{'label.workingHours' | translate}}</label>
+                        <textarea
+                            kendoTextArea
+                            name="workingHours"
+                            [(ngModel)]="model.workingHours"
+                            class="form-control note-textarea"
+                            [rows]="3"
+                            [maxLength]="512">
+                        </textarea>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="remarks" class="">{{'label.remarks' | translate}}</label>
+                        <textarea
+                            kendoTextArea
+                            name="remarks"
+                            [(ngModel)]="model.remarks"
+                            class="form-control note-textarea"
+                            [rows]="3"
+                            [maxLength]="512">
+                        </textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 action-bar p-0">
+                <button type="button" class="btn second-button" (click)="cancel()">{{'label.cancel' |
+                    translate}}</button>
+                <button type="submit" class="btn prim-button" 
+                    (click)="save()">{{'label.save' |
+                    translate}}</button>
+            </div>
+        </form>
+    </div>
+</ng-template>
+
+<!-- View mode -->
+<ng-template #viewModeTemplate>
+    <div class="col" *ngIf="isViewMode && isInitDataLoaded">
+        <div class="col-12 panel-group mt-0">
+            <label class="panel-header">{{'label.warehouseLocationDetail' | translate}}</label>
+
+            <div class="row form-group">
+                <div class="col-md-6">
+                    <label for="code" class="required">{{'label.warehouseCode' | translate}}</label>
+                    <input type="text" class="form-control" name="code" [(ngModel)]="model.code" required maxlength="128" disabled />
+                </div>
+
+                <div class="col-md-6">
+                    <label for="name" class="required">{{'label.warehouseName' | translate}}</label>
+                    <input type="text" class="form-control" name="name" [(ngModel)]="model.name" required maxlength="128" disabled />
+                    <div *ngIf="formErrors['name']" class="k-invalid-msg">
+                        {{ formErrors.name }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-6">
+                    <label for="addressLine1" class="required">{{'label.addressLine1' | translate}}</label>
+                    <input type="text" class="form-control" name="addressLine1" [(ngModel)]="model.addressLine1" required maxlength="256" disabled />
+                    <div *ngIf="formErrors['addressLine1']" class="k-invalid-msg">
+                        {{ formErrors.addressLine1 }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label required">{{'label.country' | translate}}</label>
+                    <kendo-dropdownlist #countryIdElement
+                        name="organizationCountryId"
+                        [data]="countrySourceFilter"
+                        [defaultItem]="defaultDropDownItem"
+                        [disabled]="isViewMode"
+                        [(ngModel)]="model.countryId"
+                        [valuePrimitive]="true"
+                        [textField]="'label'"
+                        [valueField]="'value'"
+                        (valueChange)="onCountryValueChanged($event)"
+                        (filterChange)="onCountryFilterChanged($event)"
+                        [filterable]="true"
+                        class="form-control"
+                        required
+                        >
+                        <ng-template kendoDropDownListValueTemplate let-dataItem>
+                            {{ dataItem.label | translate }}
+                        </ng-template>
+                        <ng-template kendoDropDownListItemTemplate let-dataItem>
+                            {{ dataItem.label | translate }}
+                        </ng-template>
+                    </kendo-dropdownlist>
+                    <div *ngIf="formErrors['countryId']" class="k-invalid-msg">
+                        {{ formErrors.countryId }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-6">
+                    <label for="addressLine2" class="">{{'label.addressLine2' | translate}}</label>
+                    <input type="text" class="form-control" name="addressLine2" [(ngModel)]="model.addressLine2"  maxlength="256" disabled />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label required">{{'label.city' | translate}}</label>
+                    <kendo-dropdownlist #locationIdElement
+                        name="organizationCountryId"
+                        [data]="locationSourceFilter"
+                        [defaultItem]="defaultDropDownItem"
+                        [disabled]="isViewMode"
+                        [(ngModel)]="model.locationId"
+                        [valuePrimitive]="true"
+                        [textField]="'label'"
+                        [valueField]="'value'"
+                        (filterChange)="onLocationFilterChanged($event)"
+                        [filterable]="true"
+                        class="form-control"
+                        required
+                        >
+                        <ng-template kendoDropDownListValueTemplate let-dataItem>
+                            {{ dataItem.label | translate }}
+                        </ng-template>
+                        <ng-template kendoDropDownListItemTemplate let-dataItem>
+                            {{ dataItem.label | translate }}
+                        </ng-template>
+                    </kendo-dropdownlist>
+                    <div *ngIf="formErrors['locationId']" class="k-invalid-msg">
+                        {{ formErrors.locationId }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-6">
+                    <label for="addressLine3" class="">{{'label.addressLine3' | translate}}</label>
+                    <input type="text" class="form-control" name="addressLine3" [(ngModel)]="model.addressLine3" maxlength="256" disabled />
+                </div>
+
+                <div class="col-md-6">
+                    <label for="contactPerson" class="">{{'label.contactName' | translate}}</label>
+                    <input type="text" class="form-control" name="contactPerson" [(ngModel)]="model.contactPerson" maxlength="256"disabled />
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-6">
+                    <label for="addressLine4" class="">{{'label.addressLine4' | translate}}</label>
+                    <input type="text" class="form-control" name="addressLine4" [(ngModel)]="model.addressLine4" maxlength="256" disabled />
+                </div>
+
+                <div class="col-md-6">
+                    <label for="contactNumber" class="">{{'label.contactNumber' | translate}}</label>
+                    <input type="text" class="form-control" name="contactNumber" [(ngModel)]="model.contactPhone" maxlength="32" disabled />
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-6">
+                    <label for="organizationId" class="required">{{'label.provider' | translate}}</label>
+                    <kendo-autocomplete #OrganizationIdElement
+                        required
+                        name="organizationId"
+                        (filterChange)="onOrganizationFilterChanged($event)"
+                        (valueChange)="onOrganizationValueChanged($event)"
+                        [(ngModel)]="model.organizationName"
+                        [valueField]="'text'"
+                        [disabled]="isViewMode"
+                        [data]="organizationSourceFilter"
+                        [filterable]="true"
+                        [placeholder]="'placeholder.egThing' | translate: {thing: ('label.organizationName' | translate)}"
+                        class="form-control"
+                        disabled
+                    >
+                    </kendo-autocomplete>
+                    <div *ngIf="formErrors['organizationId']" class="k-invalid-msg">
+                        {{ formErrors.organizationId }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="contactEmail" class="">{{'label.contactEmail' | translate}}</label>
+                    <input type="text" class="form-control" name="contactEmail" [(ngModel)]="model.contactEmail" (ngModelChange)="onContactEmailValueChanged($event)" maxlength="128" disabled />
+                    <div *ngIf="formErrors['contactEmail']" class="k-invalid-msg">
+                        {{ formErrors.contactEmail }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-6">
+                    <label for="workingHours" class="">{{'label.workingHours' | translate}}</label>
+                    <textarea
+                        kendoTextArea
+                        name="workingHours"
+                        [(ngModel)]="model.workingHours"
+                        class="form-control note-textarea"
+                        [readOnly]="true"
+                        [rows]="3"
+                        [maxLength]="512">
+                    </textarea>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="remarks" class="">{{'label.remarks' | translate}}</label>
+                    <textarea
+                        kendoTextArea
+                        name="remarks"
+                        [(ngModel)]="model.remarks"
+                        class="form-control note-textarea"
+                        [readOnly]="true"
+                        [rows]="3"
+                        [maxLength]="512">
+                    </textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 panel-group">
+            <label class="panel-header">{{'label.listOfCustomers' | translate}}</label>
+
+            <kendo-grid
+                [data]="customerList"
+                [scrollable]="'vertical'"
+                [selectable]="false">
+
+                <kendo-grid-column field="code" title="{{'label.organizationCode' | translate}}">
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                        <a class="k-link" routerLinkActive="active" *ngIf="isOrganizationViewAllow; else organizationCode" target="_blank" routerLink="/organizations/view/{{dataItem.id}}">{{dataItem.code}}</a>
+                        <ng-template #organizationCode>{{dataItem.code}}</ng-template>
+                    </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column field="name" title="{{'label.name' | translate}}">
+                </kendo-grid-column>
+                <kendo-grid-column field="contactName" title="{{'label.warehouseContact' | translate}}">
+                </kendo-grid-column>
+                <kendo-grid-column field="contactNumber" title="{{'label.warehouseNumber' | translate}}">
+                </kendo-grid-column>
+                <kendo-grid-column field="contactEmail" title="{{'label.warehouseEmail' | translate}}">
+                </kendo-grid-column>
+            </kendo-grid>
+        </div>
+    </div>
+</ng-template>

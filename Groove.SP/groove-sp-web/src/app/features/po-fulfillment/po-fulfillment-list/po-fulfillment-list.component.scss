@@ -1,0 +1,57 @@
+@import "../../../../styles/variables";
+
+.header-button {
+    width: 130px;
+}
+
+.pending_arrow_box, .rejected_arrow_box {
+    left: 155px;
+}
+
+::ng-deep .k-tooltip {
+    padding: 0;
+}
+
+.booking-warning-tooltip{
+    display: block;
+    overflow: hidden;
+    background-color: $color-orange-light;
+    padding: 0;
+    margin: 0;
+    border-radius: 3px;
+    color: $color-orange-primary;
+    font-size: 14px;
+    bottom:0;
+}
+
+::ng-deep button {
+    .extended-content {
+        display: none;
+    }
+    .collapsed-content {
+        display: inherit;
+    }
+    
+    &[aria-expanded="true"] {
+        .extended-content {
+
+            display: inherit;
+        }
+        .collapsed-content {
+
+            display: none;
+        }
+    }
+}
+
+::ng-deep .bulk-booking-dropdown-popup {
+    width: 125px;
+}
+
+::ng-deep {
+    .booking-Stage-multiSelect {
+        .k-clear-value {
+            margin-top: -7px;
+        }
+    }
+}

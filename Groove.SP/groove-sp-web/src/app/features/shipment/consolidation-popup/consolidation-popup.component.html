@@ -1,0 +1,32 @@
+<kendo-dialog [title]="'label.consolidation' | translate" *ngIf="popupOpened" (close)="onFormClosed()" novalidate [width]="540" class="custom-header-dialog">
+    <div class="container">
+        <form #mainForm="ngForm" class="order-note-form">
+            <div class="row">
+                <div class="form-group col-12">
+                    <label for="executionAgent" class="form-label required">{{'label.selectExecutionAgentForConsolidating' | translate}}</label>
+                    <kendo-dropdownlist name="executionAgent" 
+                        [data]="optionsDataSource"
+                        [defaultItem]="defaultDropDownItem"
+                        [(ngModel)]="selectedConsignmentId" 
+                        [valuePrimitive]="true"
+                        [textField]="'label'"
+                        [valueField]="'value'"
+                        class="form-control"
+                        required>
+                    </kendo-dropdownlist>
+                    <div *ngIf="f?.executionAgent.errors && f?.executionAgent.touched" class="k-invalid-msg">
+                        <p *ngIf="f?.executionAgent.errors.required">
+                            {{ 'validation.requiredField' | translate: {'fieldName': 'label.executionAgent' | translate} }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()"
+            #Cancel>{{(isViewMode ? 'label.close' : 'label.cancel') | translate}}</button>
+        <button type="submit" class="btn prim-button dialog-button" (click)="onAddClick()"
+            [disabled]="!mainForm.valid">{{'label.select' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

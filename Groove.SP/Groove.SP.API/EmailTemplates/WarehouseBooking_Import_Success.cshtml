@@ -1,0 +1,23 @@
+﻿@model Groove.SP.Application.WarehouseFulfillment.ViewModels.WarehouseBookingEmailViewModel
+@{
+    Layout = "_EmailLayout.cshtml";
+    var whAssignment = @Model.WarehouseAssignment;
+    var whContactEmails = whAssignment?.ContactEmail?.Replace(" ", "").Replace(",", ";").Split(';', StringSplitOptions.RemoveEmptyEntries);
+}
+
+<p class="mb-0">Dear@(string.IsNullOrEmpty(Model.CustomerName) ? "" : $" VIP {Model.CustomerName}'{(Model.CustomerName.ToLowerInvariant().Last() != 's' ? 's' : string.Empty)} Supplier"),</p>
+<br />
+<p class="mb-0">Your booking is successfully received by Cargo Services, @whAssignment?.WarehouseLocation.Name is notified to approve the booking and system will reply an approved SO (Shipping Order) Release form within 24 hours.</p>
+<br />
+@if(@whAssignment != null) {
+<p>For any enquiry, please contact</p>
+}
+@if(!string.IsNullOrEmpty(@whAssignment?.ContactPerson)) {
+<p>@whAssignment?.ContactPerson</p>
+}
+@if(!string.IsNullOrEmpty(@whAssignment?.ContactPhone)) {
+<p>Direct: @whAssignment?.ContactPhone</p>
+}
+@if(whContactEmails != null && whContactEmails.Any()) {
+<p>Email: @string.Join(", ", whContactEmails)</p>
+}

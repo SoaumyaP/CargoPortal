@@ -1,0 +1,30 @@
+@import '../../../../styles/variables';
+.survey_form__container {
+    .align-control-center {
+        display: flex;
+        align-items: center;
+        height: 100%;
+    }
+    .switch-btn-container {
+        .switch-btn {
+            font-size: 7px;
+        }
+    }
+
+    ::ng-deep .question-grid {
+
+        tr.dragging td {
+            background-color: $color-blue-bright-1 !important;
+            
+        } 
+        &.draggable {
+            tr {
+                cursor: move;
+            }
+        }
+    }
+}
+.container-fluid {
+    padding-right: 0px;
+    padding-left: 0px;
+}

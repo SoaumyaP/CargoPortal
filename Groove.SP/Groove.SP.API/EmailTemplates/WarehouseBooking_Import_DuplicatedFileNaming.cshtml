@@ -1,0 +1,31 @@
+﻿@model Groove.SP.Application.WarehouseFulfillment.ViewModels.WarehouseBookingEmailViewModel
+@{
+    Layout = "_EmailLayout.cshtml";
+    var whAssignment = @Model.WarehouseAssignment;
+    var whContactEmails = whAssignment?.ContactEmail?.Replace(" ", "").Replace(",", ";").Split(';', StringSplitOptions.RemoveEmptyEntries);
+}
+
+<p class="mb-0">Dear@(string.IsNullOrEmpty(Model.CustomerName) ? "" : $" VIP {Model.CustomerName}'{(Model.CustomerName.ToLowerInvariant().Last() != 's' ? 's' : string.Empty)} Supplier"),</p>
+<br />
+<p class="mb-0">Your booking is rejected due to the email contains duplicated documents please kindly resend the email with only</p>
+<br />
+<p>  1. One booking form (Mandatory).</p>
+<p>  2. One Packinglist (Mandatory).</p>
+<p>  3. One commercial invoice (Mandatory).</p>
+<p class="mb-0">  4. One COO (Optional).</p>
+<br />
+<p>Would be appreciated for you to re-send the booking through email.</p>
+<p class="mb-0">You will receive a successful email to confirm the booking is received by Cargo Services.</p>
+<br />
+@if(@whAssignment != null) {
+<p>For any enquiry, please contact</p>
+}
+@if(!string.IsNullOrEmpty(@whAssignment?.ContactPerson)) {
+<p>@whAssignment?.ContactPerson</p>
+}
+@if(!string.IsNullOrEmpty(@whAssignment?.ContactPhone)) {
+<p>Direct: @whAssignment?.ContactPhone</p>
+}
+@if(whContactEmails != null && whContactEmails.Any()) {
+<p>Email: @string.Join(", ", whContactEmails)</p>
+}

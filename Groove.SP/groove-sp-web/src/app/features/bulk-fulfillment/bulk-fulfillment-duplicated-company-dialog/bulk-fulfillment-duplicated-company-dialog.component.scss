@@ -1,0 +1,16 @@
+@import "../../../../styles/variables";
+
+.info-icon {
+    color: $color-orange-primary;
+}
+.info-text {
+    color: $color-orange-primary;
+}
+
+::ng-deep {
+    .duplicated-companies-grid {
+        td {
+            word-break: break-all;
+        }
+    }
+}

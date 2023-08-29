@@ -1,0 +1,54 @@
+@import '../../../styles/variables';
+
+:host::ng-deep.actionbar.k-panelbar > .k-item.k-state-expanded > .k-link {
+    color: $theme-color;
+    background-color: #fff;
+}
+
+:host::ng-deep.actionbar.k-panelbar .k-item > .k-link:hover > span.icon {
+    opacity: 1;
+    color: $theme-color;
+}
+:host::ng-deep.actionbar.k-panelbar .k-item > .k-link:hover {
+    background-color: #fff;
+    color:$theme-color;
+}
+
+::ng-deep.k-panelbar > .k-item > .k-link.k-state-selected:not(.k-state-active), .k-panelbar > .k-item > .k-link.k-state-selected:not(.k-state-expanded) > .menuitem__title {
+    background-color: #fff;
+    color:$theme-color !important;
+}
+
+:host::ng-deep.actionbar.k-panelbar .k-group .k-link.k-state-selected {
+    color:$theme-color;
+    background-color: #fff;
+}
+
+:host::ng-deep.actionbar.k-panelbar .k-link .k-icon.k-panelbar-expand::before {
+    color: $theme-color;
+}
+
+:host::ng-deep.actionbar.k-panelbar .k-link .k-icon.k-i-arrow-n {
+    color: $theme-color !important;
+}
+
+:host::ng-deep .k-panelbar {
+    margin-top: 18px;
+}
+
+:host::ng-deep .k-dropdown-wrap {
+    width: auto;
+}
+
+.kendo-panelbar-title {
+    background: $theme-color !important;
+    color: #fff !important;
+}
+
+::ng-deep .navbar-expand .nav-section .actionbar.k-panelbar .k-state-selected .menuitem__title {
+    color: $theme-color;
+}
+
+::ng-deep .nav-section .actionbar.k-panelbar .k-item .router-link-active > .k-link {
+    color: $theme-color !important;
+}

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DTSConfiguration>
+   <DTSConfigurationHeading>
+      <DTSConfigurationFileInfo GeneratedBy="PC-CUONGDUONG\CuongDuongDuy" GeneratedFromPackageName="Package1" GeneratedFromPackageID="{EC34A49F-5414-4C15-BBCF-EE0C99F8EDC7}" GeneratedDate="4/22/2020 1:52:41 PM" />
+   </DTSConfigurationHeading>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[data-etl-logging.log].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\SP-PRD\data-etl-logging.log</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[External Users].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\SP-PRD\ExternalUsers.csv</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Variables[User::var_token_authorizationHeader].Properties[Value]" ValueType="String">
+      <ConfiguredValue>Basic SW1wb3J0RGF0YU1pZGRsZXdhcmU6aW1wb3J0RGF0YU1pZGRsZXdhcmVTZWNyZXQ=</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Variables[User::var_token_grantType].Properties[Value]" ValueType="String">
+      <ConfiguredValue>client_credentials</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Variables[User::var_token_requestUrl].Properties[Value]" ValueType="String">
+      <ConfiguredValue>https://csportal-identity.cargofe.com/connect/token</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Variables[User::var_user_requestUrl].Properties[Value]" ValueType="String">
+      <ConfiguredValue>https://csportal-api.cargofe.com/api/users/external</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Variables[User::var_user_role].Properties[Value]" ValueType="Int32">
+      <ConfiguredValue>9</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[MasterData].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>Data Source=cargofe-csportal.database.windows.net;Initial Catalog=masterdatadb;User ID=db-admin;Password=C7m5QvniWS3mwCYLD;Provider=SQLNCLI11.1;Auto Translate=False;</ConfiguredValue>
+   </Configuration>
+</DTSConfiguration>

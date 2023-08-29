@@ -1,0 +1,60 @@
+<div class="content__header">
+    <div class="container-fluid survey_form__container">
+        <div class="header-group">
+            <div class="row">
+                <div class="col-sm-6 d-flex align-items-center">
+                    <button attr.data-balloon="{{'tooltip.backToDetail' | translate}}" data-balloon-pos="up"
+                        type="button" class="btn btn-default back-button" (click)="backTo()">
+                        <i class="ei ei-arrow_left"></i>
+                    </button>
+                    <label class="form-header" style="margin-left: 15px;">{{ 'label.surveyReport' | translate}}</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row chart-group">
+        <div class="col-12">
+            <div class="card chart-container">
+                <div class="row">
+                    <div class="col-4 text-center">
+                        <p class="number-title">{{generalStatisticModel.participantCount}}</p>
+                        <p>{{'label.participants' | translate}}</p>
+                    </div>
+                    <div class="col-4 text-center">
+                        <p class="number-title">{{generalStatisticModel.completedCount}}</p>
+                        <p>{{'label.completed' | translate}}</p>
+                    </div>
+                    <div class="col-4 text-center">
+                        <p class="number-title">{{generalStatisticModel.completionRate | percent}}</p>
+                        <p>{{'label.completionRate' | translate}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row chart-group" *ngFor="let question of questions">
+        <div class="col-12">
+            <kendo-panelbar #filterProgressCheck [keepItemContent]="true" class="expanse-panel-style">
+                <kendo-panelbar-item [title]="question.sequence + '. ' + question.content" expanded="true">
+                    <ng-template kendoPanelBarContent>
+                        <app-pie-chart-question-report *ngIf="question.type === surveyQuestionType.SingleAnswer || question.type === surveyQuestionType.RatingScale"
+                            [questionId]="question.id">
+                        </app-pie-chart-question-report>
+
+                        <app-bar-chart-question-report *ngIf="question.type === surveyQuestionType.MultiAnswers"
+                            [questionId]="question.id"
+                            [completedTotal]="generalStatisticModel.completedCount">
+                        </app-bar-chart-question-report>
+
+                        <app-summary-question-report *ngIf="question.type === surveyQuestionType.OpenEnded || question.type === surveyQuestionType.OpenEndedWithMultiLines"
+                            [questionId]="question.id">
+                        </app-summary-question-report>
+                    </ng-template>
+                </kendo-panelbar-item>
+            </kendo-panelbar>
+        </div>
+    </div>
+</div>
+<app-scroll-to-top></app-scroll-to-top>

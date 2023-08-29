@@ -1,0 +1,776 @@
+﻿@using Groove.SP.Core.Models;
+@model Groove.SP.Application.POFulfillment.ViewModels.ShippingOrderFormViewModel
+@{
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto+Sans+SC:400,700|Noto+Sans+TC:400,700|Noto+Sans:400,400i,700&subset=chinese-simplified,chinese-traditional">
+    <style>
+        body {
+            width: 100%;
+            font-family: 'Noto Sans SC', sans-serif;
+            font-family: 'Noto Sans TC', sans-serif;
+            font-family: 'Noto Sans', sans-serif;
+            font-family: 'Microsoft Yahei';
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 1100px;
+            page-break-inside:auto;
+        }
+
+        body table:not(:first-child) tr td {
+           border-top: none;
+        }       
+
+        tr {
+            page-break-inside:avoid;
+        }
+
+        td, th {
+            font-size: 14px;
+            text-align: left;
+            padding: 8px;
+        }
+
+        td {
+            border: 1px solid #000;
+            min-width: 35px;
+        }
+
+        div {
+            min-height: 25px;
+        }
+
+        .form-title {
+            font-size: 28px;
+            color: #0054a6;
+            text-align: right;
+        }
+
+        .title {
+            font-weight: bold;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .big-font-size {
+            font-size: 18px;
+        }
+
+        .part-break {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .sub-title {
+            font-size: 12px;
+            color: #0054a6;
+        }
+
+        .empty-box {
+            padding: 20px;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .sub-content td {
+            font-size: 11px;
+            padding: 3px;
+        }
+
+        .extra-inform {
+            font-size: 10.5px;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <tr>
+            <td colspan="6">
+                <div class="title">Shipper</div>
+                @if (Model.Shipper == null && Model.ShipperOrganization == null)
+                {
+                    <br />
+                }
+                <span>@Model.Shipper?.CompanyName</span><br>
+                @if (Model.ShipperOrganization != null)
+                {
+                    if (!string.IsNullOrEmpty(Model.ShipperOrganization?.Address))
+                    {
+                        <span>@Model.ShipperOrganization.Address</span><br>
+                    }
+                    if (!string.IsNullOrEmpty(Model.ShipperOrganization?.AddressLine2))
+                    {
+                        <span>@Model.ShipperOrganization.AddressLine2</span><br>
+                    }
+                    if (!string.IsNullOrEmpty(Model.ShipperOrganization?.AddressLine3))
+                    {
+                        <span>@Model.ShipperOrganization.AddressLine3</span><br>
+                    }
+                    if (!string.IsNullOrEmpty(Model.ShipperOrganization?.AddressLine4))
+                    {
+                        <span>@Model.ShipperOrganization.AddressLine4</span><br>
+                    }
+                    @if (Model.ShipperOrganization.Location != null)
+                    {
+                        <span>@Model.ShipperOrganization.Location.LocationDescription, @Model.ShipperOrganization.Location.Country.Name</span>
+                    }
+                }
+            </td>
+            <td colspan="5" class="form-title">@(Model.FormType.Equals(Groove.SP.Application.POFulfillment.ShippingFormType.Booking) ? "BOOKING FORM" : "SHIPPING ORDER FORM")</td>
+        </tr>
+        <tr>
+            <td colspan="6">
+                <div class="title">Supplier</div>
+                <span>@Model.Supplier?.CompanyName</span><br>
+                @if (Model.SupplierOrganization != null)
+                {
+                    if (!string.IsNullOrEmpty(Model.SupplierOrganization?.Address))
+                    {
+                        <span>@Model.SupplierOrganization.Address</span><br>
+                    }
+                    if (!string.IsNullOrEmpty(Model.SupplierOrganization?.AddressLine2))
+                    {
+                        <span>@Model.SupplierOrganization.AddressLine2</span><br>
+                    }
+                    if (!string.IsNullOrEmpty(Model.SupplierOrganization?.AddressLine3))
+                    {
+                        <span>@Model.SupplierOrganization.AddressLine3</span><br>
+                    }
+                    if (!string.IsNullOrEmpty(Model.SupplierOrganization?.AddressLine4))
+                    {
+                        <span>@Model.SupplierOrganization.AddressLine4</span><br>
+                    }
+                    if (Model.SupplierOrganization.Location != null)
+                    {
+                        <span>@Model.SupplierOrganization.Location.LocationDescription, @Model.SupplierOrganization.Location.Country.Name</span>
+                    }
+                }
+
+                @if (!string.IsNullOrEmpty(@Model.Owner?.EmailAddress))
+                {
+                    <br><span>@Model.Owner.EmailAddress</span>
+                }
+                @if (!string.IsNullOrEmpty(@Model.Owner?.ContactNumber))
+                {
+                    <br><span>@Model.Owner.ContactNumber</span>
+                }
+            </td>
+            <td colspan="5" class="text-right">
+                <span><span class="title">SO No.</span>: @Model.SoNumber</span><br>
+                <span><span class="title">@(Model.FormType.Equals(Groove.SP.Application.POFulfillment.ShippingFormType.Booking) ? "Booking Date" : "Confirm Date")</span>: @Model.ConfirmDate.ToString(Model.DateFormat)</span><br />
+                <span>
+                    <span class="title">Booking No.</span>: @Model.PoffNumber
+                    @if (!string.IsNullOrEmpty(Model.BookingRequestReferenceNumber))
+                    {
+                        <br />
+                        @($"({Model.BookingRequestReferenceNumber})")
+                    }
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6">
+                <div class="title">Consignee</div>
+                @if (Model.Consignee == null && Model.ConsigneeOrganization == null)
+                {
+                    <br />
+                }
+                <span>@Model.Consignee?.CompanyName</span><br>
+                @if (Model.ConsigneeOrganization != null)
+                {
+                    if (!string.IsNullOrEmpty(Model.ConsigneeOrganization?.Address))
+                    {
+                        <span>@Model.ConsigneeOrganization.Address</span><br>
+                    }
+                    if (!string.IsNullOrEmpty(Model.ConsigneeOrganization?.AddressLine2))
+                    {
+                        <span>@Model.ConsigneeOrganization.AddressLine2</span><br>
+                    }
+                    if (!string.IsNullOrEmpty(Model.ConsigneeOrganization?.AddressLine3))
+                    {
+                        <span>@Model.ConsigneeOrganization.AddressLine3</span><br>
+                    }
+                    if (!string.IsNullOrEmpty(Model.ConsigneeOrganization?.AddressLine4))
+                    {
+                        <span>@Model.ConsigneeOrganization.AddressLine4</span><br>
+                    }
+                    @if (Model.ConsigneeOrganization.Location != null)
+                    {
+                        <span>@Model.ConsigneeOrganization.Location.LocationDescription, @Model.ConsigneeOrganization.Location.Country.Name</span>
+                    }
+                }
+            </td>
+            <td colspan="5" rowspan="4" class="text-right big-font-size">
+                <span class="title">@Model.OriginAgent?.CompanyName</span><br>
+                @if (Model.OriginAgentOrganization != null)
+                {
+                    if (!string.IsNullOrEmpty(Model.OriginAgentOrganization?.Address))
+                    {
+                        <span>@Model.OriginAgentOrganization.Address</span><br>
+                    }
+                    if (!string.IsNullOrEmpty(Model.OriginAgentOrganization?.AddressLine2))
+                    {
+                        <span>@Model.OriginAgentOrganization.AddressLine2</span><br>
+                    }
+                    if (!string.IsNullOrEmpty(Model.OriginAgentOrganization?.AddressLine3))
+                    {
+                        <span>@Model.OriginAgentOrganization.AddressLine3</span><br>
+                    }
+                    if (!string.IsNullOrEmpty(Model.OriginAgentOrganization?.AddressLine4))
+                    {
+                        <span>@Model.OriginAgentOrganization.AddressLine4</span><br>
+                    }
+                    @if (Model.OriginAgentOrganization.Location != null)
+                    {
+                        <span>@Model.OriginAgentOrganization.Location.LocationDescription, @Model.OriginAgentOrganization.Location.Country.Name</span>
+                    }
+                }
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="6">
+                <div class="title">Notify Party</div>
+                @if (Model.IsNotifyPartyAsConsignee)
+                {
+                    <span>Same As Consignee</span>
+                }
+                else
+                {
+                    @if (Model.Notify == null && Model.NotifyOrganization == null)
+                    {
+                        <br />
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Notify?.CompanyName))
+                    {
+                        <span>@Model.Notify.CompanyName</span><br>
+                    }
+                    @if (Model.NotifyOrganization != null)
+                    {
+                        if (!string.IsNullOrEmpty(Model.NotifyOrganization?.Address))
+                        {
+                            <span>@Model.NotifyOrganization.Address</span><br>
+                        }
+                        if (!string.IsNullOrEmpty(Model.NotifyOrganization?.AddressLine2))
+                        {
+                            <span>@Model.NotifyOrganization.AddressLine2</span><br>
+                        }
+                        if (!string.IsNullOrEmpty(Model.NotifyOrganization?.AddressLine3))
+                        {
+                            <span>@Model.NotifyOrganization.AddressLine3</span><br>
+                        }
+                        if (!string.IsNullOrEmpty(Model.NotifyOrganization?.AddressLine4))
+                        {
+                            <span>@Model.NotifyOrganization.AddressLine4</span><br>
+                        }
+                        @if (Model.NotifyOrganization.Location != null)
+                        {
+                            <span>@Model.NotifyOrganization.Location.LocationDescription, @Model.NotifyOrganization.Location.Country.Name</span>
+                        }
+                    }
+                }
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6">
+                <div class="title">Billing Party</div>
+                @if (Model.BillingAddress == null)
+                {
+                    <br />
+                }
+                @if (Model.BillingAddress != null)
+                {
+                    if (!string.IsNullOrEmpty(Model.BillingAddress.CompanyName))
+                    {
+                        <span>@(Model.BillingAddress.CompanyName)</span><br>
+                    }
+                    @if (Model.BillingPartyOrganization != null)
+                    {
+                        if (!string.IsNullOrEmpty(Model.BillingPartyOrganization?.Address))
+                        {
+                            <span>@Model.BillingPartyOrganization.Address</span><br>
+                        }
+                        if (!string.IsNullOrEmpty(Model.BillingPartyOrganization?.AddressLine2))
+                        {
+                            <span>@Model.BillingPartyOrganization.AddressLine2</span><br>
+                        }
+                        if (!string.IsNullOrEmpty(Model.BillingPartyOrganization?.AddressLine3))
+                        {
+                            <span>@Model.BillingPartyOrganization.AddressLine3</span><br>
+                        }
+                        if (!string.IsNullOrEmpty(Model.BillingPartyOrganization?.AddressLine4))
+                        {
+                            <span>@Model.BillingPartyOrganization.AddressLine4</span><br>
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(Model.BillingAddress.ContactDetails))
+                    {
+                        <span>@(Model.BillingAddress.ContactDetails)</span><br />
+                    }
+                    if (!string.IsNullOrEmpty(Model.BillingAddress.EmailAddress))
+                    {
+                        <span>@(Model.BillingAddress.EmailAddress)</span><br />
+                    }
+                }
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6">
+                <div class="title">Pickup Address</div>
+                @if (Model.PickupAddress == null)
+                {
+                    <br />
+                }
+                @if (Model.PickupAddress != null)
+                {
+                    if (!string.IsNullOrEmpty(Model.PickupAddress.CompanyName))
+                    {
+                        <span>@(Model.PickupAddress.CompanyName)</span><br>
+                    }
+                    @if (Model.PickupOrganization != null)
+                    {
+                        if (!string.IsNullOrEmpty(Model.PickupOrganization?.Address))
+                        {
+                            <span>@Model.PickupOrganization.Address</span><br>
+                        }
+                        if (!string.IsNullOrEmpty(Model.PickupOrganization?.AddressLine2))
+                        {
+                            <span>@Model.PickupOrganization.AddressLine2</span><br>
+                        }
+                        if (!string.IsNullOrEmpty(Model.PickupOrganization?.AddressLine3))
+                        {
+                            <span>@Model.PickupOrganization.AddressLine3</span><br>
+                        }
+                        if (!string.IsNullOrEmpty(Model.PickupOrganization?.AddressLine4))
+                        {
+                            <span>@Model.PickupOrganization.AddressLine4</span><br>
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(Model.PickupAddress.ContactDetails))
+                    {
+                        <span>@(Model.PickupAddress.ContactDetails)</span><br />
+                    }
+                    if (!string.IsNullOrEmpty(Model.PickupAddress.EmailAddress))
+                    {
+                        <span>@(Model.PickupAddress.EmailAddress)</span><br />
+                    }
+                }
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div class="title">@(Model.ModeOfTransport != null && Model.ModeOfTransport.Equals(ModeOfTransport.Air, StringComparison.CurrentCultureIgnoreCase) ? "Flight No." : "Vessel/Voyage")</div>
+                @if (Model.FulfillmentType == FulfillmentType.PO)
+                {
+                    @if (string.IsNullOrWhiteSpace(Model.FirstItinerrary?.VesselFlight ?? ""))
+                    {
+                        <br />
+                    }
+                    else
+                    {
+                        <span>@(Model.FirstItinerrary?.VesselFlight ?? "")</span>
+                    } 
+                }
+
+                @if (Model.FulfillmentType == FulfillmentType.Bulk)
+                {
+                    if (Model.SOFormStage == POFulfillmentStage.ForwarderBookingRequest)
+                    {
+                        if (string.IsNullOrEmpty(Model.VesselName) && string.IsNullOrEmpty(Model.VoyageNo))
+                        {
+                            <br />
+                        }
+                        else
+                        {
+                            <span>@(Model.VesselName ?? "")/@(Model.VoyageNo ?? "")</span>
+                        }
+                    }
+
+                    if (Model.SOFormStage == POFulfillmentStage.ForwarderBookingConfirmed)
+                    {
+                        @if (string.IsNullOrWhiteSpace(Model.FirstItinerrary?.VesselFlight ?? ""))
+                        {
+                            <br />
+                        }
+                        else
+                        {
+                            <span>@(Model.FirstItinerrary?.VesselFlight ?? "")</span>
+                        }
+                    }
+                }
+            </td>
+            <td colspan="3">
+                <div class="title">@(Model.ModeOfTransport != null && Model.ModeOfTransport.Equals(ModeOfTransport.Air, StringComparison.CurrentCultureIgnoreCase) ? "Airline" : "Carrier")</div>
+                @if (Model.FulfillmentType == FulfillmentType.PO)
+                {
+                    @if(string.IsNullOrWhiteSpace(Model.FirstItinerrary?.CarrierName ?? ""))
+                    {
+                        <br />
+                    }
+                    else
+                    {
+                        <span>@(Model.FirstItinerrary?.CarrierName ?? "")</span>
+                    } 
+                }
+
+                @if (Model.FulfillmentType == FulfillmentType.Bulk)
+                {
+                    if (Model.SOFormStage == POFulfillmentStage.ForwarderBookingRequest)
+                    {
+                        @if (string.IsNullOrWhiteSpace(Model.CarrierName))
+                        {
+                            <br />
+                        }
+                        else
+                        {
+                            <span>@(Model.CarrierName ?? "")</span>
+                        }
+                    }
+
+                    if (Model.SOFormStage == POFulfillmentStage.ForwarderBookingConfirmed)
+                    {
+                        @if(string.IsNullOrWhiteSpace(Model.FirstItinerrary?.CarrierName ?? ""))
+                        {
+                            <br />
+                        }
+                        else
+                        {
+                            <span>@(Model.FirstItinerrary?.CarrierName ?? "")</span>
+                        } 
+                    }
+
+                }
+            </td>
+            <td colspan="3" style="position:relative;">
+                <span class="title">Incoterm</span>
+                <span style="position:absolute; left:200px;">@(Model.Incoterm)</span>
+            </td>
+            <td colspan="2"></td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div class="title">@(Model.ModeOfTransport != null && Model.ModeOfTransport.Equals(ModeOfTransport.Air, StringComparison.CurrentCultureIgnoreCase) ? "Origin" : "Port of loading")</div>
+                @if (string.IsNullOrWhiteSpace(Model.PortOfLoading))
+                {
+                    <br />
+                }
+                else
+                {
+                    <span>@Model.PortOfLoading</span>
+                } 
+            </td>
+            <td colspan="3">
+                <div class="title">Place of receipt</div>
+                @if (string.IsNullOrWhiteSpace(Model.PlaceOfReceipt))
+                {
+                    <br />
+                }
+                else
+                {
+                    <span>@Model.PlaceOfReceipt</span>
+                } 
+            </td>
+            <td colspan="3" style="position:relative;">
+                <span class="title">Dangerous Goods</span>&nbsp;&nbsp;&nbsp;
+                <span style="position:absolute; left:200px;">
+                    @if (@Model.IsDangerousGoods)
+                    {
+                        <img width="16" height="16" alt="checked" src="data:image/png;base64,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FMPGTo+7RIkSqe/jhT6WTsWwDaFlpRj22Z2Iu1y5cmrBwkXwY+hMDNsQWlaKYedNx708Nxf+GGEM2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVqpzl65E1qFnTQo14RtvwiaKC9SEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvChQ2EfmNYRMFiGETBYhhEwWIYRMFiGETBYhhEwWIYRMFiGETBYhhEwWIYRMFiGETBYhhEwXnR/V/ptkOu1IPbbIAAAAASUVORK5CYII=" />
+                    }
+                    else
+                    {
+                        <img width="16" height="16" alt="unchecked" src="data:image/png;base64,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" />
+                    }
+                </span>
+            </td>
+            <td colspan="2" style="position:relative;">
+                <span class="title">CIQ or Fumigation</span>&nbsp;&nbsp;&nbsp;
+                <span style="position:absolute; right:25px;">
+                    @if (@Model.IsCIQOrFumigation)
+                    {
+                        <img width="16" height="16" alt="checked" src="data:image/png;base64,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FMPGTo+7RIkSqe/jhT6WTsWwDaFlpRj22Z2Iu1y5cmrBwkXwY+hMDNsQWlaKYedNx708Nxf+GGEM2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVqpzl65E1qFnTQo14RtvwiaKC9SEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvChQ2EfmNYRMFiGETBYhhEwWIYRMFiGETBYhhEwWIYRMFiGETBYhhEwWIYRMFiGETBYhhEwXnR/V/ptkOu1IPbbIAAAAASUVORK5CYII=" />
+                    }
+                    else
+                    {
+                        <img width="16" height="16" alt="unchecked" src="data:image/png;base64,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" />
+                    }
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div class="title">@(Model.ModeOfTransport != null && Model.ModeOfTransport.Equals(ModeOfTransport.Air, StringComparison.CurrentCultureIgnoreCase) ? "Destination" : "Port of discharge")</div>
+                @if (string.IsNullOrWhiteSpace(Model.PortOfDischarge))
+                {
+                    <br />
+                }
+                else
+                {
+                    <span>@Model.PortOfDischarge</span>
+                }
+            </td>
+            <td colspan="3">
+                <div class="title">Place of delivery</div>
+                @if (string.IsNullOrWhiteSpace(Model.PlaceOfDelivery))
+                {
+                    <br />
+                }
+                else
+                {
+                    <span>@Model.PlaceOfDelivery</span>
+                }
+            </td>
+            <td colspan="3" style="position:relative;">
+                <span class="title">Battery or Chemical</span>&nbsp;&nbsp;&nbsp;
+                <span style="position:absolute; left:200px;">
+                    @if (@Model.IsBatteryOrChemical)
+                    {
+                        <img width="16" height="16" alt="checked" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAADaCAYAAACVfL+FAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAABBTSURBVHhe7d1nkJbVGcZxbBR11JFFkKiDVEVH4iJRZ8ChmokkUhYbgrBYIigs2MBIHYGI0kEk0kWQXkQTeolRYelh6KjBQpcYRYp+OPG8iFIulj17n/c55znP9eH3RXbfc9/w/FXg7LuFjv7woyKisDBsogAxbKIAMWyiADFsoogdOnwE/nObGDZRhL7avUc1aNhQjZ8wAf64LQybKCKbtmxVNWvWUoUKFUoZ+9Zb8ONsYNhEEfh4Ra669dbMX6I+YfSYMfDjpRg2UZrNnT9flS1b9oyoTxgxchT8PAmGTZRGk6dOVcWLF4dBn2z4396En19QDJsoTd4cOVJdeOGFMGTk9WFvwNcpCIZNlAav9e0H4z2XwUOGwtczxbCJLOvcpSuMNr8GDhoEX9dEgcJGwxDFyZz33ofPtlTbdjnwPFP9+g+Ar59fDJsSJSMjQ320fAV8riW+P3JUPdKiBTyzoF7t2xeelR8MmxLjhhtuUNu274DPtMSun2+ToTOlXunTB555LgybEqF69epq7/4D8HmW2Kxvk9X69TZZOvTq/Vd4dl4YNgVP/9cUPcdSy/Vtsswzb5Olw8s9e8IZzoZhU9Aefewx+AxLzZu/QJUtVw6emS7de/SAsyAMm4LVsVMn+PxKTZk6TRUvngHPTLcuXbvBmU7HsClI+oIIenalRhjeJrPt5Z694FynY9gUnFGj0/MVU337Few2mS2DhwyBcyEMm4IybcYM+MxKdekqu00mNXac2dduM2wKgr54snDRYvi8SrXLsXObrCCKFSumZs6aDefKC8Om2NMXT1atXgOfVQl9m6xFi5bwzCiUKlVKLVq8BM52LgybYk1fPNn+yafwOZXYtWevatiwETwzChUrVlIrBf+yYtgUW/riyf6vD8JnVGLz1m2qVppvk+WlWrVqatsO2dVXhk2x1LJlNnw2pZbn5qrMiG6TIXXq1FV79u2Hs5lg2BQ7Oe07wOdSSt8mKxfxbbKTNWrcWB059gOczRTDpljp1j3/1ypN6Ntk+k/W0ZlRaJlt9/9AGDbFxoCBA+HzKKXfJfSiiy6CZ0ahXU57OJcEw6ZYGD12LHwWpfr26w/Pi4q++ILmkmLY5DX91r0zZs6Cz6GU69tk6brPrjFs8pb+g6zFS5bCZ1DK5W0y7c0RI+BctngT9vwFC4lOsXrtOvj8SaRuk7V0d5tM/15+0uQpcDabvAobnUVkS+o2WSN3t8muvLK4+vvceXA22xg2JULqNlnt2vDZi0KZMmXUhx99DGdLB4ZNwVueu1JlZlaFz10UbrmlitqwcROcLV0YNgVt3k/PlcvbZNVr1FCff/klnC2dGDYFa8o0t7fJ6tf/o/rm2+/gbOnGsClII0a5vU32UNOmcK6oMGwKjuvbZE+2bg3nihLDpqDot+dFz1dUXuiYnrc8NsWwKRj6iynQsxWVXr17w7lcYNgUe4ePHlMtWmbD5yoqQ4a+DmdzhWFTrO3e6/Y22XnnnafGjR8PZ3OJYVNsbXF8m+yyyy5Ts2a/C2dzjWFTLK3Qt8mqurtNds0116jFS5fB2XzAsCl29LNSrnx5+BxF4cYbK6vVa9bC2XzBsClWpk6brjJKlIDPUBR+d/vtaXkfc9sYNsXGyFGjnd4mq1uvntp34ACczTcMm2KhX3+3t8mysprAuXzFsMl7Xbu5vU2W3aoVnMtnDJu8ltPe7W2y9h3S880J0o1hk5f0bTL9bXzQsxKVrt26w9nigGGTd3bv3acaNWoMn5Oo6N/To9nigmGTV7Zs265q164Dn5Go6O8MgmaLE4ZN3lixcqWq6vA22cUXX6wmT50KZ4sbhk1emL9woSrv8DZZyVKl1Nx58+FsccSwyTl9m6yEw9tkFSpUUB8tXwFniyuGTU7p22SFCxeGz0QU9BeSbNy0Gc4WZwybnOnXfwB8FqJSs2ZN9cVXu+BsccewyQn9d8ToOYjKn+69V3176BCcLQQMmyLn+jbZww83g3OFhGFTZFK3ybLd3iZr3aYNnC00DJsikbpN1tjtbbJOL74IZwsRw6a0S90mq+P2Nlnvv74CZwsVw6a0WrFylapa9Tb4ax6VocOGwdlCxrApbeYvXKTKl68Af72joP9+fPzbE+BsoWPYlBZTp7u9TVa8eIaaPWcOnE3iwMH/wn/uG4ZN1o0c7fY22fXXX6+WLvsnnE1i5+dfqAYNGsIf8w3DJqv6DXB7m+yWKlXUmnXr4WwSGzdvUXXq1k2dgX7cNwybrHF9m6x69erqk08/g7NJ6D8AvP2OO345B32Mbxg2WZHTvgP8dY3KH+65R+3/+iCcTWLxkqXq5ptvPuUs9HG+YdhAVpMmasI778Afo1MdOfaDapndCv6aRuX+Bx6As0m9O+c9VaZMmTPOQx/rG4Z9Gv2QnJiJcedtz779zm+TPfb443A2qYmTJp31O46gj/cNwz7JQ02bnjEX48a2bnd/m6zDM8/C2aT0e54VK1YMnqmhz/ENw/5Zs+bN4Vwa4z5Vrr5Ndpvb22TduveAs0kNGDgInncy9Hm+Ydg/adGiJZzpZIz7uAX6NlkFd7fJtP4DBsLZpF7u2Quedzr0ub5JfNjZrR6F8yBJj3va9BmqxFVXwZ+bKJx//vmpyy9oNin9lV/oTAR9vm8SHbb+gxc0S16SGveo0WNU4cJF4M9JFC6//PLUmx6i2aSebtsWnnk26DV8k9iw//xkazhHfiQt7v6Ob5Nde+21at6CBXA2qYK88QN6Hd8kMuw2Tz0NZzCRlLi7dXd7m6xy5cpq+YpcOJuEfjeX++67H555Luj1fJO4sNu2y4HnF0TocevvNIn2joq+xrlpy1Y4m8S+A1+nbqqhM/MDvaZvEhV2hw7PwLMlQoxb3ybT3xMa7RuVevXuVl/t2g3nk/hs505V46674Jn5hV7XN4kJ+7nnn4fn2hBS3Po2WePGWXDPqDTOylLffX8YziexYeMmlZmZCc80gV7bN4kIu2OnTvBMm0KIe+v2HapOneNfmuiK/p7YaDapj3/6fXrFihXhmabQ6/sm+LD/8tJL8Lx0iHPcuatWq9sc3yZr264dnE1q4aLFqnTp38AzCwKd4Zugw167br26sXJleF66xDHuBYsWpb4xHdonKi917gxnk5o1+93U34GjMwsKneOb4P+LzbjzNm3GDHWVw9tk2it9XoWzSeln6oILLoBnSqCzfJOI32MzbkzfJitSxN1tMm3YG8PhbDboZwqdKYXO8k0iwtYY96n0F1KgmaNyySWXqLcnToSz2cKwDaFlpdIdtsa4j9Nf8ohmjUqpq69Wc957H85mE8M2hJaViiJsLelxu75Npv/KadkHH8DZbGPYhtCyUlGFrSUxbh9uk+k3Z1i3/t9wvnRg2IbQslJRhq0lKe7UbbIst7fJatWqpT79z044X7owbENoWamow9aSEHfqNtnPb3Tvyr0NGjj51jgM2xBaVspF2FrIcaduk1WrBmeISrNmzeFsUWDYhtCyUq7C1kKMe8GixapCBTt3owuqdZs2cLaoMGxDaFkpl2FrIcU9bcZM57fJXujYCc4WJYZtCC0r5TpsLYS4R41xf5usZ69ecLaoMWxDaFkpH8LW4hx3/4Fub5NpgwYPgbO5wLANoWWlfAlbi2Pc3Xq4vU2m/y9hzNhxcDZXGLYhtKyUT2FrcYq7fRre8slERkZG6qvE0GwuMWxDaFkp38LW4hC3yTc8SIeyZcumvjsIms01hm0ILSvlY9iar3Hv3X9AZTm+TValym/VipUr4Xw+YNiG0LJSvoat+Rb3th3ub5PVqFFDbd66Dc7nC4ZtCC0r5XPYmi9xr/TgNtk99eurXXv2njGbbxi2IbSslO9ha67j1m/KZ+udNgvqgQcfVIcOHznl58VXDNsQWlYqDmFrruKePmOmKlmyJPzxqDz+xBPw58RXDNsQWlYqLmFrLuIuUrQo/OdReebZ5+DPhc8YtiG0rFScwtZcxO1K9x494M+B7xi2IbSsVNzC1pIQd7/+A+DuccCwDaFlpeIYthZq3Pr9uEeMHAl3jguGbQgtKxXXsLXQ4r7iiivUpMlT4K5xwrANoWWl4hy2Fkrc1113nXr/H3PhjnHDsA2hZaXiHrYW97hvuukm9cG/PoS7xRHDNoSWlQohbC2ucd9x551q/YYNcKe4YtiG0LJSoYStxS3uu+/+vfps5+dwlzhj2IbQslIhha3FJe6sJk3UwW/+B3eIO4ZtCC0rFVrYmu9xZ2e3gnOHgmEbQstKhRi25mvc7XJy4LwhYdiG0LJSoYat+RZ35y5d4JyhYdiG0LJSIYet+RJ3n1dfg/OFiGEbQstKhR625jruYcOHw7lCxbANoWWlkhC25iLuSy+9VL09YSKcJ2QM2xBaViopYWtRxn116dJq9pw5cI7QMWxDaFmpJIWtRRF3pUqV1JKly+D5ScCwDaFlpZIWtpbOuPUbHq5asxaemxQM2xBaViqJYWvpiLt27dpq2/Yd8LwkYdiG0LJSSQ1bsxl3g4YN1e69++A5ScOwDaFlpZIctmYj7ubNH1GHjx6Dr59EDNsQWlYq6WFrkrjbPPUUfM0kY9iG0LJSDPu4gsTdsdOL8LWSjmEbQstKMexfmcTdq3dv+BrEsOEP5AUtK8WwT5WfuAcPGQo/l45j2IbQslIM+0xni7to0aJq7Li34OfQrxi2IbSsFMPGTo+7RIkSqe/jhT6WTsWwDaFlpRj22Z2Iu1y5cmrBwkXwY+hMDNsQWlaKYedNx708Nxf+GGEM2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVqpzl65E1qFnTQo14RtvwiaKC9SEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvChQ2EfmNYRMFiGETBYhhEwWIYRMFiGETBYhhEwWIYRMFiGETBYhhEwWIYRMFiGETBYhhEwXnR/V/ptkOu1IPbbIAAAAASUVORK5CYII=" />
+                    }
+                    else
+                    {
+                        <img width="16" height="16" alt="unchecked" src="data:image/png;base64,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" />
+                    }
+                </span>
+            </td>
+            <td colspan="2" style="position:relative;">
+                <span class="title">Export Licence</span>&nbsp;&nbsp;&nbsp;
+                <span style="position:absolute; right:25px;">
+                    @if (@Model.IsExportLicence)
+                    {
+                        <img width="16" height="16" alt="checked" src="data:image/png;base64,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FMPGTo+7RIkSqe/jhT6WTsWwDaFlpRj22Z2Iu1y5cmrBwkXwY+hMDNsQWlaKYedNx708Nxf+GGEM2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVophk20M2xBaVqpzl65E1qFnTQo14RtvwiaKC9SEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvGDaRIdSEbxg2kSHUhG8YNpEh1IRvChQ2EfmNYRMFiGETBYhhEwWIYRMFiGETBYhhEwWIYRMFiGETBYhhEwWIYRMFiGETBYhhEwXnR/V/ptkOu1IPbbIAAAAASUVORK5CYII=" />
+                    }
+                    else
+                    {
+                        <img width="16" height="16" alt="unchecked" src="data:image/png;base64,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" />
+                    }
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="11" class="part-break">PARTICULARS FURNISHED BY VENDOR</td>
+        </tr>
+    </table>
+
+    <table>
+        <tr class="sub-title">
+            <td class="text-center" style="width: 15%;">Shipping Marks</td>
+            <td class="text-center" style="width: 15%;">Customer PO</td>
+            <td class="text-center" style="width: 11%;">Product<br /><span class="extra-inform">(Inner/Outer Qty)</span></td>
+            <td class="text-center" style="width: 11%;">HS Code</td>
+            <td class="text-center" style="width: 8%;">No. of Cartons</td>
+            <td class="text-center" style="width: 8%;">No. of Pieces</td>
+            <td class="text-center" style="width: 16%;">Package Description <br />商品说明</td>
+            <td class="text-center" style="width: 8%;">Volume<br /><span class="extra-inform">(CBM)</span></td>
+            <td class="text-center" style="width: 8%;">Weight<br /><span class="extra-inform">(KGS)</span></td>
+        </tr>
+
+        @if (Model.Orders != null && Model.Orders.Any())
+        {
+            @foreach (var order in Model.Orders)
+            {
+                var product = Model.Products?.FirstOrDefault(x => x.PurchaseOrderId.Equals(order.PurchaseOrderId) && x.Id.Equals(order.POLineItemId));
+                <tr>
+                    <td class="text-center">@order.ShippingMarks</td>
+                    <td class="text-center">
+                        @order.CustomerPONumber
+                    </td>
+                    <td class="text-center">
+                        @if (Model.FulfillmentType == FulfillmentType.Bulk)
+                        {
+                            @order.ProductCode
+                        }
+                        else
+                        {
+                            @order.ProductCode
+                            <br />
+                            var innerQty = order.InnerQuantity.HasValue ? order.InnerQuantity.Value.ToString("n0") : "--";
+                            var outerQty = order.OuterQuantity.HasValue ? order.OuterQuantity.Value.ToString("n0") : "--";
+                            @($"({innerQty}/{outerQty})")
+                        }
+
+
+                    </td>
+                    <td class="text-right">@order.HsCode</td>
+                    <td class="text-right">
+                        @if (Model.FulfillmentType == FulfillmentType.Bulk)
+                        {
+                            @order.BookedPackage
+                        }
+                        else
+                        {
+                            @if (order.DifferentSizedCarton)
+                            {
+                                <span style="color:red;">* @(order.NoOfCartons.HasValue && order.NoOfCartons > 0 ? order.NoOfCartons.Value.ToString("#,##0") : "")</span>
+                            }
+                            else
+                            {
+                                <span>@(order.NoOfCartons.HasValue && order.NoOfCartons > 0 ? order.NoOfCartons.Value.ToString("#,##0") : "")</span>
+                            }
+                        }
+                    </td>
+                    <td class="text-right">@order.NoOfPieces.ToString("#,##0")</td>
+                    <td>
+                        @(Model.FulfillmentType == FulfillmentType.Bulk ? order?.ProductName : product?.DescriptionOfGoods)
+                        @if (!string.IsNullOrEmpty(order.ChineseDescription))
+                        {
+                            <br />
+                            @order.ChineseDescription
+                        }
+                    </td>
+                    <td class="text-right">@(order.Volume.HasValue && order.Volume > 0 ? order.Volume.Value.ToString("#,##0.##0") : "")</td>
+                    <td class="text-right">@(order.Weight.HasValue && order.Weight > 0 ? order.Weight.Value.ToString("#,##0.#0") : "")</td>
+                </tr>
+            }
+        }
+
+        <tr>
+            <td colspan="9"></td>
+        </tr>
+        <tr>
+            <td colspan="4" class="title text-right">Total</td>
+            @{
+                var subOrderTotal = Model.Orders.Where(x => x.NoOfCartons.HasValue && x.NoOfCartons > 0);
+            }
+            <td class="text-right">@(subOrderTotal != null && subOrderTotal.Any() ? subOrderTotal.Sum(x=>x.NoOfCartons).Value.ToString("#,##0") : "")</td>
+
+            <td class="text-right">@Model.Orders.Sum(x => x.NoOfPieces).ToString("#,##0")</td>
+            <td></td>
+
+            @{
+                subOrderTotal = Model.Orders.Where(x => x.Volume.HasValue && x.Volume > 0);
+            }
+            <td class="text-right">@(subOrderTotal != null && subOrderTotal.Any() ? subOrderTotal.Sum(x=>x.Volume).Value.ToString("#,##0.##0") : "")</td>
+
+            @{
+                subOrderTotal = Model.Orders.Where(x => x.Weight.HasValue && x.Weight > 0);
+            }
+            <td class="text-right">@(subOrderTotal != null && subOrderTotal.Any() ? subOrderTotal.Sum(x=>x.Weight).Value.ToString("#,##0.#0") : "")</td>
+        </tr>
+
+    </table>
+
+    <table>
+        <tr>
+            <td colspan="11"></td>
+        </tr>
+        <tr>
+            
+            @if(Model.ModeOfTransport != null && Model.ModeOfTransport.Equals(ModeOfTransport.Air, StringComparison.CurrentCultureIgnoreCase))
+            {
+            <td colspan="6">
+                <span><span class="title">Expected Ship Date</span>: @(Model.ExpectedShipDate?.ToString(Model.DateFormat) ?? "")</span>
+            </td>
+            <td colspan="5">
+                <span>
+                    <span class="title">Cargo Ready Date</span>: @(Model.FulfillmentType == FulfillmentType.Bulk ? Model.CargoReadyDate?.ToString(Model.DateFormat)?? "" : Model.PoffShipmentDate?.ToString(Model.DateFormat) ?? "")
+                </span>
+            </td>
+            }
+            else
+            {
+            <td colspan="4">
+                <span><span class="title">Expected Ship Date</span>: @(Model.ExpectedShipDate?.ToString(Model.DateFormat) ?? "")</span>
+            </td>
+            <td colspan="4">
+                <span>
+                    <span class="title">Cargo Ready Date</span>: @(Model.FulfillmentType == FulfillmentType.Bulk ? Model.CargoReadyDate?.ToString(Model.DateFormat)?? "" : Model.PoffShipmentDate?.ToString(Model.DateFormat) ?? "")
+                </span>
+            </td>
+            <td colspan="3">
+                <span><span class="title">Container</span>: @Model.BookingContainers</span>
+            </td>
+            }
+        </tr>
+        <tr>
+            <td colspan="11">
+                <span style="white-space: pre-line"><span class="title">Remarks</span>: @(Model.Remarks)</span>
+            </td>
+        </tr>
+        <tr class="sub-content">
+            <td colspan="11">THIS DOCK RECEIPT INCLUDE CARGO RECEIVED ON WAREHOUSE RECEIVING RECORDS NUMBERED AS FOLLOWING:</td>
+        </tr>
+        <tr class="sub-content">
+            <td colspan="11">TOTAL NUMBER OF PACKAGES IN WRITING:</td>
+        </tr>
+        <tr class="sub-content">
+            <td colspan="11">EXCEPTION WERE NOTED AS FOLLOWS:</td>
+        </tr>
+        <tr class="sub-content">
+            <td colspan="6">RECEIVED CLERK:</td>
+            <td colspan="3">LOCATION:</td>
+            <td colspan="2">DATE:</td>
+        </tr>
+        <tr class="sub-content">
+            <td colspan="4" class="title" style="border-right: none;">RECEIVING TALLY</td>
+            <td style="border: none;"></td>
+            <td style="border-top: none; border-right: none; border-left: none;"></td>
+            <td colspan="5" class="title" style="border-left: none;">BELOW FOR OFFICE USE ONLY</td>
+        </tr>
+        <tr class="sub-content">
+            <td colspan="3">NO. OF CTNS ON EACH PALLET</td>
+            <td>SUB. TOTAL CTNS/PTS</td>
+            <td></td>
+            <td>MARKS AND NUMBER</td>
+            <td>NO. OF PKG</td>
+            <td>LENGTH (CM)</td>
+            <td>WIDTH (CM)</td>
+            <td>HEIGHT (CM)</td>
+            <td>WEIGHT</td>
+        </tr>
+        <tr class="sub-content">
+            <td>&nbsp;</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr class="sub-content">
+            <td>&nbsp;</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        @if (Model.Orders != null && Model.Orders.Any(x => x.DifferentSizedCarton))
+        {
+            <tr>
+                <td colspan="11"></td>
+            </tr>
+            <tr class="sub-content">
+                <td colspan="11">
+                    <span style="color:red;">*</span> There are cartons with different size.
+                </td>
+            </tr>
+        }
+
+    </table>
+</body>
+</html>

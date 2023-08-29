@@ -1,0 +1,11 @@
+﻿@model Groove.SP.Application.Consignment.ViewModels.ConsignmentEmailViewModel
+@{
+    Layout = "_EmailLayout.cshtml";
+}
+
+<p>Dear @Model.Name,</p>
+<p> New consignment is assigned to your organization. Please access <a href="@Model.DetailPage">here</a> to perform your task.</p>
+<p>For more information, you are welcome to contact our customer service representatives by emailing us at @Model.SupportEmail.</p>
+<br />
+<p>Regards,</p>
+<p>Shipment Portal Team.</p>

@@ -1,0 +1,19 @@
+@import '../../../../styles/variables';
+
+.cargo-detail-form-wrapper {
+    width: 824px;
+
+    .edit-info {
+        .form-input-icon {
+            position: absolute;
+            right: -9px;
+            top: 38px;
+            font-size: 18px;
+            color: $color-grey-bright-1;
+        }
+    }
+}
+
+.note-textarea {
+    height: 86px !important;
+}

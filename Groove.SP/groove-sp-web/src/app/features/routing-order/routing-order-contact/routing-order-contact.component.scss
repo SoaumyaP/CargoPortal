@@ -1,0 +1,10 @@
+@import '../../../../styles/variables';
+.address-tooltip{
+    padding: 5px;
+    color: $color-blue-primary-darker;
+}
+::ng-deep .icon-address-tooltip{
+    svg{
+        margin-bottom: 4px;
+    }
+}

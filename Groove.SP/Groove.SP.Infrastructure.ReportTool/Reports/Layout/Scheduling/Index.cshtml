@@ -1,0 +1,437 @@
+﻿@model Telerik.ReportServer.Web.Models.Scheduling.SchedulingViewModel
+
+@{
+    Layout = "~/Views/Shared/_MenuLayout.cshtml";
+    ViewBag.Title = "Scheduling | Telerik Report Server";
+}
+
+<link href="~/Content/scheduledTasksParametersArea.css" rel="stylesheet" />
+
+<style>
+
+	@* to hide internal/hide parameter (the last parameter) such as: zzValidationResult*@
+	#parametersTabContent .trv-parameters-area-content .window__item:nth-last-of-type(-n+2) {
+		display: none;
+	}
+</style>
+
+@Scripts.Render("~/Scripts/ReportServer/schedulingView.js")
+
+<div class="rs-content -scheduling">
+    <div class="content__header">
+        <h2 class="content__title" tabindex="0" data-bind="text: title, attr:{aria-label: accessibility.title}"></h2>
+        @Html.Partial("~/Views/Shared/Search.cshtml")
+    </div>
+
+    <div class="content__grid">
+        <div class="rs-grid -small">
+            @(Html.Kendo().Grid<Telerik.ReportServer.Web.Models.Scheduling.TaskViewModel>()
+            .Name("tasksGrid")
+            .HtmlAttributes(new { @class = "grid__wrapper" })
+            .PersistSelection(true)
+            .Columns(columns =>
+            {
+                columns.Bound(p => p.Enabled).Width(20).Title("").HeaderTemplate("<div></div>");
+                columns.Bound(p => p.Name).Width(150).Title("Name")
+                    .HeaderTemplate("<span class='k-link' data-bind='text: gridHeaders.name'><span>");
+                columns.Bound(p => p.Report).Width(200).Title("Report")
+                    .HeaderTemplate("<span class='k-link' data-bind='text: gridHeaders.report'><span>");
+                columns.Bound(p => p.DocumentFormat).Width(100).Title("Document Format")
+                    .HeaderTemplate("<span class='k-link' data-bind='text: gridHeaders.document'><span>");
+                columns.Bound(p => p.NextOccurence).Width(130).Title("Next Occurrence")
+                    .HeaderTemplate("<span class='k-link' data-bind='text: gridHeaders.next'><span>");
+                columns.Bound(p => p.RecurrenceRule).Width(30).Title("").HeaderTemplate("<div></div>");
+            })
+            .ClientRowTemplate(
+            "<tr data-uid='#: uid #'>" +
+                "<td class='status'>" +
+                    "<span class='#:getTaskEnabledClass(Enabled)#'></span>" +
+                "</td>" +
+                "<td class='name_column'>" +
+                    "<div><span class='data_connection_name'>#: Name #</span></div>" +
+                "</td>" +
+                "<td class='report_category_column'>" +
+                    "<div><span class='data_connection_name'>#: Report # (#: Category#)</span></div>" +
+                "</td>" +
+                "<td class='document_format_column'>" +
+                    "#: DocumentFormatDescr #" +
+                "</td>" +
+                "<td class='start_date_column'>" +
+                    "#: kendo.toString(NextOccurence, 'g') #" +
+                "</td>" +
+                "<td class='is_recurrent_column'>" +
+                    "<span class='#:getRecurrenceClass(RecurrenceRule)#'></span>" +
+                "</td>" +
+            "</tr>")
+            .ToolBar(toolbar =>
+                {
+                    toolbar.Template(@<text>
+                @(Html.Kendo().Button()
+                    .Name("addTaskButton")
+                    .HtmlAttributes(new {
+                        type = "button",
+                        title = "Add",
+                        @rs_localization = "gridToolbar.add",
+                        @rs_child = ".rs-text",
+                        @class = "k-button k-primary k-button-icontext",
+                        @data_bind = "accessibility: accessibility.gridToolbar.add, rsTitle: gridToolbar.addTitle"
+                    })
+                    .Content("<span class='rs-text'></span>")
+                    .SpriteCssClass("rs-icon -add")
+                    .Enable(Model.CanCreate)
+                    .Events(e => e.Click("controller.onNewTaskClick")))
+
+                <div class="left">
+                    @(Html.Kendo().Button()
+                        .Name("editTaskButton")
+                        .HtmlAttributes(new {
+                            type = "button",
+                            title = "Edit",
+                            @class = "editButton",
+                            @data_bind = "accessibility: accessibility.gridToolbar.edit, rsTitle: gridToolbar.edit"
+                        })
+                        .SpriteCssClass("rs-icon -edit")
+                        .Enable(false)
+                        .Events(e => e.Click("controller.onEditTaskClick")))
+
+                    @(Html.Kendo().Button()
+                        .Name("executeTaskButton")
+                        .HtmlAttributes(new {
+                            type = "button",
+                            title = "Execute",
+                            @class = "editButton",
+                            @data_bind = "accessibility: accessibility.gridToolbar.execute, rsTitle: gridToolbar.execute"
+                        })
+                        .SpriteCssClass("rs-icon -execute")
+                        .Enable(false)
+                        .Events(e => e.Click("controller.onExecuteTaskClick")))
+
+                </div>
+
+                <div class="right">
+                    @(Html.Kendo().Button()
+                        .Name("deleteTaskButton")
+                        .HtmlAttributes(new {
+                            type = "button",
+                            title = "Delete",
+                            @class = "deleteButton",
+                            @data_bind = "accessibility: accessibility.gridToolbar.remove, rsTitle: gridToolbar.remove"
+                        })
+                        .SpriteCssClass("rs-icon -delete")
+                        .Enable(false)
+                        .Events(e => e.Click("controller.onDeleteTaskClick")))
+                </div>
+                    </text>);
+                })
+                .Editable(editable =>
+                    editable
+                        .Mode(GridEditMode.PopUp)
+                        .TemplateName("TaskEditor")
+                        .DisplayDeleteConfirmation(false))
+                .Sortable()
+                .Scrollable()
+                .Navigatable()
+                .Selectable()
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .ServerOperation(false)
+                    .Events(events =>
+                    {
+                        events.Error("controller.onGridError");
+                    })
+                    .Model(model =>
+                    {
+                        model.Id(p => p.Id);
+                        model.Field(p => p.Id);
+                        model.Field(p => p.Name);
+                        model.Field(p => p.ReportId);
+                        model.Field(p => p.Report);
+                        model.Field(p => p.CategoryId);
+                        model.Field(p => p.Category);
+                        model.Field(p => p.DocumentFormat);
+                        model.Field(p => p.DocumentFormatDescr);
+                        model.Field(p => p.StartDate);
+                        model.Field(p => p.RecurrenceRule);
+                        model.Field(p => p.IsRecurrent);
+                        model.Field(p => p.Parameters);
+
+                    })
+                    .Create(update => update.Action("Create", "Scheduling"))
+                    .Read(read => read.Action("Read", "Scheduling"))
+                    .Update(update => update.Action("Update", "Scheduling"))
+                    .Destroy(update => update.Action("Destroy", "Scheduling"))
+                )
+                .Events(e =>
+                {
+                    e
+                        //.DataBound("controller.onGridDataBound")
+                        .Change("controller.onTaskSelectionChanged")
+                        .Edit("controller.onTaskEdit")
+                        .BeforeEdit("controller.onTaskGridBeforeEdit")
+                        .Cancel("controller.onTaskGridEditCancel")
+                        .Save("controller.onTaskGridEditCancel");
+                })
+            )
+
+        </div>
+
+        <div class="rs-tabs">
+            <div id="details" class="tabs__content">
+                @(Html.Kendo().TabStrip()
+            .Name("tabstrip")
+            .HtmlAttributes(new { @class = "report-tabstrip" })
+            .Items(tabstrip =>
+            {
+            tabstrip.Add().Text("ACTIVITY")
+                    .Selected(true)
+                    .HtmlAttributes(new
+                    {
+                        @data_bind = "attr: {aria-label: accessibility.activities.label}"
+                    })
+                    .Content(@<text>
+                            <div id="schedulingInfo" class="rs-tab">
+                                <div class="tab__header">
+                                    <h2 data-bind="text: Name"></h2>
+                                </div>
+                                @(Html.Kendo().PanelBar()
+                                    .Name("activityPanelBar")
+                                    .HtmlAttributes(new { @class = "rs-expander" })
+                                    .Items(items =>
+                                    {
+                                        items
+                                            .Add()
+                                            .Expanded(true)
+                                            .HtmlAttributes(new
+                                            {
+                                                @rs_localization = "scheduling.createdDocs.label",
+                                                @rs_after = ".k-icon",
+                                                @data_bind = "attr: {aria-label: createdDocs.label}"
+                                            })
+                                            .LoadContentFrom(Url.Action("CreatedDocuments", "Scheduling"));
+                                    })
+                                )
+                            </div>
+                            <div id="schedulingInfoEmpty" class="rs-tab -empty">
+                                <span rs-localization="scheduling.noSelectedTask"></span>
+                            </div>
+                        </text>);
+
+                    tabstrip.Add()
+                        .HtmlAttributes(new
+                        {
+                            @rs_localization = "subscribers.label",
+                            @rs_child = ".k-link",
+                            @data_bind = "attr: {aria-label: accessibility.subscribers.label}"
+                        })
+                        .Content(@<text>
+                            <div id="subscribersInfo" name="subscribersInfo" class="rs-tab">
+                                <div name="general_task_info" class="tab__header">
+                                    <h3 data-bind="text: Name"></h3>
+                                </div>
+                                @Html.Partial("Subscribers")
+                            </div>
+                            <div id="subscribersInfoEmpty" class="rs-tab -empty">
+                                <span rs-localization="subscribers.noSelectedTask">No scheduled task selected</span>
+                            </div>
+                        </text>);
+                })
+                )
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var controller = createTasksViewController(
+        jQuery,
+        kendo,
+        '@Url.Action("Read_Subscribers", "Scheduling")',
+        '@Url.Action("Read_Documents", "Scheduling")'),
+        resourceReportsLabels = window.telerikReportServer.resourceSchedulingLabels,
+        localization = new Localization(resourceReportsLabels);
+
+    function getSchedulingAriaLabel(accessibilityLabel, args) {
+        var label = "accessibility.activities." + accessibilityLabel;
+        return getAriaLabel(label, args);
+    }
+
+    function getSubscribersAriaLabel(accessibilityLabel, args) {
+        var label = "accessibility." + accessibilityLabel;
+        return getAriaLabel(label, args);
+    }
+
+    function getAriaLabel(accessibilityLabel, args) {
+        var label = resourceReportsLabels.get(accessibilityLabel) ||
+                resourceReportsLabels.accessibility.get("activities." + accessibilityLabel),
+            args = args || {};
+
+        args["taskName"] = resourceReportsLabels.get("selectedTask");
+
+        return label.stringFormat(args);
+    }
+
+    function getLocalizationString(key) {
+        return localization.getLocalizationString(key);
+    }
+
+    var createdDocumentsDataSource = controller.documentsDataSource;
+
+    function updateDocumentsDataSource() {
+        controller.updateDocumentsDataSource();
+    }
+
+    function getTaskEnabledClass(enabled) {
+        return (enabled) ? "enabledTask" : "disabledTask";
+    }
+
+    function getRecurrenceClass(recurrentRule) {
+        return (recurrentRule) ? "recurring" : "";
+    }
+
+    function getSearchGrid() {
+        return $("#tasksGrid").data("kendoGrid");
+    }
+
+    function getFilter(searchString) {
+        return {
+            logic: "or",
+            filters: [{ field: "Name", operator: "contains", value: searchString },
+                      { field: "Report", operator: "contains", value: searchString },
+                      { field: "Category", operator: "contains", value: searchString },
+                      { field: "DocumentFormatDescr", operator: "contains", value: searchString }],
+        }
+    }
+
+    function onDocumentReady() {
+        var grid = $("#tasksGrid").data("kendoGrid");
+
+        var gridDataSource = new kendo.data.DataSource({
+            "transport": {
+                read: function(options) {
+                  var callOne = $.ajax({
+                    url: '@Url.Action("Read", "Scheduling")',
+                    cache: false
+                  });
+                  
+                  var callTwo = $.ajax({
+                    url: '@Url.Action("Read", "Category")',
+                    cache: false
+                  });
+
+                  $.when(callOne, callTwo).then(function(firstResponse, secondResponse) {
+                    var firstResult = firstResponse[0];
+                    var secondResult = secondResponse[0];
+
+                    // Allowed categories for current user.
+                    const allowedCategoryIds = secondResult.Data.map(x => x.Id);
+
+                    firstResult.Data = firstResult.Data.filter(x => allowedCategoryIds.includes(x.CategoryId));
+                    options.success(firstResult);
+                  });
+                },
+                prefix: "",
+                update: function(options) {
+                    $.ajax({
+                        url: '@Url.Action("Update", "Scheduling")',
+                        contentType: 'application/json; charset=utf-8',
+                        type: "POST",
+                        data: JSON.stringify(options.data),
+                        success: function(result) {
+                            options.success(result);
+                        },
+                        error: function(result) {
+                            options.error(result);
+                        }
+                    });
+                },
+                create: function(options) {
+                    $.ajax({
+                        url: '@Url.Action("Create", "Scheduling")',
+                        contentType: 'application/json; charset=utf-8',
+                        type: 'POST',
+                        data: JSON.stringify(options.data),
+                        success: function(result) {
+                            options.success(result);
+                        },
+                        error: function(result) {
+                            options.error(result);
+                        }
+                    });
+                },
+                destroy: function(options) {
+                    $.ajax({
+                        url: '@Url.Action("Destroy", "Scheduling")',
+                        contentType: 'application/json; charset=utf-8',
+                        type: 'POST',
+                        data: JSON.stringify(options.data),
+                        success: function(result) {
+                            options.success(result);
+                        },
+                        error: function(result) {
+                            options.error(result);
+                        }
+                    });
+                }
+            },
+            "serverPaging": false,
+            "serverSorting": false,
+            "serverFiltering": false,
+            "serverGrouping": false,
+            "serverAggregates": false,
+            "error": controller.onGridError,
+            "schema": {
+                "data": "Data",
+                "total": "Total",
+                "errors": "Errors",
+                "model": {
+                    "id": "Id",
+                    "fields": {
+                        "Id": { "type": "string" },
+                        "Name": { "type": "string" },
+                        "ReportId": { "type": "string" },
+                        "Report": { "type": "string" },
+                        "CategoryId": { "type": "string" },
+                        "Category": { "type": "string" },
+                        "DocumentFormat": { "type": "string" },
+                        "DocumentFormatDescr": { "type": "string" },
+                        "StartDate": { "type": "date" },
+                        "NextOccurence": { "type": "date" },
+                        "RecurrenceRule": { "type": "string" },
+                        "CanEdit": { "type": "boolean" },
+                        "CanDelete": { "type": "boolean" },
+                        "IsRecurrent": { "type": "boolean" },
+                        "Enabled": { "type": "boolean" },
+                        "Parameters": { "type": "string" }
+                    }
+                }
+            }
+        });
+
+        grid.setDataSource(gridDataSource);
+
+        controller.init(
+            "#tasksGrid",
+            "#editTaskButton",
+            "#executeTaskButton",
+            "#deleteTaskButton",
+            "#subscribersInfo",
+            "#subscribersInfoEmpty",
+            "#schedulingInfo",
+            "#schedulingInfoEmpty",
+            "@Html.Raw(Model.DefaultMailTemplate.Subject.Replace("\\", "\\\\").Replace("\"", "\\\""))",
+            "@Html.Raw(Model.DefaultMailTemplate.Body.Replace("\\", "\\\\").Replace("\"", "\\\""))",
+            resourceReportsLabels);
+
+        // Recalculate the grid content on window resize
+        $(window).resize(function () {
+            grid.refresh();
+        });
+
+        kendo.bind($(".rs"), resourceReportsLabels);
+        localization.localize(".rs");
+    }
+
+    $(document)
+        .ready(onDocumentReady);
+</script>
+

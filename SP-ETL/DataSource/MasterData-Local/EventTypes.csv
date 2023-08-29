@@ -1,0 +1,15 @@
+Code,Description
+CA,Container Activity Event
+CE,Container Exception Event
+CM,Container Milestone Event
+EE,End with Exception
+ES,End of Shipment
+FA,Booking Activity Event
+FE,Booking Exception Event
+FM,Booking Milestone Event
+PA,Purchase Order Activity Event
+PE,Purchase Order Exception Event
+PM,Purchase Order Milestone Event
+SA,Shipment Activity Event
+SE,Shipment Exception Event
+SM,Shipment Milestone Event

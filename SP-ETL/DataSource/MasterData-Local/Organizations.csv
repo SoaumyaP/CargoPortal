@@ -1,0 +1,4 @@
+OrgType,OrgCode,LocationName,Cty,Name,Address,Line2,Line3,Line4,Telephone,EmailAddress,ContactName,ediSONInstance,ediSONCompanyCode
+Agent,CASE0021,,,CARGO SERVICES FAR EAST LIMITED,"ROOM 13018E, ATL LOGISTICS","CENTRE B, BERTH 3, KWAI CHUNG",CONTAINER TERMINALS,"N.T., HONG KONG",24818308,hai.nguyen.customer+ex1@gmail.com,VINCENT YAU,,
+Agent,PUGL0002,AUFRE,,PURE GLOBAL LOGISTICS PTY LTD,P.O. BOX 164,ESSENDON VIC 3040,,,61 4110 78229,hai.nguyen.customer+ex1@gmail.com,HAROLD KAINDL,,
+Principal,THRE0003,AUMEL,,THE REJECT SHOP LIMITED,245 RACECOURSE ROAD        ,"KENSINGTON VICTORIA 3031, AUSTRALIA       ",,,03 9371 5555        ,hai.nguyen.customer+ex1@gmail.com,TRS Contact Person,,

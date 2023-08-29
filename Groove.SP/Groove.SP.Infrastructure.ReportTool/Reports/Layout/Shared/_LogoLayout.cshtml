@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html>
+<html role="application">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-111455-53', 'auto');
+        var page = document.location.pathname;
+        if (page.indexOf('/Index') > -1) {
+            page = page.replace('/Index', '');
+        }
+        else if (page.indexOf('/Report/Preview') > -1) {
+            page = '/Report/Preview';
+        }
+
+        var license = '@ViewBag.Trial' ? 'trial' : 'dev';
+        ga('send', 'pageview', page, {
+            'dimension1': license,
+            'dimension2': '@ViewBag.Version'
+        });
+        //ga('send', 'event')
+    </script>
+    <!-- End Google Analytics -->
+    @{
+        var data = ViewBag.Title.Replace("Telerik Report Server", "Cargo Group");
+    }
+    <title>@data</title>
+    <link rel="icon" href="~/@Html.Action("GetFavicon", "Startup")" />
+    @Styles.Render("~/Content/kendo/css")
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/kendo/less")
+
+    @*@Bundles.Render("~/Content/kendo/less", new { type = "less/css" } )*@
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/stringFormat")
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/kendo")
+    @Scripts.Render("~/Scripts/ReportServer/utils.js")
+    @Scripts.Render("~/Scripts/ReportServer/sr.js")
+    @Scripts.Render("~/Scripts/ReportServer/sr.user.js")
+    @Scripts.Render("~/Scripts/ReportServer/resourceViewModels.js")
+
+    @Scripts.Render("~/bundles/accessibility")
+    @Scripts.Render("~/Scripts/ReportServer/localization.js")
+    @Scripts.Render("~/bundles/polyfills")
+    @*<script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise"></script>*@
+    @*<script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js"></script>*@
+    <style>
+        .cs-portal-header {
+            background-image: url("https://g-sp.azurewebsites.net/bg-1440px.ea71c8ac056272612ce1.png");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .cs-portal-link-header {
+            color: white !important
+        }
+
+        .cs-portal-header-li::before {
+            background-color: white !important
+        }
+    </style>
+</head>
+<body class="rs">
+    <div class="rs-loader">
+        <div class="sk-cube-grid">
+            <div class="sk-cube sk-cube1"></div>
+            <div class="sk-cube sk-cube2"></div>
+            <div class="sk-cube sk-cube3"></div>
+            <div class="sk-cube sk-cube4"></div>
+            <div class="sk-cube sk-cube5"></div>
+            <div class="sk-cube sk-cube6"></div>
+            <div class="sk-cube sk-cube7"></div>
+            <div class="sk-cube sk-cube8"></div>
+            <div class="sk-cube sk-cube9"></div>
+        </div>
+    </div>
+
+    <header id="header_wrapper" class="rs-header cs-portal-header">
+        <h1 id="report_server_logo" class="header__logo">
+            <div class="header__logo-image" onclick="loaderVisibility(false)">
+                <a tabindex="0" data-bind="attr:{aria-label: accessibility.logo}" role="link"
+                   href="~/" onclick="ga('send', 'event', 'top menu', 'logo'); return true;"
+                   class="header__logo-image">
+                    <img title="Report Server"
+                         alt="REPORT SERVER"
+                         src="~/Content/Images/@Html.Action("GetReportServerLogo", "Startup")" />
+                </a>
+            </div>
+        </h1>
+
+        <ul id="header_menu" class="header__menu">
+            @*<li class="header__nav-item -accessibility"
+                    onclick="openHelpWindow(event)"
+                    data-bind="attr:{aria-label: accessibility.menu.accessibility, title: menu.accessibility}">
+                    <a id="accessibility"
+                       tabindex="-1"
+                       href="javascript:void(0);">
+                        <span class="rs-kendo-icon k-i-accessibility"></span>
+                        <span class="header__nav-item-text" data-bind="text: menu.accessibility"></span>
+                    </a>
+                </li>
+                <li class="header__nav-item" data-bind="attr:{aria-label: accessibility.menu.documentation, title: menu.documentation}">
+                    <a href="http://docs.telerik.com/report-server/introduction"
+                       target="_blank"
+                       tabindex="-1"
+                       id="documentation"
+                       onclick="ga('send', 'event', 'top menu', 'Documentation'); return true;">
+                        <span class="rs-kendo-icon k-i-file-txt"></span>
+                        <span class="header__nav-item-text" data-bind="text: menu.documentation"></span>
+                    </a>
+                </li>*@
+            @if (Request.IsAuthenticated && User.IsInRole(Telerik.ReportServer.Services.Models.BuiltInRoles.SystemAdministrator))
+            {
+                <text>
+                    <li class="header__nav-item cs-portal-header-li" data-bind="attr:{aria-label: accessibility.menu.configuration, title: menu.configuration}"
+                        onclick="loaderVisibility(true)">
+                        <a href='@Url.Action("Index","Configuration")' tabindex="-1" id="configuration" class="cs-portal-link-header"
+                           onclick="ga('send', 'event', 'top menu', 'Configuration'); return true;">
+                            <span class="rs-kendo-icon k-i-gear"></span>
+                            <span class="header__nav-item-text" data-bind="text: menu.configuration"></span>
+                        </a>
+                    </li>
+                </text>
+            }
+
+            <li class="header__nav-item username" data-bind="attr:{aria-label: accessibility.menu.userMenu}">
+                @Html.Partial("_LoginPartial")
+            </li>
+        </ul>
+    </header>
+
+    <div id="content_wrapper" class="rs-main -blur">
+        @RenderBody()
+    </div>
+    @RenderSection("scripts", required: false)
+
+    @(Html.Kendo().Window()
+                                                                                                .Name("helpWindow")
+                                                                                                .Title("")
+                                                                                                .Visible(false)
+                                                                                                .Content(@<text>@Html.Partial("_KeyboardHelperWindow")</text>)
+                                                                                                                                                                                        .Draggable()
+                                                                                                                                                                                        .Modal(true)
+    )
+
+    <script type="text/javascript">
+        var HelperWindow,
+            resourceTopBannerLabels = window.telerikReportServer.resourceTopBannerLabels,
+            loader = $(".rs-loader");
+        function openHelpWindow(e) {
+            if ((e.keyCode && e.keyCode === 13) || e.type === "click") {
+                HelperWindow.closest(".k-window").find('.k-window-title').text(resourceTopBannerLabels.get("dialogWindows.titles.accessibilityWindow"));
+                HelperWindow.find('.k-edit-buttons .k-primary').text(resourceTopBannerLabels.get("dialogWindows.buttons.ok"));
+                HelperWindow.data("kendoWindow").center().open();
+            }
+        }
+
+        function loaderVisibility(isVisible) {
+            if (isVisible) {
+                loader.removeClass("-hidden");
+                $("#content_wrapper").addClass("-blur");
+            } else {
+                loader.addClass("-hidden");
+                $("#content_wrapper").removeClass("-blur");
+            }
+        }
+
+        $(document).ready(function () {
+            $("#header_menu").kendoMenu();
+            $("#header_menu").attr("aria-label", resourceTopBannerLabels.accessibility.menu.label);
+            $("#accessibility").keypress(openHelpWindow);
+
+            HelperWindow = $("#helpWindow");
+
+            HelperWindow.on("click", ".k-button", function () {
+                HelperWindow.data("kendoWindow").close();
+            }).keypress(function (e) {
+                if ((e.keyCode && e.keyCode === 13)) {
+                    HelperWindow.data("kendoWindow").close();
+                }
+            });
+
+            kendo.bind($("#header_wrapper"), resourceTopBannerLabels);
+        });
+
+        window.onload = function () {
+            setTimeout(function () {
+                loaderVisibility(false);
+            }, 300);
+        };
+    </script>
+</body>
+</html>

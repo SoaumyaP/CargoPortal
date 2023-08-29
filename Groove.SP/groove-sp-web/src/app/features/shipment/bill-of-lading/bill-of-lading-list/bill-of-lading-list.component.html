@@ -1,0 +1,92 @@
+<div class="content__header">
+    <div class="container-fluid">
+
+        <div class="row header-group">
+            <label class="list-header">{{'label.listOfHouseBill' | translate}}</label>
+            <span class="k-i-loading k-icon loading" *ngIf="service.gridLoading"></span>
+        </div>
+
+        <div class="row">
+            <kendo-grid #grid="kendoGrid" [data]="view | async" [filterable]="true" [filter]="service.state.filter"
+                [pageable]="true" [pageSize]="service.state.take" [skip]="service.state.skip" [sortable]="true" [sort]="service.state.sort"
+                (dataStateChange)="gridStateChange($event)" (pageChange)="service.pageChange($event)" (sortChange)="service.sortChange($event)"
+                [scrollable]="'vertical'"
+                class="custom-border-grid">
+                <kendo-grid-column field="houseBLNo" title="{{'label.houseBillNo' | translate}}" [filterable]="true"
+                    [sortable]="true" >
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                        <a class="k-link" [title]="dataItem.houseBLNo" routerLink="/bill-of-ladings/{{dataItem.id}}">{{dataItem.houseBLNo}}</a>
+
+                        <span *ngIf="dataItem.attachmentId && dataItem.attachmentFileName" class="float-right" (click)="downloadFile(dataItem.attachmentId, dataItem.attachmentFileName)">
+                            <fa-icon [icon]="faFileAlt" class="download-attachment-icon" size="lg"></fa-icon>
+                        </span>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column field="shipmentNo" title="{{'label.shipmentNo' | translate}}" [filterable]="true" [sortable]="true" >
+                     <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex" >
+                        <ng-container *ngFor="let shipmentInfo of dataItem.shipmentInfos; index as i; let length = count; let last = last">
+                            <a *ngIf="i < 3" class="k-link"
+                                [title]="shipmentInfo.item2"
+                                routerLink="/shipments/{{shipmentInfo.item1}}"
+                                routerLinkActive="active" target="_blank">{{ shipmentInfo.item2 }}</a>{{ !last && i < 3 ? ", " : ""}}
+
+                            <span
+                                *ngIf="length > 3 && i === 2 && !dataItem.isShowAllShipmentNo"
+                                kendoTooltip filter="span"
+                                [tooltipTemplate]="shipmentNumberTooltip"
+                                position="top">
+
+                                <span class="amount-remaining" (click)="showAllShipmentNo(dataItem)">+{{length - 3}}</span>
+
+                                <ng-template #shipmentNumberTooltip let-anchor>
+                                    <ng-container *ngFor="let shipmentNo of dataItem.shipmentInfos | slice: 3; let last = last">
+                                        {{shipmentNo.item2}}{{ !last ? ", " : ""}}
+                                        <br *ngIf="!last"/>
+                                    </ng-container>
+                                </ng-template>
+                            </span>
+
+                            <a
+                                *ngIf="i >= 3 && dataItem.isShowAllShipmentNo"
+                                class="k-link" [title]="shipmentInfo.item2"
+                                routerLink="/shipments/{{shipmentInfo.item1}}"
+                                routerLinkActive="active" target="_blank">
+                                {{ shipmentInfo.item2 }}</a>{{ !last && i >= 3 && dataItem.isShowAllShipmentNo ? ", " : ""}}
+                        </ng-container>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column field="masterBLNo" title="{{'label.masterBillNo' | translate}}" [filterable]="true"
+                    [sortable]="true" >
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container>
+                            <a *ngIf="isCanClickMasterBLNo else billOfLadingNoText" class="k-link" [title]="dataItem.masterBLNo" target="_blank" routerLink="/master-bill-of-ladings/{{dataItem.masterBLId}}">{{ dataItem.masterBLNo }}</a>
+                            <ng-template #billOfLadingNoText class="value-label">{{ dataItem.masterBLNo }}</ng-template>
+                        </ng-container>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column field="issueDate" title="{{'label.issueDates' | translate }}" [filterable]="true"
+                   filter="date" format="{0:{{DATE_FORMAT}}}" [sortable]="true" >
+                 </kendo-grid-column>
+
+                <kendo-grid-column field="shipFrom" title="{{'label.shipFrom' | translate}}" [filterable]="true"
+                    [sortable]="true" >
+                </kendo-grid-column>
+
+                <kendo-grid-column field="shipTo" title="{{'label.shipTo' | translate}}" [filterable]="true"
+                    [sortable]="true" >
+                </kendo-grid-column>
+
+                <kendo-grid-column field="customer" title="{{'label.customer' | translate}}" [filterable]="true"
+                [sortable]="true" >
+                </kendo-grid-column>
+
+                <ng-template kendoPagerTemplate>
+                    <app-custom-grid-pager [service]="service" (pageSizeChanged)="gridPageSizeChange($event)"></app-custom-grid-pager>
+                </ng-template>
+            </kendo-grid>
+        </div>
+    </div>
+</div>

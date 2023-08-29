@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "500011268419",
+    "project_id": "groove-csportal-cargoreceive",
+    "storage_bucket": "groove-csportal-cargoreceive.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:500011268419:android:7fb6d86478694a8e28d7f6",
+        "android_client_info": {
+          "package_name": "com.cargofe.cspoportal.cargoreceive.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "500011268419-fhjagv3lolhvtud33j860gcgrfj2nnur.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOZ8HtQ7Iq2AHVzW2td_6Tn5cZafwbfEE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "500011268419-fhjagv3lolhvtud33j860gcgrfj2nnur.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

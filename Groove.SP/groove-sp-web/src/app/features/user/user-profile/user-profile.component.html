@@ -1,0 +1,186 @@
+
+    <div class="content__header">
+        <div class="container-fluid">
+
+            <div class="row padding-header" *ngIf="isInitDataLoaded">
+                <label class="list-header">{{'label.myProfile' | translate}}</label>
+            </div>
+
+            <div class="typing_loader" *ngIf="!isInitDataLoaded"></div>
+            <form class="row" #mainForm="ngForm" novalidate (ngSubmit)="onSubmit()" *ngIf="isInitDataLoaded">
+                <div class="col-12 panel-group remove-padding-first-panel">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="row profile-group">
+                                <div>
+                                    <img src="{{model.profilePicture ? model.profilePicture : defaultImageUrl}}" width="100" height="100" class="profile-avatar" />
+
+                                    <ng-template #pictureLimit let-anchor>
+                                        <span>{{'validation.profilePictureLimit' | translate}}</span>
+                                    </ng-template>
+                                    <div kendoTooltip [tooltipTemplate]="pictureLimit" filter="button" position="right">
+                                        <button type="button"
+                                                class="btn upload-icon-button"
+                                                (click)="selectImage()">
+                                            <fa-icon [icon]="faCamera"></fa-icon>
+                                        </button>
+                                        <input #profilePictureElement
+                                            type="file"
+                                            accept="image/*"
+                                            name="profilePicture"
+                                            class="hidden-input-file"
+                                            (change)="successUploadProfileEventHandler($event)" />
+                                    </div>
+                                </div>
+                                <div class="profile-info-group">
+                                    <label class="profile-name">{{nameString}}</label>
+                                    <div>
+                                        <fa-icon [icon]="faEnvelope" class="profile-email-icon"></fa-icon>
+                                        <label class="profile-email">{{model.email}}</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="formErrors['unvalidFile']" class="k-invalid-msg profile-upload-message">
+                                {{ formErrors.unvalidFile }}
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="colored"/>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="form-label">{{'label.email' | translate}}</label>
+                                        <input name="email"
+                                                required
+                                                type="text"
+                                                class="form-control"
+                                                maxlength="64"
+                                                [disabled]="true"
+                                                [(ngModel)]="model.email" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="form-label required">{{'label.name' | translate}}</label>
+                                        <input name="name"
+                                                required
+                                                type="text"
+                                                class="form-control"
+                                                [(ngModel)]="model.name" />
+                                        <div *ngIf="formErrors['name']" class="k-invalid-msg">
+                                            {{ formErrors.name }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <div class="form-group" [ngClass]="formErrors['phone'] ? 'force-invalid' : ''">
+                                            <label class="form-label">{{'label.phone' | translate}}</label>
+                                            <input name="phone"
+                                                    type="text"
+                                                    class="form-control"
+                                                    (input)="onTypingPhoneNumber($event.target.value)"
+                                                    [(ngModel)]="model.phone" />
+                                            <div *ngIf="formErrors['phone']" class="k-invalid-msg">
+                                                {{ 'validation.maxLengthInput' | translate: {'maxValue': maxLengthInput} }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="form-label">{{'label.country' | translate}}</label>
+                                        <kendo-dropdownlist name="countryId"
+                                                            [data]="countryFilter"
+                                                            [defaultItem]="defaultDropDownItem"
+                                                            [valuePrimitive]="true"
+                                                            [textField]="'label'"
+                                                            [valueField]="'value'"
+                                                            [(ngModel)]="model.countryId"
+                                                            (filterChange)="onCountryFilterChanged($event)"
+                                                            [filterable]="true"
+                                                            class="form-control">
+                                            <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                {{ dataItem.label | translate }}
+                                            </ng-template>
+                                            <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                {{ dataItem.label | translate }}
+                                            </ng-template>
+                                        </kendo-dropdownlist>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="form-label">{{'label.organizationName' | translate}}</label>
+                                        <input name="organizationName"
+                                                type="text"
+                                                class="form-control"
+                                                [disabled]="true"
+                                                [(ngModel)]="model.organizationName"/>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="form-label">{{'label.organizationType' | translate}}</label>
+                                        <input name="organizationTypeName"
+                                                type="text"
+                                                class="form-control"
+                                                [disabled]="true"
+                                                [value]="organizationTypeName | translate"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label [ngClass]="!model.isInternal ? 'form-label required' : 'form-label'">{{'label.companyName' | translate}}</label>
+                                        <input name="companyName"
+                                                type="text"
+                                                class="form-control"
+                                                [(ngModel)]="model.companyName"
+                                                [required]="!model.isInternal"/>
+                                        <div *ngIf="!model.isInternal && formErrors['companyName']" class="k-invalid-msg">
+                                            {{ formErrors.companyName }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="form-label">{{'label.department' | translate}}</label>
+                                        <input name="department"
+                                                type="text"
+                                                class="form-control"
+                                                maxlength="128"
+                                                [(ngModel)]="model.department" />
+                                    </div>
+                                </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-label">{{'label.title' | translate}}</label>
+                                    <input name="title"
+                                            type="text"
+                                            class="form-control"
+                                            maxlength="128"
+                                            [(ngModel)]="model.title" />
+                                </div>
+                            </div>
+                        </div>
+
+                </div>
+
+                <div class="col-12 text-right p-0">
+                    <button type="submit" class="btn prim-button" (click)="saveUserProfile()">{{'label.save' | translate}}</button>
+                </div>
+            </form>
+        </div>
+    </div>

@@ -1,0 +1,55 @@
+@import '../../../../styles/variables';
+
+.tab-wrapper {
+    position: relative;
+}
+.tab-custom-style {
+    ::ng-deep .k-tabstrip-top > .k-tabstrip-items {
+        background-color: #F6FAFB;
+        .k-item {
+            background-color: transparent;
+            border: unset;
+        }
+    }
+    ::ng-deep .k-tabstrip-top>.k-tabstrip-items .k-item {
+       color: #656565;
+        &.k-state-active {
+            background-color: transparent !important;
+            color: #333333 !important;
+            border-bottom: 3px solid $theme-color;
+        }
+
+        &:hover{
+            color: $theme-color;
+        }
+    }
+    ::ng-deep .k-tabstrip > .k-content.k-state-active{
+        border-top: unset;
+    }
+    ::ng-deep .k-tabstrip>.k-content{
+        border-color: transparent;
+    }
+}
+
+.k-i-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 24px;
+    background-color: rgba(255, 255, 255, .3);
+}
+
+.cro-item-list ::ng-deep {
+    .k-grid td {
+        width: auto !important;
+        &.k-detail-cell {
+            padding: 0;
+        }
+    }
+
+    .k-grid-header-wrap {
+        border-width: 0 !important;
+    }
+}

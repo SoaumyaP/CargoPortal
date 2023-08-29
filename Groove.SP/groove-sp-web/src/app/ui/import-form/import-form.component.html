@@ -1,0 +1,77 @@
+<kendo-dialog [title]="'label.purchaseOrderImport' | translate" *ngIf="importFormOpened" (close)="onFormClosed()" [width]="widthPopup" [height]="heightPopup" class="import-dialog custom-header-dialog">
+    <div>
+        <div [hidden]="!isSelectingFile" (dragover)="isDropEnteredFile=true;" (dragleave)="isDropEnteredFile=false;">
+            <kendo-upload [saveUrl]="uploadSaveUrl"
+                            (success)="uploadSuccess($event)"
+                            (error)="uploadError($event)"
+                            (upload)="uploadEventHandler($event)"
+                            [restrictions]="importRestrictions"
+                            [withCredentials]="false"
+                            [multiple]="false"
+                            [autoUpload]="false"
+                            (select)="selectEventHandler($event)">
+            </kendo-upload>
+            <div class="choose-file">
+                <label class="file-msg drop-file-msg" [hidden]="isDropEnteredFile">{{'label.dropFileHereToUpload' | translate}}</label>
+                <label class="file-msg choose-file-msg" [hidden]="isDropEnteredFile">{{'label.or' | translate | lowercase}} <a class="browse-file" (click)="onSelectFile()">{{'label.browse' | translate | lowercase}}</a> {{'label.toChooseAFile' | translate | lowercase}}</label>
+            </div>
+
+        </div>
+        <div class="limit-item-upload">
+            <label>{{ 'msg.youCanImport500POOnce' | translate }}</label>
+        </div>
+    </div>
+
+    <div [hidden]="isSelectingFile">
+        <div class="row" [ngClass]="isShowError ? 'import-file-container-error' : 'import-file-container'">
+            <div class="k-icon" [ngClass]="!isNotAllow || !isLimitedItem ? 'icon-xls' : 'icon-default'"></div>
+            <div class="import-process-container">
+                <label [ngClass]="isSelectedFile && (isNotAllow || isLimitedItem) ? 'selected-file-name-error' : 'selected-file-name'">{{ (selectedFileName.length > 27)? (selectedFileName | slice:0:27)+'...xlsx' : (selectedFileName) }}</label>
+                <progress-bar [hidden]="isSelectedFile" value="{{completedSteps}}" max="{{totalSteps}}" [title]="progressTitle" [ngClass]="{'progress-striped': true, 'active': processing, 'success': statusCode == 2, 'failed': statusCode == 3, 'aborted': statusCode == 4, 'warning': statusCode == 5}"></progress-bar>
+                <span class="k-icon icon-remove-item" (click)="initPopup()" [hidden]="!isSelectedFile"></span>
+                <label class="status-progress" [hidden]="!isImporting && !isDone">{{ 'label.status' | translate }}: {{status}}</label>
+                <label class="validation-type" [hidden]="!isNotAllow">{{'validation.fileTypeInvalid' | translate}}</label>
+                <label class="limit-item" [hidden]="!isLimitedItem">{{ 'msg.youCanImport500POOnce' | translate }}</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row content__detail error-log-grid" [hidden]="!isShowError">
+        <div class="col-sm-12 mb-2">
+            <span class="download-error-list" (click)="downloadErrors()"><fa-icon [icon]="faDownload"></fa-icon>Error List</span>
+        </div>
+        <div class="col-sm-12">
+            <kendo-grid [data]="gridData"
+                        [pageSize]="state.take"
+                        [skip]="state.skip"
+                        [sort]="state.sort"
+                        [sortable]="true"
+                        [pageable]="true"
+                        (dataStateChange)="dataStateChange($event)"
+                        class="custom-border-grid">
+                <kendo-grid-column title="{{ 'label.no' | translate }}." width="50">
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                        {{rowIndex + 1}}
+                    </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column field="objectName" title="{{ 'label.purchaseOrder' | translate }}" width="150"></kendo-grid-column>
+                <kendo-grid-column field="sheetName" title="{{ 'label.sheetName' | translate }}" width="130">
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                        {{translateLabel(dataItem.sheetName)}}
+                    </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column field="row" title="{{ 'label.row' | translate }}" format="{0:n}" width="60"></kendo-grid-column>
+                <kendo-grid-column field="errorMsg" title="{{ 'label.error' | translate }}">
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                        {{translateLabel(dataItem.errorMsg)}}
+                    </ng-template>
+                </kendo-grid-column>
+            </kendo-grid>
+        </div>
+    </div>
+
+    <kendo-dialog-actions [hidden]="isSelectingFile">
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()" #Cancel>{{(isDone || isShowError ? 'label.close' : 'label.cancel') | translate}}</button>
+        <button type="button" class="btn prim-button dialog-button" (click)="onImport()" [disabled]="isImporting || isShowError  || isNotAllow || isLimitedItem" *ngIf="!isDone && !isShowError">{{'label.import' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

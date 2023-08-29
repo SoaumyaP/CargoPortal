@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report Width="6.5in" Name="Container_Consolidation" xmlns="http://schemas.telerik.com/reporting/2017/3.0">
+  <Style>
+    <Font Name="Noto Sans" Size="12px" Bold="False" />
+  </Style>
+  <DataSources>
+    <SqlDataSource QueryDesignerState="null" ConnectionString="QC-SPDatabase" SelectCommand="SELECT        Id as id, ContainerId as containerId&#xD;&#xA;FROM            Consolidations&#xD;&#xA;WHERE ContainerId = @containerId" Name="sqlDataSource1" ParameterValues="{&quot;@containerId&quot;:&quot;3&quot;}">
+      <Parameters>
+        <SqlDataSourceParameter DbType="Int32" Name="@containerId">
+          <Value>
+            <String>= Parameters.containerId.Value</String>
+          </Value>
+        </SqlDataSourceParameter>
+      </Parameters>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <DetailSection Height="1.4in" Name="detailSection1">
+      <Items>
+        <Table DataSourceName="sqlDataSource1" Width="6.49in" Height="0.4in" Left="0.01in" Top="0in" Name="table2">
+          <Body>
+            <Cells>
+              <TableCell RowIndex="0" ColumnIndex="0" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="2.5in" Height="0.2in" Left="0in" Top="0in" Value="ContainerId" Name="textBox17" StyleName="">
+                    <Style VerticalAlign="Middle">
+                      <Font Name="Noto Sans" Bold="True" />
+                      <BorderStyle Default="None" Bottom="None" />
+                      <BorderColor Default="42, 90, 120" />
+                      <BorderWidth Top="0.5pt" Bottom="0.5pt" Left="0.5pt" Right="0.5pt" />
+                      <Padding Left="5pt" />
+                    </Style>
+                  </TextBox>
+                </ReportItem>
+              </TableCell>
+              <TableCell RowIndex="0" ColumnIndex="1" RowSpan="1" ColumnSpan="1">
+                <ReportItem>
+                  <TextBox Width="3.99in" Height="0.2in" Left="3.29in" Top="0.5in" Value="= Fields.containerId" Name="textBox3" StyleName="">
+                    <Style VerticalAlign="Middle">
+                      <Font Name="Microsoft Sans Serif" />
+                      <BorderStyle Default="None" Bottom="None" />
+                      <BorderColor Default="42, 90, 120" />
+                      <BorderWidth Top="0.5pt" Bottom="0.5pt" Left="0.5pt" Right="0.5pt" />
+                      <Padding Left="5pt" />
+                    </Style>
+                  </TextBox>
+                </ReportItem>
+              </TableCell>
+            </Cells>
+            <Columns>
+              <Column Width="2.50000018268824in" />
+              <Column Width="3.99000039756298in" />
+            </Columns>
+            <Rows>
+              <Row Height="0.2in" />
+            </Rows>
+          </Body>
+          <Corner />
+          <Style BackgroundColor="">
+            <BorderStyle Default="None" />
+            <BorderColor Default="42, 90, 120" />
+            <BorderWidth Top="0.5pt" Bottom="0.5pt" Left="0.5pt" Right="0.5pt" />
+          </Style>
+          <RowGroups>
+            <TableGroup Name="detailTableGroup">
+              <ChildGroups>
+                <TableGroup Name="group9" />
+              </ChildGroups>
+              <Groupings>
+                <Grouping />
+              </Groupings>
+            </TableGroup>
+          </RowGroups>
+          <ColumnGroups>
+            <TableGroup Name="tableGroup">
+              <ReportItem>
+                <TextBox Width="2.5in" Height="0.2in" Left="0in" Top="0in" Value="ID" Name="textBox11">
+                  <Style Color="42, 90, 120" VerticalAlign="Middle">
+                    <Font Name="Noto Sans" Bold="True" />
+                    <BorderStyle Default="None" Bottom="None" />
+                    <BorderColor Default="42, 90, 120" />
+                    <BorderWidth Top="0.5pt" Bottom="0.5pt" Left="0.5pt" Right="0.5pt" />
+                    <Padding Left="5pt" />
+                  </Style>
+                </TextBox>
+              </ReportItem>
+            </TableGroup>
+            <TableGroup>
+              <ReportItem>
+                <TextBox Width="3.99in" Height="0.2in" Left="3.29in" Top="0.5in" Value="= Fields.id" Name="textBox20" StyleName="">
+                  <Style VerticalAlign="Middle">
+                    <Font Name="Microsoft Sans Serif" />
+                    <BorderStyle Default="None" Bottom="None" />
+                    <BorderColor Default="42, 90, 120" />
+                    <BorderWidth Top="0.5pt" Bottom="0.5pt" Left="0.5pt" Right="0.5pt" />
+                    <Padding Left="5pt" />
+                  </Style>
+                </TextBox>
+              </ReportItem>
+            </TableGroup>
+          </ColumnGroups>
+        </Table>
+      </Items>
+    </DetailSection>
+  </Items>
+  <PageSettings PaperKind="Letter" Landscape="False" ColumnCount="1" ColumnSpacing="0in">
+    <Margins>
+      <MarginsU Left="1in" Right="1in" Top="1in" Bottom="1in" />
+    </Margins>
+  </PageSettings>
+  <StyleSheet>
+    <StyleRule>
+      <Style>
+        <Padding Left="2pt" Right="2pt" />
+      </Style>
+      <Selectors>
+        <TypeSelector Type="TextItemBase" />
+        <TypeSelector Type="HtmlTextBox" />
+      </Selectors>
+    </StyleRule>
+    <StyleRule>
+      <Style Color="0, 63, 89">
+        <Font Name="Segoe UI" Size="9pt" />
+        <BorderStyle Default="Solid" />
+        <BorderColor Default="187, 220, 235" />
+        <BorderWidth Default="1px" />
+      </Style>
+      <Selectors>
+        <StyleSelector Type="Table" StyleName="BlueOpal.TableNormal" />
+      </Selectors>
+    </StyleRule>
+    <StyleRule>
+      <Style Color="0, 63, 89">
+        <Font Name="Segoe UI" Size="9pt" />
+        <BorderStyle Default="Solid" />
+        <BorderColor Default="187, 220, 235" />
+        <BorderWidth Default="1px" />
+      </Style>
+      <Selectors>
+        <DescendantSelector>
+          <Selectors>
+            <TypeSelector Type="Table" />
+            <StyleSelector Type="ReportItem" StyleName="BlueOpal.TableBody" />
+          </Selectors>
+        </DescendantSelector>
+      </Selectors>
+    </StyleRule>
+    <StyleRule>
+      <Style BackgroundColor="233, 244, 249" Color="0, 63, 89" VerticalAlign="Middle">
+        <Font Name="Segoe UI" Size="10pt" />
+        <BorderStyle Default="Solid" />
+        <BorderColor Default="187, 220, 235" />
+        <BorderWidth Default="1px" />
+      </Style>
+      <Selectors>
+        <DescendantSelector>
+          <Selectors>
+            <TypeSelector Type="Table" />
+            <StyleSelector Type="ReportItem" StyleName="BlueOpal.TableHeader" />
+          </Selectors>
+        </DescendantSelector>
+      </Selectors>
+    </StyleRule>
+    <StyleRule>
+      <Style Color="Black">
+        <Font Name="Tahoma" Size="9pt" />
+        <BorderStyle Default="Solid" />
+        <BorderColor Default="Black" />
+        <BorderWidth Default="1px" />
+      </Style>
+      <Selectors>
+        <StyleSelector Type="Table" StyleName="Normal.TableNormal" />
+      </Selectors>
+    </StyleRule>
+    <StyleRule>
+      <Style>
+        <Font Name="Tahoma" Size="9pt" />
+        <BorderStyle Default="Solid" />
+        <BorderColor Default="Black" />
+        <BorderWidth Default="1px" />
+      </Style>
+      <Selectors>
+        <DescendantSelector>
+          <Selectors>
+            <TypeSelector Type="Table" />
+            <StyleSelector Type="ReportItem" StyleName="Normal.TableBody" />
+          </Selectors>
+        </DescendantSelector>
+      </Selectors>
+    </StyleRule>
+    <StyleRule>
+      <Style VerticalAlign="Middle">
+        <Font Name="Tahoma" Size="10pt" />
+        <BorderStyle Default="Solid" />
+        <BorderColor Default="Black" />
+        <BorderWidth Default="1px" />
+      </Style>
+      <Selectors>
+        <DescendantSelector>
+          <Selectors>
+            <TypeSelector Type="Table" />
+            <StyleSelector Type="ReportItem" StyleName="Normal.TableHeader" />
+          </Selectors>
+        </DescendantSelector>
+      </Selectors>
+    </StyleRule>
+  </StyleSheet>
+  <ReportParameters>
+    <ReportParameter Name="containerId" Type="Integer" Visible="True" AllowNull="True" />
+  </ReportParameters>
+</Report>

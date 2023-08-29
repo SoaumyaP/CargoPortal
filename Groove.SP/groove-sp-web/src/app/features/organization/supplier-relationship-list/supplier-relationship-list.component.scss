@@ -1,0 +1,22 @@
+.add-new-button {
+    width: 110px;
+}
+.title-grid {
+    margin-top: 0px;
+}
+
+.btn-default {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.custom-supplier-grid {
+    ::ng-deep .k-select {
+        width: 32px !important;
+    }
+
+    ::ng-deep .action-text{
+        text-align: center !important;
+        padding: 12px;
+    }
+}

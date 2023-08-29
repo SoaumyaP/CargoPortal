@@ -1,0 +1,22 @@
+﻿@model dynamic
+@{
+    Layout = "_EmailLayout.cshtml";
+}
+
+@if (string.IsNullOrEmpty(Model.ContactName))
+{
+<p>Dear,</p>
+}
+else
+{
+<p>Dear @Model.ContactName,</p>
+}
+<br />
+<p>@Model.Name is sending a connection with your organization. Please access <a href="@Model.DetailPage">here</a> to confirm your business relationship in Shipment Portal.</p>
+<br />
+<p>For more information, you are welcome to contact our customer service representatives by emailing us at @Model.SupportEmail.</p>
+<br />
+<br />
+<p>Regards,</p>
+<br />
+<p>Shipment Portal Team.</p>

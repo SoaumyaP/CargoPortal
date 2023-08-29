@@ -1,0 +1,16 @@
+﻿@model Groove.SP.Infrastructure.EmailSender.Models.ShareFileEmailParameters
+@{
+    Layout = "_EmailLayout.cshtml";
+}
+
+<p>Hi</p>
+<p>@Model.CustomerName wishes to share with you the following document(s).</p>
+<p>The document(s) can be downloaded from the links below. Please note that these link(s) will expire in @Model.ShareFileExpiredTime hours.</p>
+<a href="@Model.ShareFileLink">@Model.FileName</a>
+<br />
+<p>
+    If you experience any difficulties with opening the files, you are welcome to contact our customer service representatives by emailing us at @Model.SupportEmail.
+</p>
+<br />
+<p>Regards,</p>
+<p>Shipment Portal Team.</p>

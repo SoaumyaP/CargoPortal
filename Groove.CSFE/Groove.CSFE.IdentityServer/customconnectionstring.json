@@ -1,0 +1,17 @@
+//{
+//  "ConnectionStrings": {
+//    "CSPortalDatabase": "Data Source=AYUSH\\MSSQLSERVER01;Initial Catalog=csportaldb;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False",
+//    "HangfireConnection": "Data Source=AYUSH\\MSSQLSERVER01;Initial Catalog=hangfiredb;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False",
+//    //"HangfireConnection": "Data Source=sqlserverclover.database.windows.net;Initial Catalog=csportalhangfire;User ID=csadmin;Password=welcome@123;",
+//    "DefaultConnection": "Data Source=AYUSH\\MSSQLSERVER01;Initial Catalog=csportaldb;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False"
+//  }
+//}
+
+{
+  "ConnectionStrings": {
+    "CSPortalDatabase": "Server=tcp:cargoportalserver.database.windows.net,1433;Initial Catalog=csportaldb;User ID=csadmin;Password=welcome@123;MultipleActiveResultSets=true;Persist Security Info=True;",
+    "HangfireConnection": "Server=tcp:cargoportalserver.database.windows.net,1433;Initial Catalog=hangfiredb;User ID=csadmin;Password=welcome@123;MultipleActiveResultSets=true;Persist Security Info=True;",
+    //"HangfireConnection": "Data Source=sqlserverclover.database.windows.net;Initial Catalog=csportalhangfire;User ID=csadmin;Password=welcome@123;",
+    "DefaultConnection": "Server=tcp:cargoportalserver.database.windows.net,1433;Initial Catalog=csportaldb;User ID=csadmin;Password=welcome@123;MultipleActiveResultSets=true;Persist Security Info=True;"
+  }
+}

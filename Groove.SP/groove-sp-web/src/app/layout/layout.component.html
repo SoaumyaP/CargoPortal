@@ -1,0 +1,71 @@
+<div class="wrapper" [ngClass]="{'navbar-expand': navbarExpand}">
+    <div class="wrapper-loader" *ngIf="false">
+        <div class="loader"></div>
+    </div>
+    <div class="clearfix">
+        <app-navigation [navbarExpand]="navbarExpand"></app-navigation>
+        <main id="main-section" class="main-section" tabindex="-1" role="main">
+            <header class="row header fixed-top">
+                <div class="header-items">
+                    <div class="column menuitem__hamburger">
+                        <a class="k-link k-header" tabindex="-1" (click)="onClickNavbar()">
+                            <span [ngClass]="navbarExpand ? 'bg-icon-close-left-menu' : 'bg-icon_humberger_menu'"></span>
+                        </a>
+                    </div>
+                    <app-user-role-switch></app-user-role-switch>
+                    <h1 id="main-logo" class="column main-logo">
+                        <a routerLink="/home" style="width: fit-content;">
+                            <img class="img-logo" [src]="currentLogo ? currentLogo : (currentUser.companyLogo ? currentUser.companyLogo : csPortalLogoDefaultPath)"/>
+                        </a>
+                    </h1>
+                    <app-search></app-search>
+                    <app-notification></app-notification>
+                    <app-header></app-header>
+                    <div class="column divider-column">
+                        <span class="icon-divider"></span>
+                    </div>
+                    <div class="column user-wrapper">
+                        <ul class="usermenu">
+                            <li id="user__avatar">
+                                <img #anchor src="{{currentUser?.profilePicture ? currentUser.profilePicture : defaultAvatarUrl}}"
+                                    (mouseenter)="showMenuPopupDelay()" (mouseleave)="hideMenuPopupDelay()" class="img-circle"
+                                    height="39" width="40" alt="">
+                                <kendo-popup *ngIf="showMenuPopup" [popupClass]="''" [anchor]="anchor" (mouseenter)="showMenuPopupDelay()"
+                                    (mouseleave)="hideMenuPopupDelay()">
+                                    <div class="k-group-item k-item header-profile">
+                                        <p class="username">{{currentUser?.name}}</p>
+                                        <p *ngIf="showOrgName" class="org-name" routerLink="/organizations/owner/view/{{currentUser?.organizationId}}">{{currentUser?.organizationName}}</p>
+                                    </div>
+                                    <div class="k-group-item content-profile">
+                                        <div class="k-item">
+                                            <a routerLink="/user-profile" (click)="gaEmitEvent('View', gaEventCategory.UserProfile)">
+
+                                                <span class="k-icon k-i-user custom-k-icon"></span>
+                                                <p>
+                                                    {{'label.userProfile' | translate}}
+                                                </p>
+                                            </a>
+                                        </div>
+                                        <div class="k-item">
+                                            <a (click)="logout()" class="cursor-pointer">
+                                                <span class="k-icon k-i-logout custom-k-icon"></span>
+                                                <p>
+                                                    {{'label.logOut' | translate}}
+                                                </p>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </kendo-popup>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+            <div class="content container-fluid">
+                <router-outlet></router-outlet>
+            </div>
+            <app-footer></app-footer>
+        </main>
+    </div>
+    <app-loader></app-loader>
+</div>

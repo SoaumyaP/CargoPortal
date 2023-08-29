@@ -1,0 +1,209 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+	  <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
+	  <LangVersion>10.0</LangVersion>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Filters\Audit\**" />
+    <Compile Remove="Filters\Result\**" />
+    <Compile Remove="Filters\Validation\**" />
+    <Content Remove="Filters\Audit\**" />
+    <Content Remove="Filters\Result\**" />
+    <Content Remove="Filters\Validation\**" />
+    <EmbeddedResource Remove="Filters\Audit\**" />
+    <EmbeddedResource Remove="Filters\Result\**" />
+    <EmbeddedResource Remove="Filters\Validation\**" />
+    <None Remove="Filters\Audit\**" />
+    <None Remove="Filters\Result\**" />
+    <None Remove="Filters\Validation\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="libwkhtmltox\32\libwkhtmltox.dll" />
+    <None Remove="libwkhtmltox\32\libwkhtmltox.dylib" />
+    <None Remove="libwkhtmltox\32\libwkhtmltox.so" />
+    <None Remove="libwkhtmltox\64\libwkhtmltox.dll" />
+    <None Remove="libwkhtmltox\64\libwkhtmltox.dylib" />
+    <None Remove="libwkhtmltox\64\libwkhtmltox.so" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="EmailTemplates\Pdf\Cargo Services logo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libwkhtmltox\32\libwkhtmltox.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libwkhtmltox\32\libwkhtmltox.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libwkhtmltox\32\libwkhtmltox.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libwkhtmltox\64\libwkhtmltox.dll" />
+    <Content Include="libwkhtmltox\64\libwkhtmltox.dylib" />
+    <Content Include="libwkhtmltox\64\libwkhtmltox.so" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.6" />
+    <PackageReference Include="Hangfire.InMemory" Version="0.3.4" />
+    <PackageReference Include="IdentityModel.AspNetCore.OAuth2Introspection" Version="6.0.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.1" />
+    <PackageReference Include="NSwag.AspNetCore" Version="13.15.5" />
+    <PackageReference Include="RazorLight" Version="2.0.0-rc.4" />
+    <PackageReference Include="Scrutor" Version="4.2.1" />
+    <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Groove.SP.Infrastructure.CSFE\Groove.SP.Infrastructure.CSFE.csproj" />
+    <ProjectReference Include="..\Groove.SP.Infrastructure.DinkToPdf\Groove.SP.Infrastructure.DinkToPdf.csproj" />
+    <ProjectReference Include="..\Groove.SP.Infrastructure.MicrosoftGraphAPI\Groove.SP.Infrastructure.MicrosoftGraphAPI.csproj" />
+    <ProjectReference Include="..\Groove.SP.Infrastructure.RazorLight\Groove.SP.Infrastructure.RazorLight.csproj" />
+    <ProjectReference Include="..\Groove.SP.Infrastructure.SignalR\Groove.SP.Infrastructure.SignalR.csproj" />
+    <ProjectReference Include="..\Groove.SP.Infrastructure\Groove.SP.Infrastructure.csproj" />
+    <ProjectReference Include="..\Groove.SP.Persistence\Groove.SP.Persistence.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="EmailTemplates\AccountCreation_Activation_ExternalUser.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\AccountCreation_Inform_ExternalUser.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\AccountRegistrationApproved_ExternalUser.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\AccountRegistrationApproved_InternalUser.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\AccountRegistrationRejected_ExternalUser.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\AccountRegistrationRejected_InternalUser.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\AccountRegistrationWaitForApprove_Admin.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\AccountRegistrationWaitForApprove_User.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\AccountRejectedResubmitForApprove.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\ApprovalNotificationEmailToApproverWarehouse.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\ApprovalNotificationEmailToApprover.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\BookingConfirmedNotificationToSuplier.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\Booking_Amended.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\ConsigneeOrganization.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\Booking_BookedNotificationToOriginAgent.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\Booking_Cancelled.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\Booking_NewShippingDocumentsNotificationToOriginAgent.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\Consignment_NewAssigned.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\EmailShareFiles.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\EmailUserRoleChanged.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\Pdf\ShippingOrderForm.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\Pdf\WarehouseSOForm.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\PODelegationAccessRemovedNotification.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\PODelegationNotifyUser.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\POFulfillment_Booked.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\POFulfillment_Rejected.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\ProgressCheck.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\Shipment_Cancelled.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\User_ExcelImportResult.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\WarehouseBooking_Approved.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\WarehouseBooking_Confirmed.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\WarehouseBooking_Import_DuplicatedFileNaming.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\WarehouseBooking_Import_IncorrectFileNaming.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\WarehouseBooking_Import_Failed.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\WarehouseBooking_Import_Success.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\_EmailLayout.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="EmailTemplates\Excel\ShippingOrderForm.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="EmailTemplates\Excel\ShippingOrderForm.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

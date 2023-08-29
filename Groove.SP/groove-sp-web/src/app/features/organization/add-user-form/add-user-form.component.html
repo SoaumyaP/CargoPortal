@@ -1,0 +1,84 @@
+<kendo-dialog [title]="'label.newUser' | translate" *ngIf="addUserFormOpened" (close)="onFormClosed()" novalidate [width]="824" class="custom-header-dialog">
+    <div class="container">
+        <form #mainForm="ngForm">
+            <div>
+                <h5 class="title-grid mt-0">{{'label.userAccountInfo' | translate}}</h5>
+                <hr class="colored"/>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label class="required">{{'label.emailAddress' | translate}}</label>
+                        <input name="email" required type="text" class="form-control"
+                                [(ngModel)]="model.email"
+                                [pattern]="patternEmail"
+                                maxlength="128"
+                                (focusout)="checkUserExists()"/>
+                        <div *ngIf="formErrors['email']" class="k-invalid-msg">
+                            {{formErrors.email}}
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6" [class.force-invalid]="formErrors['roleId']">
+                        <label class="required">{{'label.userRole' | translate}}</label>
+                        <kendo-dropdownlist name="roleId" [data]="roleOptions" required [(ngModel)]="model.roleId" [valuePrimitive]="true"
+                        [textField]="'name'" [valueField]="'id'" class="form-control" >
+                        </kendo-dropdownlist>
+                        <div *ngIf="formErrors['roleId']" class="k-invalid-msg">
+                            {{formErrors.roleId}}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label class="required">{{'label.contactName' | translate}}</label>
+                        <input  required
+                                type="text"
+                                name="contactName"
+                                class="form-control"
+                                maxlength="256"
+                                [(ngModel)]="model.name" />
+                        <div *ngIf="formErrors['contactName']" class="k-invalid-msg">
+                            {{formErrors.contactName}}
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="form-label">{{'label.phone' | translate}}</label>
+                        <input type="text"
+                                name="phone"
+                                class="form-control"
+                                (input)="onTypingPhoneNumber($event.target.value)"
+                                [(ngModel)]="model.phone" />
+                                
+                                <div *ngIf="formErrors['phone']" class="k-invalid-msg">
+                                    {{formErrors.phone}}
+                                </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label class="form-label">{{'label.title' | translate}}</label>
+                        <input name="title"
+                                type="text"
+                                class="form-control"
+                                maxlength="128"
+                                [(ngModel)]="model.title" />
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label class="form-label">{{'label.department' | translate}}</label>
+                        <input name="department"
+                                type="text"
+                                class="form-control"
+                                maxlength="128"
+                                [(ngModel)]="model.department" />
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()"
+            #Cancel>{{'label.cancel' | translate}}</button>
+        <button type="submit" class="btn prim-button dialog-button" (click)="onAddClick()"
+            >{{'label.save' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

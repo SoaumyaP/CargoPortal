@@ -1,0 +1,3 @@
+C:\Users\cuongduong\source\repos\ShipmentPortal\JIRA\PSP-1380\SP-ETL\Initialize-Data\bin\Development>dtexec /dts "MasterData-Initialize-Data.dtsx" /ConfigFile "UAT_Environment.dtsConfig"
+
+/DTS "\"\File System\MasterData-Initialize-Data\"" /SERVER "\".\"" /CONFIGFILE "\"C:\Users\cuongduong\source\repos\ShipmentPortal\JIRA\PSP-1380\SP-ETL\Initialize-Data\bin\Development\UAT_Environment.dtsConfig\""  /CONNECTION MasterData;"\"Data Source=.;User ID=sa;Password=Pass@123456;Initial Catalog=CSFE;Provider=SQLNCLI11.1;Auto Translate=False;\""  /CHECKPOINTING OFF  /REPORTING V 

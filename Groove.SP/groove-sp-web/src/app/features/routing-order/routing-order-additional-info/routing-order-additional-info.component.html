@@ -1,0 +1,109 @@
+<div class="row form-group mt-2">
+    <div class="col-lg-6">
+        <div class="form-group">
+            <label class="form-label">{{'label.isContainDangerousGoods' | translate}}</label>
+            <div class="radio-wrapper" #anchor>
+                <input id="{{tabPrefix}}isContainDangerousGoods_yes"
+                        type="radio"
+                        class="k-radio"
+                        name="{{tabPrefix}}isContainDangerousGoods_yes"
+                        [disabled]="readonly"
+                        [value]="true"
+                        [(ngModel)]="model.isContainDangerousGoods"/>
+                <label class="k-radio-label" for="{{tabPrefix}}isContainDangerousGoods_yes">{{'label.yes' | translate}}</label>
+                <input id="{{tabPrefix}}isContainDangerousGoods_no"
+                        type="radio"
+                        class="k-radio"
+                        name="{{tabPrefix}}isContainDangerousGoods_no"
+                        [disabled]="readonly"
+                        [value]="false"
+                        [(ngModel)]="model.isContainDangerousGoods"/>
+                <label class="k-radio-label" for="{{tabPrefix}}isContainDangerousGoods_no">{{'label.no' | translate}}</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="form-group">
+            <label class="form-label">{{'label.ciqOrFumigation' | translate}}</label>
+            <div class="radio-wrapper" #anchor>
+                <input id="{{tabPrefix}}isCIQOrFumigation_yes"
+                        type="radio"
+                        class="k-radio"
+                        name="{{tabPrefix}}isCIQOrFumigation_yes"
+                        [disabled]="readonly"
+                        [value]="true"
+                        [(ngModel)]="model.isCIQOrFumigation"/>
+                <label class="k-radio-label" for="{{tabPrefix}}isCIQOrFumigation_yes">{{'label.yes' | translate}}</label>
+                <input id="{{tabPrefix}}isCIQOrFumigation_no"
+                        type="radio"
+                        class="k-radio"
+                        name="{{tabPrefix}}isCIQOrFumigation_no"
+                        [disabled]="readonly"
+                        [value]="false"
+                        [(ngModel)]="model.isCIQOrFumigation"/>
+                <label class="k-radio-label" for="{{tabPrefix}}isCIQOrFumigation_no">{{'label.no' | translate}}</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row form-group">
+    <div class="col-lg-6">
+        <div class="form-group">
+            <label class="form-label">{{'label.batteryOrChemical' | translate}}</label>
+            <div class="radio-wrapper" #anchor>
+                <input id="{{tabPrefix}}isBatteryOrChemical_yes"
+                        type="radio"
+                        class="k-radio"
+                        name="{{tabPrefix}}isBatteryOrChemical_yes"
+                        [disabled]="readonly"
+                        [value]="true"
+                        [(ngModel)]="model.isBatteryOrChemical"/>
+                <label class="k-radio-label" for="{{tabPrefix}}isBatteryOrChemical_yes">{{'label.yes' | translate}}</label>
+                <input id="{{tabPrefix}}isBatteryOrChemical_no"
+                        type="radio"
+                        class="k-radio"
+                        name="{{tabPrefix}}isBatteryOrChemical_no"
+                        [disabled]="readonly"
+                        [value]="false"
+                        [(ngModel)]="model.isBatteryOrChemical"/>
+                <label class="k-radio-label" for="{{tabPrefix}}isBatteryOrChemical_no">{{'label.no' | translate}}</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="form-group">
+            <label class="form-label">{{'label.exportLicence' | translate}}</label>
+            <div class="radio-wrapper" #anchor>
+                <input id="{{tabPrefix}}isExportLicence_yes"
+                        type="radio"
+                        class="k-radio"
+                        name="{{tabPrefix}}isExportLicence_yes"
+                        [disabled]="readonly"
+                        [value]="true"
+                        [(ngModel)]="model.isExportLicence"/>
+                <label class="k-radio-label" for="{{tabPrefix}}isExportLicence_yes">{{'label.yes' | translate}}</label>
+                <input id="{{tabPrefix}}isExportLicence_no"
+                        type="radio"
+                        class="k-radio"
+                        name="{{tabPrefix}}isExportLicence_no"
+                        [disabled]="readonly"
+                        [value]="false"
+                        [(ngModel)]="model.isExportLicence"/>
+                <label class="k-radio-label" for="{{tabPrefix}}isExportLicence_no">{{'label.no' | translate}}</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row mt-2">
+    <div class="col-lg-6">
+        <label class="form-label">{{'label.remarks' | translate}}</label>
+        <textarea kendoTextArea rows="3" name="remarks" [(ngModel)]="model.remarks"
+            class="form-control note-textarea" [readonly]="readonly" maxlength="500"
+            [ngClass]="{'read-only': readonly}">
+        </textarea>
+    </div>
+</div>

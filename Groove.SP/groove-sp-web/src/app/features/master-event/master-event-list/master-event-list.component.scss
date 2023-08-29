@@ -1,0 +1,23 @@
+::ng-deep .k-event-grid.k-grid {
+    td {
+        overflow: visible;
+    }
+    th.k-header {
+        padding: 12px 12px !important;
+        .k-link {
+            padding: 8px 12px !important;
+        }
+    }
+
+    &.draggable {
+        tr.dragging td{
+            background-color: #A6D4F0 !important;
+        }
+        tr {
+            cursor: move;
+        }
+        .order-drag-container:hover .hover-drag {
+            margin-left: 21px;
+        }
+    }
+}

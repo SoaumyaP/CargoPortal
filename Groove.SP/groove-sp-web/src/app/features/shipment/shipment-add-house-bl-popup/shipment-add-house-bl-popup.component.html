@@ -1,0 +1,275 @@
+<kendo-dialog
+    [title]="stringHelper.caseIgnoredCompare(shipmentModel.modeOfTransport, modeOfTransport.Air) ? ('label.assign' | translate) +' '+ ('label.hawb' | translate):'label.assignHouseBL' | translate"
+    *ngIf="isOpenHouseBLPopup"
+    (close)="onCancelHouseBLPopup()"
+    novalidate [width]="824" class="custom-header-dialog">
+    <div class="container">
+        <form #mainForm="ngForm">
+            <div>
+                <label class="required">{{'label.selectExecutionAgent' | translate}}</label>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <kendo-dropdownlist
+                            required
+                            class="form-control"
+                            [disabled]="isDisabledConsignmentDropdown"
+                            [defaultItem]="defaultDropDownItem"
+                            [data]="consignments"
+                            [textField]="'executionAgent'"
+                            [valueField]="'executionAgentId'"
+                            [valuePrimitive]="true"
+                            name="executionAgentId"
+                            (valueChange)="onChangeExecutionAgent($event)"
+                            [(ngModel)]="houseBLModel.executionAgentId"
+                        >
+                        <ng-template kendoDropDownListValueTemplate let-dataItem>
+                            {{ dataItem?.executionAgent | translate }}
+                        </ng-template>
+                        <ng-template kendoDropDownListItemTemplate let-dataItem>
+                            {{ dataItem?.executionAgent | translate }}
+                        </ng-template>
+                        </kendo-dropdownlist>
+                    </div>
+                </div>
+
+                <label class="required">
+                    {{stringHelper.caseIgnoredCompare(shipmentModel.modeOfTransport, modeOfTransport.Air) ? ('label.select' | translate) +' '+ ('label.hawb' | translate):'label.selectedHouseBL' | translate}}
+                </label>
+                <div class="form-row">
+                    <div class="form-group col-md-8">
+                        <kendo-autocomplete
+                            required
+                            name="houseBLNoManualInputName"
+                            (valueChange)="onChangeHouseBLNo($event)"
+                            (filterChange)="searchHouseBLEvent$.next($event)"
+                            [loading]="null"
+                            [valueField]="'billOfLadingNo'"
+                            [data]="filteredHouseBLs"
+                            [(ngModel)]="houseBLNoManualInput"
+                            [filterable]="true"
+                            class="form-control"
+                            [disabled]="isShowAddNewMode"
+                            [virtual]="true">
+                        </kendo-autocomplete>
+                        <div class="error-message-container">
+                            <div *ngIf="getControl('houseBLNoManualInputName')?.errors?.required && getControl('houseBLNoManualInputName').touched" class="k-invalid-msg">
+                                {{'validation.requiredThisField' | translate}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-4 text-right pr-0">
+                        <button
+                            type="button"
+                            class="btn btn-header-secondary"
+                            [disabled]="isDisabledResetButton"
+                            (click)="onResetHouseBL()">
+                            {{ 'label.reset' | translate}}
+                        </button>
+
+                        <button
+                            type="button" class="btn btn-header-warning"
+                            [disabled]="isDisabledAddNewButton"
+                            (click)="onAddNewHouseBL()">
+                            {{stringHelper.caseIgnoredCompare(shipmentModel.modeOfTransport, modeOfTransport.Air) ? ('label.new' | translate) +' '+ ('label.hawb' | translate):'label.newHouseBL' | translate}}
+                        </button>
+                    </div>
+                </div>
+
+                <div id="house-bl-section-container">
+                    <ng-container *ngIf="!isDisabledResetButton">
+                            <h5 *ngIf="isShowSelectMode" class="title-grid mt-0">
+                                {{stringHelper.caseIgnoredCompare(shipmentModel.modeOfTransport, modeOfTransport.Air) ? ('label.select' | translate) +' '+ ('label.hawb' | translate):'label.selectedHouseBL' | translate}}
+                            </h5>
+
+                            <h5 *ngIf="isShowAddNewMode" class="title-grid mt-0">
+                                {{stringHelper.caseIgnoredCompare(shipmentModel.modeOfTransport, modeOfTransport.Air) ? ('label.new' | translate) +' '+ ('label.hawb' | translate):'label.newHouseBL' | translate}}
+                            </h5>
+
+                            <hr *ngIf="isShowSelectMode || isShowAddNewMode" class="colored" />
+
+                        <div *ngIf="isShowSelectMode" class="row">
+                            <div class="col content-details">
+                                <div class="row">
+                                    <div class="col text-label">
+                                        {{stringHelper.caseIgnoredCompare(shipmentModel.modeOfTransport, modeOfTransport.Air) ? ('label.hawbNo' | translate):'label.houseBillOfLadingNumber' | translate}}
+                                    </div>
+                                    <div class="col value-label">{{ houseBLModel.billOfLadingNo | default:defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-label">
+                                        {{'label.jobNo' | translate}}
+                                    </div>
+                                    <div class="col value-label">{{ houseBLModel.jobNumber | default:defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-label">
+                                        {{'label.issueDates' | translate}}
+                                    </div>
+                                    <div class="col value-label">{{ houseBLModel.issueDate | date: dateFormat  | default:defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-label">
+                                        {{'label.modeOfTransport' | translate}}
+                                    </div>
+                                    <div class="col value-label">{{ houseBLModel.modeOfTransport | default:defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-label">
+                                        {{'label.billOfLadingType' | translate}}
+                                    </div>
+                                    <div class="col value-label">{{ houseBLModel.billOfLadingType | default:defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-label">
+                                        {{'label.etdDates' | translate}}
+                                    </div>
+                                    <div class="col value-label">{{ houseBLModel.shipFromETDDate | date: dateFormat  | default:defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-label">
+                                        {{'label.etaDates' | translate}}
+                                    </div>
+                                    <div class="col value-label">{{ houseBLModel.shipToETADate | date: dateFormat  | default:defaultValue }}</div>
+                                </div>
+
+                            </div>
+
+                            <div class="col content-details">
+                                <div class="row location">
+                                    <div class="col text-label">
+                                        {{'label.shipFrom' | translate}}
+                                    </div>
+                                    <div class="col value-label">{{ houseBLModel.shipFrom | default:defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-label">
+                                        {{'label.shipTo' | translate}}
+                                    </div>
+                                    <div class="col value-label">{{ houseBLModel.shipTo | default:defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-label">
+                                        {{'label.originAgent' | translate}}
+                                    </div>
+                                    <div class="col value-label">{{ houseBLModel.originAgent | default:defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-label">
+                                        {{'label.destinationAgent' | translate}}
+                                    </div>
+                                    <div class="col value-label">{{ houseBLModel.destinationAgent | default:defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-label">
+                                        {{'label.customer' | translate}}
+                                    </div>
+                                    <div class="col value-label">{{ houseBLModel.customer | default:defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-label">
+                                        {{'label.movement' | translate}}
+                                    </div>
+                                    <div class="col value-label">{{ houseBLModel.movement | default:defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-label">
+                                        {{'label.incoterm' | translate}}
+                                    </div>
+                                    <div class="col value-label">{{ houseBLModel.incoterm | default:defaultValue }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- form -->
+                        <ng-container *ngIf="isShowAddNewMode">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="billOfLadingNo" class="required">
+                                        {{stringHelper.caseIgnoredCompare(shipmentModel.modeOfTransport, modeOfTransport.Air) ? ('label.hawbNo' | translate):'label.houseBillOfLadingNumber' | translate}}
+                                    </label>
+                                    <input
+                                        required type="text"
+                                        class="form-control"
+                                        name="billOfLadingNo"
+                                        (input)="checkHouseBLEvent$.next($event.target.value)"
+                                        [(ngModel)]="houseBLModel.billOfLadingNo" />
+                                        <div *ngIf="getControl('billOfLadingNo')?.errors?.required && getControl('billOfLadingNo')?.touched" class="k-invalid-msg">
+                                            {{ 'validation.requiredField' | translate: {'fieldName': (stringHelper.caseIgnoredCompare(shipmentModel.modeOfTransport, modeOfTransport.Air) ? 'label.hawbNo' : 'label.houseBillOfLadingNumber') | translate} }}
+                                        </div>
+
+                                        <div *ngIf="getControl('billOfLadingNo')?.errors?.isDuplicated && getControl('billOfLadingNo')?.touched" class="k-invalid-msg">
+                                            {{ 'validation.cannotBeDuplicated' | translate: {'fieldName': (stringHelper.caseIgnoredCompare(shipmentModel.modeOfTransport, modeOfTransport.Air) ? 'label.hawbNo' : 'label.houseBillOfLadingNumber') | translate} }}
+                                        </div>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="jobNumber">{{'label.jobNo' | translate}}</label>
+                                    <input type="text" class="form-control" name="jobNumber" [(ngModel)]="houseBLModel.jobNumber" maxlength="12" />
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div *ngIf="stringHelper.caseIgnoredCompare(shipmentModel.modeOfTransport, modeOfTransport.Sea)" class="form-group col-md-6">
+                                    <label for="billOfLadingType" class="required">{{'label.billOfLadingType' | translate}}</label>
+                                    <kendo-dropdownlist
+                                        required
+                                        [data]="billOfLadingTypes"
+                                        [textField]="'value'"
+                                        [valueField]="'value'"
+                                        [valuePrimitive]="true"
+                                        name="billOfLadingType"
+                                        class="form-control"
+                                        [(ngModel)]="houseBLModel.billOfLadingType"
+                                    >
+                                    <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                        {{ dataItem?.label | translate }}
+                                    </ng-template>
+                                    </kendo-dropdownlist>
+                                    <div *ngIf="getControl('billOfLadingType')?.errors?.required && getControl('billOfLadingType')?.touched" class="k-invalid-msg">
+                                        {{ 'validation.requiredField' | translate: {'fieldName': 'label.billOfLadingType' | translate} }}
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label for="issueDate" class="required">{{'label.issueDates' | translate}}</label>
+                                    <kendo-datepicker
+                                        required
+                                        name="issueDate"
+                                        [(ngModel)]="houseBLModel.issueDate"
+                                        class="form-control" >
+                                    </kendo-datepicker>
+                                    <div *ngIf="getControl('issueDate')?.errors?.required && getControl('issueDate')?.touched" class="k-invalid-msg">
+                                        {{ 'validation.requiredField' | translate: {'fieldName': 'label.issueDates' | translate} }}
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onCancelHouseBLPopup()">
+            {{'label.cancel' | translate}}
+        </button>
+
+        <button
+            type="submit"
+            class="btn prim-button dialog-button"
+            *ngIf="!isShowAddNewMode"
+            (click)="onSelectHouseBL()">{{'label.select' | translate}}
+        </button>
+
+        <button
+            type="submit"
+            class="btn prim-button dialog-button"
+            *ngIf="isShowAddNewMode"
+            (click)="onSaveHouseBL()"
+            >
+            {{'label.save' | translate}}
+        </button>
+
+    </kendo-dialog-actions>
+</kendo-dialog>

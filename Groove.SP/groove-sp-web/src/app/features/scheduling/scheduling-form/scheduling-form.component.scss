@@ -1,0 +1,89 @@
+@import '../../../../styles/variables';
+
+.recurrence-rule.disabled {
+
+    .recurrence-over-lay {
+        display: block;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 3;
+    }
+}
+
+::ng-deep {
+
+    kendo-recurrence-editor {
+
+        width: 500px;
+
+        .k-numerictextbox {
+            margin-right: 10px;
+        }
+
+        .k-button-group {
+
+            height: 36px !important;
+
+            .k-button:focus {
+                box-shadow: none !important;
+            }
+
+            .k-button:hover {
+                border-color: $color-blue-primary;
+                color: $color-white-primary;
+                background-color: $color-blue-primary;
+                background-image: none;
+            }
+
+            .k-button:active,
+            .k-button.k-state-active {
+                border-color: $color-blue-primary;
+                color: #fff;
+                background-color: $color-blue-primary;
+            }
+
+        }
+
+        .k-input, input {
+            height: 46px !important;
+        }
+
+        .k-dropdown {
+            width: 160px;
+        }
+    }
+    
+    .break-line-row{
+        flex-basis: 100%;
+        height: 0;
+        width: 0;
+        overflow: hidden;
+    }
+}
+
+.k-multiselect {
+    display: contents;
+}
+
+
+.force-invalid {
+    input.form-control {
+        color: $color-red-bright-1;
+        border-color: $color-red-bright-1;
+    }
+}
+
+.selected-column-container {
+    .list-of-selected-columns ::ng-deep {
+        .k-grid-container {
+            display: none;
+        }
+        .k-grid-header-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+    }
+}

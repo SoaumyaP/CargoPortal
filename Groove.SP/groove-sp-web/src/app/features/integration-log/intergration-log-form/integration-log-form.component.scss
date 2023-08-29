@@ -1,0 +1,37 @@
+.integration-log-detail {
+    .copy-btn {
+        position: absolute;
+        right: 15px;
+    }
+
+    .note-textarea {
+        height: 86px !important;
+    }
+
+    .json-preview ::ng-deep {
+
+        word-break: break-word;
+
+        color: grey;
+
+        .string {
+            color: green;
+        }
+
+        .number {
+            color: darkorange;
+        }
+
+        .boolean {
+            color: blue;
+        }
+
+        .null {
+            color: grey;
+        }
+
+        .key {
+            color: red;
+        }
+    }
+}

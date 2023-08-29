@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DTSConfiguration>
+   <DTSConfigurationHeading>
+      <DTSConfigurationFileInfo GeneratedBy="GROOVETECH\cuongduong" GeneratedFromPackageName="Package1" GeneratedFromPackageID="{AB1D2A37-D210-46A6-9284-01F859BCF0F0}" GeneratedDate="4/16/2020 11:31:52 AM" />
+   </DTSConfigurationHeading>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[data-etl-logging.log].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\SP-Staging\data-etl-logging.log</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[Delete_Data_SP_Database.sql].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\SP-Staging\Delete_Data_SP_Database.sql</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[Off_Triggers_Constraints_SP_Database.sql].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\SP-Staging\Off_Triggers_Constraints_SP_Database.sql</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[On_Triggers_Constraints_SP_Database.sql].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\SP-Staging\On_Triggers_Constraints_SP_Database.sql</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[Seed_SP_OptionalData.sql].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\SP-Staging\Seed_SP_OptionalData.sql</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[Seed_SP_SystemData.sql].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\SP-Staging\Seed_SP_SystemData.sql</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[SP].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>Data Source=global-ltl-db.database.windows.net;Initial Catalog=SP-GlobalIdSchemaDB;User ID=ltl-admin;Password=Abc@1234;Provider=SQLNCLI11.1;Auto Translate=False;</ConfiguredValue>
+   </Configuration>
+</DTSConfiguration>

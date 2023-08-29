@@ -1,0 +1,12 @@
+<div class="content__header">
+    <div class="container-fluid">
+        <div class="row header-group">
+            <label class="list-header">{{'label.listOfArticles' | translate}}</label>
+            <span class="k-i-loading k-icon loading" *ngIf="service.gridLoading"></span>
+        </div>
+
+        <div class="row">
+            <kendo-grid #grid="kendoGrid"></kendo-grid>
+        </div>
+    </div>
+</div>

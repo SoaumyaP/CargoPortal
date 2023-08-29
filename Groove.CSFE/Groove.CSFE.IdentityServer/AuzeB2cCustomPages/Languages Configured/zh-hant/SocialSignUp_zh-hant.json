@@ -1,0 +1,116 @@
+{
+  "LocalizedStrings": [
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "initial_intro",
+      "Override": true,
+      "Value": "(TC) Sign up to Cargo"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "verifying_blurb",
+      "Override": true,
+      "Value": ""
+    },
+    {
+      "ElementType": "ErrorMessage",
+      "ElementId": null,
+      "StringId": "UserMessageIfClaimsPrincipalAlreadyExists",
+      "Override": true,
+      "Value": "(TC) A user with the specified ID already exists. Please sign in with the specified ID or choose a different one to sign up"
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "LengthRange",
+      "StringId": "HelpText",
+      "Override": true,
+      "Value": "(TC) The password must be between {0} and {1} characters including a lowercase letter, an uppercase letter, a number, a symbol."
+    },
+    {
+      "ElementType": "InputValidation",
+      "ElementId": "CustomPassword",
+      "StringId": "CharacterClassesAll",
+      "Override": true,
+      "Value": ""
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "Lowercase",
+      "StringId": "HelpText",
+      "Override": true,
+      "Value": ""
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "Number",
+      "StringId": "HelpText",
+      "Override": true,
+      "Value": ""
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "Symbol",
+      "StringId": "HelpText",
+      "Override": true,
+      "Value": ""
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "Uppercase",
+      "StringId": "HelpText",
+      "Override": true,
+      "Value": ""
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_PhoneNumber",
+      "StringId": "UserHelpText",
+      "Override": true,
+      "Value": "(TC) Phone number"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_PhoneNumber",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "(TC) Phone number"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_CompanyName",
+      "StringId": "UserHelpText",
+      "Override": true,
+      "Value": "(TC) Company name"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_CompanyName",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "(TC) Company name"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "email",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "(TC) Enter your email"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "displayName",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "(TC) Display name"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "ver_but_edit",
+      "Override": true,
+      "Value": "(TC) Change email"
+    }
+  ]
+}

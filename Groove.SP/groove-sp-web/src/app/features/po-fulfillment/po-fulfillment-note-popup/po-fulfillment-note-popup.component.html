@@ -1,0 +1,60 @@
+<kendo-dialog [title]="title | translate" *ngIf="popupOpened" (close)="onFormClosed()" novalidate [width]="824" class="custom-header-dialog">
+    <div class="container">
+        <form #mainForm="ngForm" class="order-note-form">
+            <div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="category" class="form-label required">{{'label.category' | translate}}</label>
+                        <kendo-dropdownlist name="category" [data]="categoryOptions"
+                            [disabled]="isViewMode" [(ngModel)]="model.category" [valuePrimitive]="true"
+                            [textField]="'text'" [valueField]="'value'" class="form-control" required>
+                        </kendo-dropdownlist>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="poItems" class="form-label">{{'label.poItem' | translate}}</label>
+                        <kendo-multiselect name="poItems" class="note-input form-control"
+                            [data]="filteredPOItemOptionsSource | orderBy: 'value'"
+                            [(ngModel)]="model.poItems"
+                            [valueField]="'value'"
+                            [textField]="'optionText'"
+                            [autoClose]="false"
+                            [filterable]="true"
+                            (filterChange)="poItemsFilterChange($event)"
+                            (valueChange)="poItemsValueChange($event)"
+                            [disabled]="isViewMode"
+                            [itemDisabled]="isPOItemDisabled">
+                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                    <span *ngIf="dataItem.isParentPO === false && dataItem.isOrphan === false">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                    <input type="checkbox" class="k-checkbox" [checked]="isPOItemSelected(dataItem)">
+                                    <label class="k-checkbox-label">{{ dataItem.optionText }}</label>
+                                </ng-template>
+                                <ng-template kendoMultiSelectTagTemplate let-dataItem>
+                                    {{ dataItem.value }}
+                                </ng-template>
+                        </kendo-multiselect>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-12 mb-0">
+                        <label for="message" class="form-label required">{{'label.message' | translate}}</label>
+                        <textarea rows="4" kendoTextArea name="message" [(ngModel)]="model.noteText"
+                            class="form-control note-textarea" [disabled]="isViewMode" required #message="ngModel">
+                        </textarea>
+                        <div *ngIf="message.invalid && (message.dirty || message.touched)" class="k-invalid-msg">
+                            {{ 'validation.requiredField' | translate: {'fieldName': 'label.message' | translate} }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()"
+            #Cancel>{{(isViewMode ? 'label.close' : 'label.cancel') | translate}}</button>
+        <button type="button" class="btn prim-button dialog-button" *ngIf="isAddMode" (click)="onAddClick()"
+            >{{'label.save' | translate}}</button>
+        <button type="button" class="btn prim-button dialog-button" *ngIf="isEditMode" (click)="onEditClick()"
+            >{{'label.save' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

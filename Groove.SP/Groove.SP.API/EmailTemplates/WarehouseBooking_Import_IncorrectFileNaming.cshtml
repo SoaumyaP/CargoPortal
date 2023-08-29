@@ -1,0 +1,31 @@
+﻿@model Groove.SP.Application.WarehouseFulfillment.ViewModels.WarehouseBookingEmailViewModel
+@{
+    Layout = "_EmailLayout.cshtml";
+    var whAssignment = @Model.WarehouseAssignment;
+    var whContactEmails = whAssignment?.ContactEmail?.Replace(" ", "").Replace(",", ";").Split(';', StringSplitOptions.RemoveEmptyEntries);
+}
+
+<p class="mb-0">Dear@(string.IsNullOrEmpty(Model.CustomerName) ? "" : $" VIP {Model.CustomerName}'{(Model.CustomerName.ToLowerInvariant().Last() != 's' ? 's' : string.Empty)} Supplier"),</p>
+<br />
+<p class="mb-0">Your booking is rejected due to incorrect file naming</p>
+<br />
+<p>  1. For booking form, please rename the file with wording "booking form".</p>
+<p>  2. For packinglist, please rename the file with wording "packinglist".</p>
+<p>  3. For commercial invoice, please rename the file with wording "commercial invoice".</p>
+<p class="mb-0">  4. For COO, please rename the file with wording "COO".</p>
+<br />
+<p>Would be appreciated for you to re-send the booking through email.</p>
+<p class="mb-0">You will receive a successful email to confirm the booking is received by Cargo Services.</p>
+<br />
+@if(@whAssignment != null) {
+<p>For any enquiry, please contact</p>
+}
+@if(!string.IsNullOrEmpty(@whAssignment?.ContactPerson)) {
+<p>@whAssignment?.ContactPerson</p>
+}
+@if(!string.IsNullOrEmpty(@whAssignment?.ContactPhone)) {
+<p>Direct: @whAssignment?.ContactPhone</p>
+}
+@if(whContactEmails != null && whContactEmails.Any()) {
+<p>Email: @string.Join(", ", whContactEmails)</p>
+}

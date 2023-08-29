@@ -1,0 +1,11 @@
+﻿@model Groove.SP.Application.Users.ViewModels.AccountRegistrationEmailTemplateViewModel
+@{
+    Layout = "_EmailLayout.cshtml";
+}
+
+<p>Dear @Model.Name,</p>
+<p>Thank you for registering an account with us! An email notification will be sent to you when the account opening process is completed.</p>
+<p>If assistance is required, you can contact our customer support team by emailing us at @Model.SupportEmail.</p>
+<br />
+<p>Regards,</p>
+<p>Shipment Portal Team.</p>

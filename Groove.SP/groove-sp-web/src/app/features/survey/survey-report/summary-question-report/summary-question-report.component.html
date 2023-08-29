@@ -1,0 +1,41 @@
+<div class="answer-grid-container">
+    <kendo-grid #grid="kendoGrid" [data]="gridData" [pageable]="true" [pageSize]="gridState.take" [skip]="gridState.skip"
+        [sortable]="false" [sort]="gridState.sort" (pageChange)="gridPageChange($event)"
+        (sortChange)="gridSortChange($event)" (dataStateChange)="gridStateChange($event)"
+        class="custom-border-grid consolidation-cargo-detail-grid" [class.hiddenPagerWrap]="!gridData.data || gridData.data.length == 0">
+
+        <kendo-grid-column [width]="8" field="sequence" title="{{'label.number' | translate}}" [sortable]="true">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">{{rowIndex + 1}}</ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column [width]="92" field="answerText" title="{{'label.answers' | translate}}" [sortable]="true" class="multiple-lines-text">
+        </kendo-grid-column>
+        
+        <!-- Custom kendo pager -->
+        <ng-template kendoPagerTemplate>
+            <div class="k-pager-wrap k-pager-wrap__custom" *ngIf="gridData.data && gridData.data.length > 0">
+                <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+
+                <kendo-pager-input *ngIf="pagerType === 'input'"></kendo-pager-input>
+                <kendo-pager-numeric-buttons *ngIf="pagerType === 'numeric'" [buttonCount]="buttonCount">
+                </kendo-pager-numeric-buttons>
+
+                <kendo-pager-next-buttons></kendo-pager-next-buttons>
+
+                <kendo-pager-info></kendo-pager-info>
+
+                <span class="k-pager-sizes k-label refresh-grid">
+                    <div class="k-label">{{'label.showRows' | translate}}</div>
+                    <kendo-dropdownlist [data]="pageSizes" [value]="gridState.take" (valueChange)="pageSizeChange($event)">
+                    </kendo-dropdownlist>
+
+                    <button attr.data-balloon="{{'tooltip.refresh' | translate}}" data-balloon-pos="up" type="button"
+                        class="k-pager-refresh k-link pull-right btn refresh-icon-button" (click)="fetchGridData()">
+                        <i class="ei ei-icon_refresh"></i>
+                    </button>
+                </span>
+            </div>
+        </ng-template>
+    </kendo-grid>
+    <div *ngIf="isGridLoading" class="k-i-loading"></div>
+</div>

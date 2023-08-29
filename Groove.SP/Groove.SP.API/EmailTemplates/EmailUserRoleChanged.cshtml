@@ -1,0 +1,11 @@
+﻿@model  Groove.SP.Application.Users.ViewModels.UserRoleChangedEmailTemplateViewModel
+@{
+    Layout = "_EmailLayout.cshtml";
+}
+
+<p>Dear @Model.Name,</p>
+<p>Thanks for your interest in Shipment Portal. Your role in Shipment Portal has been changed to @Model.RoleName</p>
+<p>For more information, you are welcome to contact our customer service representatives by emailing us at @Model.SupportEmail.</p>
+<br />
+<p>Regards,</p>
+<p>Shipment Portal Team.</p>

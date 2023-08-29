@@ -1,0 +1,89 @@
+<div class="content__header">
+    <div class="container-fluid">
+
+        <div class="row header-group">
+            <label class="list-header">{{'label.listOfContract' | translate}}</label>
+            <span class="k-i-loading k-icon loading" *ngIf="service.gridLoading"></span>
+            <div class="col-sm text-right">
+                <button 
+                    *hasPermission="[AppPermissions.Organization_Contract_Detail_Add]" 
+                    (click)="onAddNewContract()" 
+                    type="button" 
+                    class="btn header-button add-new-button">
+                    <div class="icon-circle">
+                        <fa-icon [icon]="faPlus"></fa-icon>
+                    </div>
+                    <span class="icon-circle-label">{{'label.addNew' | translate}}</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <kendo-grid 
+                #grid="kendoGrid" [data]="view | async" [filterable]="true" [filter]="service.state.filter"
+                [pageable]="true" [pageSize]="service.state.take" [skip]="service.state.skip" [sortable]="true"
+                [sort]="service.state.sort" (dataStateChange)="gridStateChange($event)"
+                (pageChange)="service.pageChange($event)" (sortChange)="service.sortChange($event)"
+                class="custom-border-grid">
+                <kendo-grid-column field="realContractNo" title="{{'label.contractNo' | translate}}" [filterable]="true" [sortable]="true">
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                        <a class="k-link" routerLink="/contracts/view/{{dataItem.id}}" [title]="dataItem.realContractNo" routerLinkActive="active"> {{ dataItem.realContractNo}} </a>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column field="contractType" title="{{'label.contractType' | translate}}" [filterable]="true" [sortable]="true">
+                </kendo-grid-column>
+
+                <kendo-grid-column field="carrierName" title="{{'label.carrier' | translate}}" [filterable]="true" [sortable]="true">
+                </kendo-grid-column>
+
+                <kendo-grid-column field="organizationName" title="{{'label.contractHolder' | translate}}" [filterable]="true" [sortable]="true">
+                </kendo-grid-column>
+
+                <kendo-grid-column field="validFromDate" title="{{'label.validFrom' | translate}}" [filterable]="true"  format="{0:{{DATE_FORMAT}}}" filter="date" [sortable]="true">
+                </kendo-grid-column>
+
+                <kendo-grid-column field="validToDate" title="{{'label.validTo' | translate}}" [filterable]="true" format="{0:{{DATE_FORMAT}}}" filter="date" [sortable]="true">
+                </kendo-grid-column>
+
+                <kendo-grid-column field="status" title="{{'label.status' | translate}}" [filterable]="true" [sortable]="true">
+                    <ng-template kendoGridFilterCellTemplate let-filter="filter">
+                        <app-drop-down-list-filter 
+                            [filter]="filter"
+                            fieldName="status"
+                            [data]="service.contractMasterStatus"
+                            textField="text"
+                            valueField="value">
+                        </app-drop-down-list-filter>
+                    </ng-template>
+
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                        <span [className]="dataItem.status === contractMasterStatus.Active ? 'active-status' : 'inactive-status'">
+                            {{dataItem.status === contractMasterStatus.Active ? 'Active' : 'Inactive'}}
+                        </span>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <!-- Action -->
+                <!-- <kendo-grid-column title="{{'label.action' | translate}}" width="100">
+                    <ng-template kendoGridCellTemplate let-dataItem class="col-action">
+                        <div *hasPermission="[AppPermissions.Organization_Location_Detail_Edit]">
+                            <button attr.data-balloon="{{'label.edit' | translate}}"
+                                    data-balloon-pos="right"
+                                    type="button"
+                                    (click)="onEditLocation(dataItem)"
+                                    class="btn grid-edit-icon-button ml-0">
+                                <fa-icon [icon]="faPencilAlt"></fa-icon>
+                            </button>
+                        </div>
+                    </ng-template>
+                </kendo-grid-column> -->
+
+                <ng-template kendoPagerTemplate>
+                    <app-custom-grid-pager [service]="service" (pageSizeChanged)="gridPageSizeChange($event)">
+                    </app-custom-grid-pager>
+                </ng-template>
+            </kendo-grid>
+        </div>
+    </div>
+</div>

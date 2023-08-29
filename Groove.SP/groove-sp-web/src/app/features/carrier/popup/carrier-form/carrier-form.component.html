@@ -1,0 +1,87 @@
+<kendo-dialog [title]="formTitle" *ngIf="carrierFormOpened" (close)="onFormClosed()"  novalidate [width]="824" class="custom-header-dialog">
+    <form #mainForm="ngForm">
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="modeOfTransport" class="required">{{'label.modeOfTransport' | translate}}</label>
+                    <kendo-dropdownlist
+                        name="modeOfTransport"
+                        required
+                        class="form-control"
+                        [data]="modeOfTransportOptions"
+                        [valuePrimitive]="true"
+                        [textField]="'label'"
+                        [valueField]="'value'"
+                        [defaultItem]="defaultModeOfTransportDropDownItem"
+                        [(ngModel)]="model.modeOfTransport">
+                        <ng-template kendoDropDownListValueTemplate let-dataItem>
+                            {{ dataItem?.label | translate }}
+                        </ng-template>
+                        <ng-template kendoDropDownListItemTemplate let-dataItem>
+                            {{ dataItem?.label | translate }}
+                        </ng-template>
+                    </kendo-dropdownlist>
+                    <div *ngIf="frmControlByName('modeOfTransport')?.errors && (frmControlByName('modeOfTransport')?.dirty || frmControlByName('modeOfTransport')?.touched)" class="k-invalid-msg">
+                        <p *ngIf="frmControlByName('modeOfTransport')?.errors?.required">
+                            {{ 'validation.requiredField' | translate: {'fieldName': 'label.modeOfTransport' | translate} }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div *ngIf="this.model.modeOfTransport === modeOfTransportType.Air" class="form-group"
+                    [class.force-invalid]="frmControlByName('carrierNumber')?.errors && (frmControlByName('carrierNumber')?.dirty || frmControlByName('carrierNumber')?.touched)">
+                    <label for="carrierNumber" class="required">{{label.carrierNumber | translate}}</label>
+                    <input type="text" class="form-control" required name="carrierNumber" [(ngModel)]="model.carrierNumber" (focusout)="carrierNumberFocusout()" pattern="\d*" maxlength="3">
+                    <div *ngIf="frmControlByName('carrierNumber')?.errors && (frmControlByName('carrierNumber')?.dirty || frmControlByName('carrierNumber')?.touched)" class="k-invalid-msg">
+                        <p *ngIf="frmControlByName('carrierNumber')?.errors?.required">
+                            {{ 'validation.requiredField' | translate: {'fieldName': label.carrierNumber | translate} }}
+                        </p>
+                        <p *ngIf="frmControlByName('carrierNumber')?.errors?.pattern">
+                            {{ 'validation.invalid' | translate: {'fieldName': label.carrierNumber | translate} }}
+                        </p>
+                        <p *ngIf="frmControlByName('carrierNumber')?.errors?.duplicated">
+                            {{ 'validation.cannotBeDuplicated' | translate: {'fieldName': label.carrierNumber | translate} }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group" [class.force-invalid]="frmControlByName('carrierCode')?.errors && (frmControlByName('carrierCode')?.dirty || frmControlByName('carrierCode')?.touched)">
+                    <label for="carrierCode" class="required">{{label.carrierCode | translate}}</label>
+                    <input type="text" class="form-control" name="carrierCode" required [disabled]="formMode === formModeType.Edit"
+                        [(ngModel)]="model.carrierCode" (focusout)="carrierCodeFocusout()"/>
+                    <div *ngIf="frmControlByName('carrierCode')?.errors && (frmControlByName('carrierCode')?.dirty || frmControlByName('carrierCode')?.touched)" class="k-invalid-msg">
+                        <p *ngIf="frmControlByName('carrierCode')?.errors?.required">
+                            {{ 'validation.requiredField' | translate: {'fieldName': label.carrierCode | translate} }}
+                        </p>
+                        <p *ngIf="frmControlByName('carrierCode')?.errors?.duplicated">
+                            {{ 'validation.cannotBeDuplicated' | translate: {'fieldName': label.carrierCode | translate} }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group" [class.force-invalid]="frmControlByName('carrierName')?.errors && (frmControlByName('carrierName')?.dirty || frmControlByName('carrierName')?.touched)">
+                    <label for="carrierName" class="required">{{label.carrierName | translate}}</label>
+                    <input type="text" class="form-control" name="carrierName" required
+                        [(ngModel)]="model.name" (focusout)="carrierNameFocusout()"/>
+                    <div *ngIf="frmControlByName('carrierName')?.errors && (frmControlByName('carrierName')?.dirty || frmControlByName('carrierName')?.touched)" class="k-invalid-msg">
+                        <p *ngIf="frmControlByName('carrierName')?.errors?.required">
+                            {{ 'validation.requiredField' | translate: {'fieldName': label.carrierName | translate} }}
+                        </p>
+                        <p *ngIf="frmControlByName('carrierName')?.errors?.duplicated">
+                            {{ 'validation.cannotBeDuplicated' | translate: {'fieldName': label.carrierName | translate} }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()" #Cancel>{{'label.cancel' | translate}}</button>
+        <button type="button" class="btn prim-button dialog-button" (click)="onSave()">{{(formMode === formModeType.Edit ? 'label.save' : 'label.add') | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

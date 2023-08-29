@@ -1,0 +1,143 @@
+<div class="activity-wrapper">
+    <div class="row" *ngIf="showActionButton">
+        <div class="col-10 text-left top-bar-container d-flex" style="align-items: center;">
+
+            <div class="form-inline-control filter-date-control">
+                <label class="form-label">{{'label.activityDates' | translate}}</label>
+                <kendo-datepicker class="date-filter form-control" (valueChange)="onFromDateFilterChange($event)" [(ngModel)]="filterActivityModel.filterFromDate"></kendo-datepicker>
+                <kendo-datepicker class="date-filter form-control" (valueChange)="onToDateFilterChange($event)" [(ngModel)]="filterActivityModel.filterToDate"></kendo-datepicker>
+            </div>
+            <div class="action_button_container" >
+                <button type="button" class="btn btn-header-success" (click)="applyActivityFilter()" [disabled]="!enableApplyActivityFilterButton">
+                    <span class="icon-circle-label">{{'label.apply' | translate}}</span>
+                </button>
+                <a (click)="clearActivityFilter()" class="clear_activity_filter_btn">{{'label.clearAll' | translate}}</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" *ngIf="showActivityList">
+        <div class="activity-list">
+            <div class="date-group" >
+                <div class="activity-item" *ngFor="let item of defaultMilestone">
+                    <div class="milestone">{{ item.milestone | translate }}</div>
+                    <div class="added-circle rounded-circle added-info"></div>
+                </div>
+            </div>
+
+            <div class="date-group" *ngFor="let groupActivity of groupModel" [style.display]="!groupActivity.matchFilter ? 'none' : 'block'">
+                <div class="date-title rounded-pill">
+                    <span>{{groupActivity.dateGroup | date: DATE_FORMAT}}</span>
+                </div>
+
+                <div class="activity-item" *ngFor="let activity of groupActivity.activities" [style.display]="!activity.matchFilter && !activity.activity.milestone ? 'none' : 'flex'">
+                    <div class="milestone" [style.background-color]="!activity.activity.milestone ? 'white':''">{{ activity.activity.milestone | translate }}</div>
+                    <div class="added-info"><fa-icon [icon]="faCheckCircle" style="font-size: 16px; color:#009FFF"></fa-icon></div>
+                    <div *ngIf="activity.activity.activityCode !== 'Draft'" class="activity-info rounded" [class.milestone-event]="milestoneEventCode.includes(activity.activity.activityType)" [style.display]="!activity.matchFilter ? 'none' : 'block'">
+                        <div>
+                            <span class="activity-code">
+                                {{activity.activity.activityCode}} - {{activity.activity.activityDescription}}
+                            </span>
+                            <span class="added-time">{{"label.at" | translate}} {{ activity.activityDate | date:'hh:mm a'}}</span>
+                        </div>
+
+                        <div *ngIf="activity.vesselFlight" class="activity-message pt-2">
+                            <span>{{"label.vesselSlashVoyage" | translate}} </span>
+                            <ng-container *ngFor="let vesselInfo of activity.vesselFlightArray; index as i; let length = count; let last = last">
+                                <span *ngIf="i < 5 && !isCanClickVessel" class="un_clickable__number">{{ vesselInfo.text }}</span>
+                                <a *ngIf="i < 5 && isCanClickVessel" class="k-link"
+                                    routerLink="/freight-schedulers/schedule-detail/{{vesselInfo.value}}"
+                                    routerLinkActive="active" target="_blank">{{ vesselInfo.text }}</a>{{ !last && i < 5 ? ", " : ""}}
+
+                                <span *ngIf="length > 5 && i === 4 && !activity.isShowAllVessel" class="k-link" (click)="showAllVessel(activity)">+{{length - 5}}</span>
+
+                                <span *ngIf="i >= 5 && activity.isShowAllVessel && !isCanClickVessel" class="un_clickable__number">{{ vesselInfo.text }}</span>
+                                <a
+                                    *ngIf="i >= 5 && activity.isShowAllVessel && isCanClickVessel"
+                                    class="k-link"
+                                    routerLink="/freight-schedulers/schedule-detail/{{vesselInfo.value}}"
+                                    routerLinkActive="active" target="_blank">
+                                    {{ vesselInfo.text }}</a>{{ !last && i >= 5 && activity.isShowAllVessel ? ", " : ""}}
+
+                            </ng-container>
+                        </div>
+
+                        <div *ngIf="activity.containerNos" class="activity-message pt-2">
+                            <span>{{'label.containerNo' | translate}} </span>
+                            <ng-container *ngFor="let containerInfo of activity.containerNosArray; index as i; let length = count; let last = last">
+                                <span *ngIf="i < 5 && !isCanClickContainerNo" class="un_clickable__number">{{ containerInfo.text }}</span>
+                                <a *ngIf="i < 5 && isCanClickContainerNo" class="k-link"
+                                    routerLink="/containers/{{containerInfo.value}}"
+                                    routerLinkActive="active" target="_blank">{{ containerInfo.text }}</a>{{ !last && i < 5 ? ", " : ""}}
+
+                                <span *ngIf="length > 5 && i === 4 && !activity.isShowAllContainerNo" class="k-link" (click)="showAllContainerNo(activity)">+{{length - 5}}</span>
+
+                                <span *ngIf="i >= 5 && activity.isShowAllContainerNo && !isCanClickContainerNo" class="un_clickable__number">{{ containerInfo.text }}</span>
+                                <a
+                                    *ngIf="i >= 5 && activity.isShowAllContainerNo && isCanClickContainerNo"
+                                    class="k-link"
+                                    routerLink="/containers/{{containerInfo.value}}"
+                                    routerLinkActive="active" target="_blank">
+                                    {{ containerInfo.text }}</a>{{ !last && i >= 5 && activity.isShowAllContainerNo ? ", " : ""}}
+                            </ng-container>
+                        </div>
+
+                         <div *ngIf="activity.shipmentNos" class="activity-message pt-2">
+                            <span>{{'label.shipmentNo' | translate}} </span>
+                            <ng-container *ngFor="let shipmentInfo of activity.shipmentNosArray; index as i; let length = count; let last = last">
+                                <span *ngIf="i < 5 && !isCanClickShipmentNo" class="un_clickable__number">{{ shipmentInfo.text }}</span>
+                                <a *ngIf="i < 5 && isCanClickShipmentNo" class="k-link"
+                                    routerLink="/shipments/{{shipmentInfo.value}}"
+                                    routerLinkActive="active" target="_blank">{{ shipmentInfo.text }}</a>{{ !last && i < 5 ? ", " : ""}}
+
+                                <span *ngIf="length > 5 && i === 4 && !activity.isShowAllShipmentNo" class="k-link" (click)="showAllShipmentNo(activity)">+{{length - 5}}</span>
+
+                                <span *ngIf="i >= 5 && activity.isShowAllShipmentNo && !isCanClickShipmentNo" class="un_clickable__number">{{ shipmentInfo.text }}</span>
+                                <a
+                                    *ngIf="i >= 5 && activity.isShowAllShipmentNo && isCanClickShipmentNo"
+                                    class="k-link"
+                                    routerLink="/shipments/{{shipmentInfo.value}}"
+                                    routerLinkActive="active" target="_blank">
+                                    {{ shipmentInfo.text }}</a>{{ !last && i >= 5 && activity.isShowAllShipmentNo ? ", " : ""}}
+                            </ng-container>
+                        </div>
+
+                        <div *ngIf="activity.poFulfillmentNos" class="activity-message pt-2">
+                            <span>{{'label.fulfillmentNo' | translate}} </span>
+                            <ng-container *ngFor="let poFulfillmentInfo of activity.poFulfillmentNosArray; index as i; let length = count; let last = last">
+                                <span *ngIf="i < 5 && !isCanClickBookingNo" class="un_clickable__number">{{ poFulfillmentInfo.text }}</span>
+
+                                <a *ngIf="i < 5 && isCanClickBookingNo" class="k-link"
+                                    routerLink="/warehouse-bookings/view/{{poFulfillmentInfo.value}}"
+                                    routerLinkActive="active" target="_blank">{{ poFulfillmentInfo.text }}</a>{{ !last && i < 5 ? ", " : ""}}
+
+                                    <span *ngIf="length > 5 && i === 4 && !activity.isShowAllBookingNo" class="k-link" (click)="showAllBookingNo(activity)">+{{length - 5}}</span>
+
+                                    <span *ngIf="i >= 5 && activity.isShowAllBookingNo && !isCanClickBookingNo" class="un_clickable__number">{{ poFulfillmentInfo.text }}</span>
+                                <a
+                                    *ngIf="i >= 5 && activity.isShowAllBookingNo && isCanClickBookingNo"
+                                    class="k-link"
+                                    routerLink="/warehouse-bookings/view/{{poFulfillmentInfo.value}}"
+                                    routerLinkActive="active" target="_blank">
+                                    {{ poFulfillmentInfo.text }}</a>{{ !last && i >= 5 && activity.isShowAllBookingNo ? ", " : ""}}
+                            </ng-container>
+                        </div>
+
+                        <div class="pt-2" *ngIf="activity.location">
+                            <fa-icon [icon]="faMapMarkerAlt"></fa-icon> <span class="pl-2"><span class="activity-code">{{activity.location}}</span></span>
+                        </div>
+
+                        <div class="pt-2" *ngIf="activity.remark">
+                            {{ 'label.remark' | translate }} <span class="activity-code text-break-word">{{activity.remark}}</span>
+                        </div>
+
+                        <div class="added-by pt-2">
+                            {{ 'label.by' | translate }} <span class="activity-code">{{activity.actor}}</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

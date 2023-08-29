@@ -1,0 +1,181 @@
+
+
+
+<div class="custom-container">
+    <div *ngIf="isNotFoundWarehouse" class="not-found-container">
+        <div class="row justify-content-center mb-2">
+            <fa-icon [icon]="faInfo" class="custom-icon-info"></fa-icon>
+        </div>
+        <div class="row justify-content-center">
+            <span class="text-label">{{'label.cruiseOrder.notFoundWarehouse' | translate}}</span>
+        </div>
+    </div>
+    
+    
+    <div *ngIf="!isNotFoundWarehouse && !loadingGrids[rowIndex]" class="row">
+        <div class="col content-details">
+            <div class="row">
+                <div class="col-5 text-label">{{'label.inDates' | translate}}</div>
+                <div class="col-7 value-label">
+                    {{ warehouseModel.inDate | date: DATE_FORMAT  | default : defaultValue }}
+                </div>
+            </div>
+    
+            <div class="row">
+                <div class="col-5 text-label">{{'label.receivedQty' | translate}}</div>
+                <div class="col-6 value-label">{{ warehouseModel?.receivedQty | number: '0.0-0' | default : defaultValue}}</div>
+            </div>
+    
+            <div class="row">
+                <div class="col-5 text-label">{{'label.osd' | translate}}</div>
+                <div class="col-7 value-label">{{ returnText('osd') }}</div>
+            </div>
+    
+            <div class="row">
+                <div class="col-5 text-label">{{'label.bonded' | translate}}</div>
+                <div class="col-7 value-label">{{ returnText('bonded') }}</div>
+            </div>
+    
+            <div class="row">
+                <div class="col-5 text-label">{{'label.hazardous' | translate}}</div>
+                <div class="col-7 value-label">{{ returnText('hazardous') }}</div>
+            </div>
+    
+            <div class="row">
+                <div class="col-5 text-label">{{'label.cruisePackingList' | translate}}</div>
+                <div class="col-7 value-label">{{ returnText('packingList') }}</div>
+            </div>
+
+            <div class="row">
+                <div class="col-5 text-label">{{'label.availableDays' | translate}}</div>
+                <div class="col-6 value-label">{{ calculateAvailableDays| number: '0.0-0' | default : defaultValue}}</div>
+            </div>
+    
+            <div class="row">
+                <div class="col-5 text-label">{{'label.warehouse' | translate}}</div>
+                <div class="col-7 value-label">{{ returnText('warehouse') }}</div>
+            </div>
+    
+            <div class="row">
+                <div class="col-5 text-label">{{'label.bookedToShip' | translate}}</div>
+                <div class="col-7 value-label">{{ returnText('bookedToShip') }}</div>
+            </div>
+    
+            <div class="row">
+                <div class="col-5 text-label">{{'label.fulfillmentNo' | translate}}</div>
+                <div class="col-7 value-label">{{ returnText('bookingNumber') }}</div>
+            </div>
+    
+            <div class="row">
+                <div class="col-5 text-label">{{'label.deliveryTicket' | translate}}</div>
+                <div class="col-7 value-label">{{ returnText('deliveryTicket') }}</div>
+            </div>
+    
+            <div class="row">
+                <div class="col-5 text-label">{{'label.deliveryConfirmDates' | translate}}</div>
+                <div class="col-7 value-label">
+                    {{ warehouseModel.deliveryConfirmDate | date: DATE_FORMAT  | default : defaultValue }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-5 text-label">{{'label.uom' | translate}}</div>
+                <div class="col-7 value-label">
+                    {{ warehouseModel.uom | default : defaultValue }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-5 text-label">{{'label.dimension' | translate}}</div>
+                <div class="col-7 value-label">
+                    {{ warehouseModel.dimension | default : defaultValue }}
+                </div>
+            </div>
+        </div>
+    
+        <div class="col content-details">
+    
+            <div class="row">
+                <div class="col-5 text-label">{{'label.palletID' | translate}}</div>
+                <div class="col-7 value-label">{{ returnText('packageID') }}</div>
+            </div>
+
+            <div class="row">
+                <div class="col-5 text-label">{{'label.osdReason' | translate}}</div>
+                <div class="col-7 value-label">{{ returnText('osdReason') }}</div>
+            </div>
+    
+            <div class="row">
+                <div class="col-5 text-label">{{'label.bondNo' | translate}}</div>
+                <div class="col-7 value-label">{{ returnText('bondNo') }}</div>
+            </div>
+    
+            <div class="row">
+                <div class="col-5 text-label">{{'label.mrStatus' | translate}}</div>
+                <div class="col-7 value-label">{{ returnText('mrStatus') }}</div>
+            </div>
+    
+            <div class="row">
+                <div class="col-5 text-label">{{'label.packedDates' | translate}}</div>
+                <div class="col-7 value-label">
+                    {{ warehouseModel.packedDate | date: DATE_FORMAT  | default : defaultValue }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-5 text-label">{{'label.physicalQty' | translate}}</div>
+                <div class="col-6 value-label">{{ warehouseModel?.physicalQty | number: '0.0-0' | default : defaultValue}}</div>
+            </div>
+
+            <div class="row">
+                <div class="col-5 text-label">{{'label.modeOfTransport' | translate}}</div>
+                <div class="col-7 value-label">{{ returnText('modeOfTransport') }}</div>
+            </div>
+
+            <div class="row">
+                <div class="col-5 text-label">{{'label.containerNo' | translate}}</div>
+                <div class="col-7 value-label">{{ returnText('containerNumber') }}</div>
+            </div>
+    
+            <div class="row">
+                <div class="col-5 text-label">{{'label.HAWBMAWB' | translate}}</div>
+                <div class="col-7 value-label">{{ returnText('hawbmawb') }}</div>
+            </div>
+    
+            <div class="row">
+                <div class="col-5 text-label">{{'label.poIssueDates' | translate}}</div>
+                <div class="col-7 value-label">
+                    {{ warehouseModel.bookingCreatedDate | date: DATE_FORMAT  | default : defaultValue }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-5 text-label">{{'label.asnNo' | translate}}</div>
+                <div class="col-7 value-label">
+                    {{ returnText('refID') }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-5 text-label">{{'label.unNo' | translate}}</div>
+                <div class="col-7 value-label">
+                    {{ returnText('unNo') }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-5 text-label">{{'label.weightKGS' | translate}}</div>
+                <div class="col-7 value-label">
+                    {{ warehouseModel.kgs | number: '0.0-0' | default : defaultValue }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-5 text-label">{{'label.volumeCBM' | translate}}</div>
+                <div class="col-7 value-label">
+                    {{ warehouseModel.cbm | number: '0.2-2' | default : defaultValue }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

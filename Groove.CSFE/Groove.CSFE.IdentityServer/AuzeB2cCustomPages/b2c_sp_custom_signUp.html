@@ -1,0 +1,460 @@
+<html>
+
+<head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Noto+Serif|Nunito|Open+Sans|Quicksand" rel="stylesheet" />
+
+    <!-- QC cargoportalstorage.blob.core.windows.net -->
+    <!-- Staging uatshipmentportal.blob.core.windows.net -->
+    <!-- PRD cargofecsportal.blob.core.windows.net -->
+
+
+    <link href="https://cargoportalstorage.blob.core.windows.net/shipmentportalb2cui/images/favicon.ico" rel="icon" type="image/x-icon" />
+    <link href="https://cargoportalstorage.blob.core.windows.net/shipmentportalb2cui/styles/b2c_sp_custom_style.css" rel="stylesheet" />
+    <link href="https://cargoportalstorage.blob.core.windows.net/shipmentportalb2cui/styles/b2c_sp_custom_signUp_style.css" rel="stylesheet" />
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script src="https://cargoportalstorage.blob.core.windows.net/shipmentportalb2cui/js/bootstrap-autocomplete.min.js"></script>
+
+    <!--Global site tag (gtag.js) - Google Analytics-->
+    <!--Local G-XKXS3HDXBK-->
+    <!--QC G-HKLLNZV41B-->
+    <!--Staging G-V8JJZ4ELX8-->
+    <!--PRD G-NW6JCBMTNR-->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-HKLLNZV41B"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-HKLLNZV41B', { send_page_view: false, debug_mode: true });
+    </script>
+
+    <title>Shipment Portal - Sign Up</title>
+
+    <style type="text/css">
+        .field-icon {
+            float: right;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-top: -40px;
+            position: relative;
+            z-index: 2;
+            font-weight: inherit;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="background_branding_container">
+        <img id="background_background_image" src="https://cargoportalstorage.blob.core.windows.net/shipmentportalb2cui/images/ship.png" alt="Illustration">
+    </div>
+    <div class="panel" id="panel">
+
+        <div class="api_container normaltext">
+            <div class="inner_container signup">
+                <img src="https://cargoportalstorage.blob.core.windows.net/shipmentportalb2cui/images/logo_v2.png" height="70" class="logo" />
+
+                <div id="api" data-name="SelfAsserted">
+                    <div class="intro">
+                        <p>Sign up to Cargo</p>
+                    </div>
+                    <div id="attributeVerification" role="form">
+                        <div class="error pageLevel" id="passwordEntryMismatch" style="display: none;" aria-hidden="true">The password entry fields do not match. Please enter the same password in both fields and try again.</div>
+                        <div class="error pageLevel" id="requiredFieldMissing" style="display: none;" aria-hidden="true">A required field is missing. Please fill out all required fields and try again.</div>
+                        <div class="error pageLevel" id="fieldIncorrect" style="display: none;" aria-hidden="true">One or more fields are filled out incorrectly. Please check your entries and try again.</div>
+                        <div class="error pageLevel" id="claimVerificationServerError" style="display: none;" aria-hidden="true"></div>
+                        <div class="attr" id="attributeList">
+                            <ul>
+                                <li class="TextBox">
+                                    <div class="attrEntry">
+                                        <div>
+                                            <div class="verificationInfoText" id="email_intro" style="display: inline;" aria-hidden="false" role="alert" aria-live="polite"></div>
+                                            <div class="verificationInfoText" id="email_info" style="display:none" aria-hidden="true"></div>
+                                            <div class="verificationSuccessText" id="email_success" style="display:none" aria-hidden="true"></div>
+                                            <div class="verificationErrorText error" id="email_fail_retry" style="display:none" aria-hidden="true">That code is incorrect. Please try again.</div>
+                                            <div class="verificationErrorText error" id="email_fail_no_retry" style="display:none" aria-hidden="true">You've made too many incorrect attempts. Please try again later.</div>
+                                            <div class="verificationErrorText error" id="email_fail_throttled" style="display:none" aria-hidden="true">There have been too many requests to verify this email address. Please wait a while, then try again.</div>
+                                            <div class="verificationErrorText error" id="email_fail_code_expired" style="display:none" aria-hidden="true">That code is expired. Please request a new code.</div>
+                                            <div class="verificationErrorText error" id="email_fail_server" style="display:none" aria-hidden="true">We are having trouble verifying your email address. Please enter a valid email address and try again.</div>
+                                            <div class="verificationErrorText error" id="email_incorrect_format" style="display:none" aria-hidden="true"></div>
+                                        </div>
+
+                                        <label for="email">Email Address</label>
+
+                                        <div class="error itemLevel" aria-hidden="true"><p>Please enter a valid email address.</p></div>
+
+
+                                        <input id="email" class="textInput" type="text" placeholder="Email Address" pattern="^[a-zA-Z0-9!#$%&amp;'+^_`{}~-]+(?:\.[a-zA-Z0-9!#$%&amp;'+^_`{}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$" title="Email address that can be used to contact you." required="" aria-required="true" aria-label="Please enter a valid email address., Email Address">
+
+
+                                        <a href="javascript:void(0)" data-help="Email address that can be used to contact you." class="helpLink tiny">What is this?</a>
+
+                                        <div class="buttons verify" claim_id="email">
+                                            <div id="email_success_screenreader_msg" aria-label="E-mail address verified. You can now continue."></div>
+                                            <label id="email_ver_input_label" for="email_ver_input" aria-hidden="true" style="display: none;">Verification code</label>
+                                            <input id="email_ver_input" class="verifyInput" type="text" placeholder="Verification code" style="display:none" aria-hidden="true">
+                                            <button id="email_ver_but_send" class="sendButton" type="button" style="display: inline;" aria-label="Send verification code" aria-hidden="false">Send verification code</button>
+                                            <button id="email_ver_but_verify" class="verifyButton" type="button" style="display:none" aria-label="Verify code" aria-hidden="true">Verify code</button>
+                                            <button id="email_ver_but_resend" class="sendButton" type="button" style="display:none" aria-label="Send new code" aria-hidden="true">Send new code</button>
+
+                                            <button id="email_ver_but_edit" class="editButton" type="button" style="display:none" aria-label="Change e-mail" aria-hidden="true">Change email</button>
+
+                                            <button id="email_ver_but_default" class="defaultButton" type="button" style="display:none" aria-label="Default">Default</button>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="Password">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="attrEntry">
+
+                                                <label for="newPassword">New password</label>
+
+                                                <div class="error itemLevel" aria-hidden="true"><p>This information is required.</p></div>
+
+
+                                                <input id="newPassword" class="textInput" type="password" placeholder="New password" title="Enter new password" required="" aria-required="true" aria-label="The password must be between 8 and 16 characters., Your password must have all of the following:, a lowercase letter, an uppercase letter, a number, a symbol, New Password">
+
+                                                <a href="javascript:void(0)" data-help="Enter new password" class="helpLink tiny">What is this?</a>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <div class="attrEntry">
+
+                                                <label for="reenterPassword">Confirm new password</label>
+
+                                                <div class="error itemLevel" aria-hidden="true"><p>This information is required.</p></div>
+
+
+                                                <input id="reenterPassword" class="textInput" type="password" placeholder="Confirm password" title="Confirm new password" required="" aria-required="true" aria-label="The password must be between 8 and 16 characters., Your password must have all of the following:, a lowercase letter, an uppercase letter, a number, a symbol, Confirm New Password">
+
+                                                <a href="javascript:void(0)" data-help="Confirm new password" class="helpLink tiny">What is this?</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="TextBox">
+                                    <div class="attrEntry">
+
+                                        <label for="extension_Phone">Phone</label>
+                                        <div class="error itemLevel" aria-hidden="true"><p></p></div>
+
+                                        <input id="extension_Phone" class="textInput" type="text" placeholder="Phone" title="Phone number" aria-label=", Phone">
+
+                                        <a href="javascript:void(0)" data-help="Phone number" class="helpLink tiny">What is this?</a>
+                                    </div>
+                                </li>
+                                <li class="TextBox">
+                                    <div class="attrEntry">
+
+                                        <label for="displayName">Display name</label>
+
+                                        <div class="error itemLevel" aria-hidden="true"><p>This information is required.</p></div>
+
+
+                                        <input id="displayName" class="textInput" type="text" placeholder="Display name" title="Your display name." required="" aria-required="true" aria-label="This information is required., Display name">
+
+
+                                        <a href="javascript:void(0)" data-help="Your display name." class="helpLink tiny">What is this?</a>
+                                    </div>
+                                </li>
+                                <li class="TextBox">
+                                    <div class="attrEntry">
+
+                                        <label for="extension_CompanyName">Company name</label>
+
+                                        <div class="error itemLevel" aria-hidden="true"><p>This information is required.</p></div>
+
+
+                                        <input id="extension_CompanyName" class="textInput" type="text" placeholder="Your company name" title="Company name" required="" aria-required="true" aria-label="This information is required., Company name">
+
+
+                                        <a href="javascript:void(0)" data-help="Company Name" class="helpLink tiny">What is this?</a>
+                                    </div>
+                                </li>
+                                <li class="TextBox">
+                                    <div class="attrEntry">
+
+                                        <label for="extension_CompanyAddress">Company address</label>
+
+                                        <div class="error itemLevel" aria-hidden="true"><p>This information is required.</p></div>
+
+                                        <textarea id="extension_CompanyAddress" rows="4" cols="50" placeholder="Your company address" title="Company address" required="" aria-required="true" aria-label="This information is required., Company address"></textarea>
+
+                                        <a href="javascript:void(0)" data-help="Company address" class="helpLink tiny">What is this?</a>
+                                    </div>
+                                </li>
+                                <li class="TextBox">
+                                    <div class="attrEntry">
+
+                                        <label for="extension_CompanyWeChatOrWhatsApp">Your company WeChat/WhatsApp</label>
+
+                                        <input id="extension_CompanyWeChatOrWhatsApp" class="textInput" type="text" placeholder="Your company WeChat/WhatsApp" title="Your company WeChat/WhatsApp">
+
+                                        <a href="javascript:void(0)" data-help="Your company WeChat/WhatsApp" class="helpLink tiny">What is this?</a>
+                                    </div>
+                                </li>
+                                <li class="TextBox">
+                                    <div class="attrEntry">
+
+                                        <label for="extension_Customer">Your customer</label>
+
+                                        <input id="extension_Customer" class="textInput" type="text" placeholder="Your customer" title="Your customer" aria-label="This information is required., Your customer">
+
+
+                                        <a href="javascript:void(0)" data-help="Your customer" class="helpLink tiny">What is this?</a>
+                                    </div>
+                                </li>
+                                <li class="TextBox">
+                                    <div class="attrEntry">
+
+                                        <label for="extension_OP_EmailAddress">OP Contact email</label>
+
+                                        <input id="extension_OP_EmailAddress" class="textInput" type="text" placeholder="OP Contact email" title="OP Contact email" required="" aria-required="true" aria-label="This information is required., OP contact email">
+
+
+                                        <a href="javascript:void(0)" data-help="OP contact email" class="helpLink tiny">What is this?</a>
+                                    </div>
+                                </li>
+                                <li class="TextBox">
+                                    <div class="attrEntry">
+
+                                        <label for="extension_OP_Name">OP Contact name</label>
+
+                                        <input id="extension_OP_Name" class="textInput" type="text" placeholder="OP Contact name" title="OP Contact name" required="" aria-required="true" aria-label="This information is required., OP Contact name">
+
+
+                                        <a href="javascript:void(0)" data-help="OP Contact name" class="helpLink tiny">What is this?</a>
+                                    </div>
+                                </li>
+                                <li class="DropdownSingleSelect">
+                                    <div class="attrEntry">
+
+                                        <label for="extension_OP_CountryID">OP Contact country</label>
+
+                                        <select id="extension_OP_CountryID" title="OP Contact country" required="" aria-required="true" aria-label="This information is required., OP Contact country"></select>
+
+                                        <a href="javascript:void(0)" data-help="OP Contact country" class="helpLink tiny">What is this?</a>
+                                    </div>
+                                </li>
+                                <li class="TextBox">
+                                    <div class="attrEntry">
+                                        <label for="extension_OP_Location">OP Contact city</label>
+
+                                        <!--Local: http://localhost:50896/api-->
+                                        <!--QC: https://g-cs-api.azurewebsites.net/api-->
+                                        <!--Staging: https://newuatcsfemasterapi.azurewebsites.net/api-->
+                                        <!--Production: https://w-common.azurewebsites.net/api-->
+                                        <input id="extension_OP_Location"
+                                               class="textInput"
+                                               type="text"
+                                               placeholder="OP Contact city"
+                                               title="OP Contact city"
+                                               required=""
+                                               aria-required="true"
+                                               aria-label="This information is required., OP Contact city"
+                                               data-filter-relation='{"group":"#extension_OPContactCountry"}'
+                                               data-filterMinChars="3"
+                                               data-filter='https://g-cs-api.azurewebsites.net/api/locations/suggestionByCountry?locationName=#QUERY#'>
+
+                                        <a href="javascript:void(0)" data-help="OP Contact city" class="helpLink tiny">What is this?</a>
+                                    </div>
+                                </li>
+                                <li class="TextBox">
+                                    <div class="attrEntry">
+
+                                        <label for="extension_TaxpayerID">Taxpayer ID</label>
+
+                                        <input id="extension_TaxpayerID" class="textInput" type="text" placeholder="Taxpayer ID" title="Taxpayer ID" required="" aria-required="true" aria-label="This information is required., Taxpayer ID">
+
+
+                                        <a href="javascript:void(0)" data-help="Taxpayer ID" class="helpLink tiny">What is this?</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="buttons">
+                            <button id="continue" disabled="" aria-label="Create">Create</button>
+                            <button id="cancel" aria-label="Cancel" formnovalidate="">Cancel</button>
+                        </div>
+
+                        <div class="verifying-modal">
+                            <div id="verifying_blurb"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            // Set timeout to sync attributes from real to fake signup button
+            setInterval(function () {
+                var disabled = $('#continue').attr('disabled');
+                if (disabled === 'disabled') {
+                    $('#fake-continue').attr('disabled', 'disabled');
+                } else {
+                    $('#fake-continue').removeAttr('disabled');
+                }
+            }, 1000);
+
+
+            // Set timeout to set-up autocomplete feature for location input
+            setTimeout(function () {
+                $('#extension_OP_Location')
+                    .attr('data-filter-relation', '{"group":"#extension_OP_CountryID"}')
+                    .attr('data-filter', 'https://g-cs-api.azurewebsites.net/api/locations/suggestionByCountry?locationName=#QUERY#')
+                    .attr('data-filterMinChars', '3')
+                    .autocomplete().prop('disabled', true);
+            }, 1000);
+
+
+            // Bind countries
+            $.ajax({
+                url: 'https://g-cs-api.azurewebsites.net/api/countries/dropdown',
+                method: 'GET'
+            }).done(function (data) {
+                $.each(data, function (idx, obj) {
+                    $('#extension_OP_CountryID').css('padding-left', '11px');
+                    $('#extension_OP_CountryID').append('<option value="' + obj.value + '">' + obj.label + '</option>');
+                });
+            });
+
+
+
+            $('#extension_OP_Location').on('change', function () {
+                setTimeout(function () {
+                    var locationElmt = $('#extension_OP_Location');
+                    var countryElmt = $('#extension_OP_CountryID');
+                    if (locationElmt.val().length > 3) {
+                        $.ajax({
+                            url: 'https://g-cs-api.azurewebsites.net/api/locations/verifyLocationName?countryId=' + countryElmt.val() + '&locationName=' + locationElmt.val(),
+                            method: 'GET'
+                        }).done(function (valid) {
+                            if (!valid) {
+                                locationElmt.val('');
+                            }
+                        });
+                    }
+                    else {
+                        locationElmt.val('');
+                    }
+                }, 100); // set timeout to make sure selected value is binded
+            });
+
+            // On country selection changed
+            $('#extension_OP_CountryID').on('change', function (e) {
+
+                let val = $(this).find('option:selected').val();
+                if (val > 0) {
+                    $('#extension_OP_Location').prop('disabled', false);
+                }
+                else {
+                    $('#extension_OP_Location').prop('disabled', true);
+                }
+            });
+
+
+            // Add toogle password visibility
+            var passwordToogleElement = document.createElement('span');
+            passwordToogleElement.className = 'fa fa-fw fa-eye field-icon';
+            passwordToogleElement.setAttribute('toogle-for', 'newPassword');
+            passwordToogleElement.addEventListener('click', function () {
+                tooglePassword(this);
+            });
+            var passwordElement = document.getElementById('newPassword');
+            passwordElement.parentNode.insertBefore(passwordToogleElement, passwordElement.nextSibling);
+
+            // Customize layout for Password	
+            $($('.Password')[0]).addClass('col-sm-6').css('padding-left', '0').css('padding-right', '10px');
+            $($('.Password')[1]).addClass('col-sm-6').css('padding-left', '10px').css('padding-right', '5px');
+
+            var passwordToogleElement = document.createElement('span');
+            passwordToogleElement.className = 'fa fa-fw fa-eye field-icon';
+            passwordToogleElement.setAttribute('toogle-for', 'reenterPassword');
+            passwordToogleElement.addEventListener('click', function () {
+                tooglePassword(this);
+            });
+            var passwordElement = document.getElementById('reenterPassword');
+            passwordElement.parentNode.insertBefore(passwordToogleElement, passwordElement.nextSibling);
+
+            // Add fake continue button, user click on it to fire GA tag then sign up
+            // Hide real signup button
+            var continueButtonElement = document.getElementById('continue');
+            continueButtonElement.classList.add('hidden');
+
+            // Create fake signup button
+            var fakeContinueButtonElement = document.createElement('button')
+            fakeContinueButtonElement.id = 'fake-continue';
+            fakeContinueButtonElement.setAttribute('disabled', 'disabled');
+
+            fakeContinueButtonElement.innerHTML = continueButtonElement.innerHTML;
+            continueButtonElement.parentNode.insertBefore(fakeContinueButtonElement, continueButtonElement.nextSibling);
+
+            // Add event click
+            document.getElementById('fake-continue').addEventListener('click', function () {
+                if ($('form').find('.custom_error.invalid').length === 0) {
+                    gtag('event', 'sign_up', {
+                        event_category: 'Sign Up',
+                        event_action: "Sign Up",
+                        event_label: null,
+                        event_value: null,
+                        event_callback: function () {
+                            // callback, fire signup process
+                            document.getElementById("continue").click();
+                        }
+                    })
+                }
+            });
+
+            // Add email validation for OP Contact Email
+            var newInvalidEmailLayout = '<div class="custom_error" id="extension_OP_EmailAddress_invalid_msg" style="color: #f44336; font-size: 1.5rem; display: none;">Please enter a valid email address.</div>';
+            $('#extension_OP_EmailAddress_invalid_msg').hide();
+            $(newInvalidEmailLayout).insertBefore("#extension_OP_EmailAddress");
+            $("#extension_OP_EmailAddress").on('change', function () {
+                var value = $(this).val();
+                if (value === '' || validateEmail(value)) {
+                    $('#extension_OP_EmailAddress_invalid_msg').removeClass("invalid");
+                    $('#extension_OP_EmailAddress_invalid_msg').hide();
+                } else {
+                    $('#extension_OP_EmailAddress_invalid_msg').addClass("invalid");
+                    $('#extension_OP_EmailAddress_invalid_msg').show();
+                }
+            });
+
+        });
+
+        function tooglePassword(toogleElement) {
+
+            var toogleForId = toogleElement.getAttribute('toogle-for');
+            var passwordElement = document.getElementById(toogleForId);
+            var attributeVale = passwordElement.getAttribute('type');
+            if (attributeVale === 'text') {
+                toogleElement.classList.remove('fa-eye-slash');
+                passwordElement.setAttribute('type', 'password');
+            } else {
+                toogleElement.classList.add('fa-eye-slash');
+                passwordElement.setAttribute('type', 'text');
+            }
+
+        }
+
+        function validateEmail(email) {
+            var emailReg = /^[a-zA-Z0-9!#$%&'+^_`{}~-]+(?:\.[a-zA-Z0-9!#$%&'+^_`{}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/;
+            return emailReg.test(email);
+        }
+    </script>
+
+</body>
+
+</html>

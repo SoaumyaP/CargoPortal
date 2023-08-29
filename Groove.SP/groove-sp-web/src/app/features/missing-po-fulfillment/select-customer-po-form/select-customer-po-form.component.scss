@@ -1,0 +1,195 @@
+@import "../../../../styles/variables";
+
+.po-fulfillment-customer-po-popup {
+    .button-bar {
+        text-align: center;
+        margin-top: 25px;
+    }
+
+    .panel-header {
+        font-size: 24px;
+    }
+
+    .header-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .group-col-header {
+        font-weight: bold;
+        color: $color-grey-dark-3;
+        font-size: 14px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    .filter-container {
+        padding: 0 10px 10px 0;
+    }
+
+    // Place of tree view
+    .drop-column-container ::ng-deep {
+        height: 500px;
+        overflow-y: auto;
+
+        .k-item {
+            .k-icon {
+                &:before {
+                    padding: 4px;
+                }
+                &.k-i-expand {
+                    &:before {
+                        content: "\e11e";
+                        color: #666666;
+                        border: 1px solid #ebebeb;
+                    }
+                }
+
+                &.k-i-collapse {
+                    &:before {
+                        content: "\e121";
+                        color: white;
+                        border: 1px solid #ebebeb;
+                        background-color: $theme-color;
+                    }
+                }
+            }
+        }
+        .k-treeview {
+            .k-in {
+                left: 15px;
+                padding: 0px;
+
+                &:hover {
+                    color: inherit;
+                    background-color: inherit;
+                }
+                &.k-state-focused {
+                    box-shadow: none;
+                }
+            }
+        }
+
+        .child-icon {
+            font-size: 16px;
+            color: #838393;
+        }
+
+        .node-item {
+            cursor: pointer;
+            height: 40px;
+            text-transform: uppercase;
+        }
+
+        .node-item-parent {
+            padding-top: 10px;
+            padding-left: 10px;
+        }
+
+        .node-item-child {
+            margin-left: -38px;
+            padding: 5px;
+            width: 263px;
+            &:active {
+                box-shadow: -4px 3px 10px NaNpx rgba(64, 64, 64, 0.3);
+                border: 1px solid $theme-color;
+                background-color: $theme-color-blank;
+            }
+            .item-text {
+                color: black;
+                padding-left: 15px;
+            }
+            &.selected {
+                cursor: inherit;
+                background-color: $theme-background-color-disable;
+
+                .item-text {
+                    color: $color-grey-bright-1;
+                }
+                &:active {
+                    border: none;
+                }
+            }
+
+            .drag-item-container {
+                margin-top: 2px;
+            }
+        }
+
+        .load-more-text {
+            color: $theme-color;
+            cursor: pointer;
+            text-align: center;
+            display: block;
+            font-size: small;
+        }
+    }
+
+    // Place to drop
+    .drop-container {
+        height: 500px;
+        overflow-y: auto;
+        border: 2px dotted $color-white-dark-2;
+
+        .drop-image {
+            top: calc(50% - 45px);
+            left: calc(50% - 53px);
+            position: relative;
+        }
+
+        .drop-text {
+            top: 50%;
+            left: calc(50% - 155px);
+            position: relative;
+        }
+
+    }
+
+    // Place to show information of customer po
+    .customer-po-container {
+        @extend .drop-container;
+        padding: 15px;
+        .close-image {
+            cursor: pointer;
+            position: absolute;
+            right: 23px;
+            top: 40px;
+            width: 10px;
+            height: 10px;
+            z-index: 2000;
+        }
+        .close-button {
+            cursor: pointer;
+            right: 15px;
+            top: 31px;
+            position: absolute;
+            background-color: $color-red-light;
+            width: 30px;
+            height: 30px;
+            border-bottom-left-radius: 20px;
+            z-index: 1000;
+        }
+        .k-checkbox-label {
+            float: right;
+            margin-top: 3px;
+        }
+
+        .note-textarea {
+            height: 64px !important;
+        }
+
+    }
+
+    // If it is edit mode
+    &.view-maximum {
+        .hidden-in-view-maximum {
+            display: none;
+        }
+        .customer-po-container {
+            border: none;
+            height: inherit;
+            padding: 0;
+            overflow: hidden;
+        }
+    }
+}

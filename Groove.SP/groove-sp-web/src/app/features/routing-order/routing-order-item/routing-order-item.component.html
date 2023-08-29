@@ -1,0 +1,58 @@
+<div class="line-items-container">
+
+    <kendo-grid [data]="lineItems" [rowClass]="itemRowCallback" [scrollable]="'vertical'" class="line-items-grid">
+
+        <kendo-grid-column field="poNo" [width]="12" title="{{'label.poNo' | translate}}" [headerClass]="'multiline-header'">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                {{dataItem.poNo | default: defaultValue}}
+            </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column field="itemNo" [width]="12" title="{{'label.itemNo' | translate}}" [headerClass]="'multiline-header'">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                {{dataItem.itemNo | default: defaultValue}}
+            </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column field="descriptionOfGoods" [width]="22" title="{{'label.descriptionOfGoods' | translate}}" [headerClass]="'multiline-header'">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                <a class="k-link" routerLinkActive="active" (click)="openItemDetailDialog(rowIndex)">{{dataItem.descriptionOfGoods}}</a>
+            </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column field="orderedUnitQty" [width]="11" title="{{'label.orderedQty' | translate}}" [headerClass]="'multiline-header'">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                {{dataItem.orderedUnitQty | number:0}} {{getUOMLabel(dataItem.orderedUnitQty, dataItem.unitUOM) | translate}}
+            </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column field="grossWeight" [width]="11" title="{{'label.grossWeightKGS' | translate}}" [headerClass]="'multiline-header'">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                {{dataItem.grossWeight | number: '0.2-2'}}
+            </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column field="volume" [width]="11" title="{{'label.volumeCBM' | translate}}" [headerClass]="'multiline-header'">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                {{dataItem.volume | number: '0.3-3'}}
+            </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column *ngIf="!isViewMode" title="{{'label.action' | translate}}" width="10" headerClass="action-header" class="action-column-grid col-action" [headerClass]="'multiline-header'">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                <button attr.data-balloon="{{'tooltip.edit' | translate}}" data-balloon-pos="left" type="button" class="ml-0 btn grid-edit-icon-button tooltip-action" (click)="editOrder(rowIndex)">
+                    <fa-icon [icon]="faPencilAlt"></fa-icon>
+                </button>
+                <button attr.data-balloon="{{'tooltip.delete' | translate}}" data-balloon-pos="left"  type="button" class="btn grid-remove-icon-button tooltip-action" (click)="deleteOrder(rowIndex)">
+                    <i class="ei ei-icon_minus-06"></i>
+                </button>
+            </ng-template>
+        </kendo-grid-column>
+    </kendo-grid>
+</div>
+
+<app-routing-order-item-dialog
+    [model]="lineItemModel"
+    [itemDetailDialogOpened]="itemDetailDialogOpened"
+    (close)="itemDetailDialogClosedHandler()">
+</app-routing-order-item-dialog>

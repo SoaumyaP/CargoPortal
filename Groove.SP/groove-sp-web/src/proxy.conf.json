@@ -1,0 +1,26 @@
+{
+    "/api": {
+        "target": "http://localhost:56153",
+        "secure": false,
+        "changeOrigin": true,
+        "timeout": 300000
+    },
+    "/common-api": {
+        "target": "http://localhost:50896",
+        "secure": false,
+        "pathRewrite": {
+        "^/common-api": "/api"
+        },
+        "changeOrigin": true,
+        "timeout": 300000
+    },
+    "/identity": {
+        "target": "http://localhost:44392",
+        "secure": false,
+        "pathRewrite": {
+        "^/identity": ""
+        },
+        "changeOrigin": true,
+        "timeout": 300000
+    }
+}

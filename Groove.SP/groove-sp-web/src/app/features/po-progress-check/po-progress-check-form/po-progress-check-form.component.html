@@ -1,0 +1,37 @@
+<div class="content__header po-progress-check-container">
+    <div class="container-fluid">
+        <div class="header-group" *ngIf="isInitDataLoaded">
+            <div class="row">
+                <div class="col-sm-6">
+                    <button attr.data-balloon="{{'tooltip.backToList' | translate}}" data-balloon-pos="up" type="button"
+                        (click)="backToPoList()"
+                        class="btn btn-default back-button">
+                        <i class="ei ei-arrow_left"></i>
+                    </button>
+                    <label class="form-header">{{'label.progressCheck' | translate}}</label>
+                </div>
+            </div>
+        </div>
+        <div class="typing_loader" *ngIf="!isInitDataLoaded"></div>
+        <kendo-panelbar #filterProgressCheck *ngIf="isInitDataLoaded" [keepItemContent]="true" class="expanse-panel-style" (stateChange)="onPanelChange()">
+            <kendo-panelbar-item [title]="'label.filterCriteria' | translate" expanded="true">
+                <ng-template kendoPanelBarContent>
+                    <app-po-progress-check-filter-form (search)="searchPO($event)"(searchFromEmail)="searchFromEmail($event)"  [searching]="isInSearchingProgress"></app-po-progress-check-filter-form>
+                </ng-template>
+              </kendo-panelbar-item>
+        </kendo-panelbar>
+        <div class="panel-group">
+            <app-po-progress-check-list-form [poProgressCheckList]="poProgressCheckList" [heightToReduceOfPOGrid]="heightToReduceOfPOGrid">
+
+            </app-po-progress-check-list-form>
+        </div>
+
+        <div class="col-12 action-bar">
+            <button type="button" class="btn second-button" (click)="cancelPOProgressCheck()">{{'label.cancel' | translate}}</button>
+            <button type="button" class="btn prim-button"
+                (click)="savePOProgressCheck()">{{'label.save' | translate}}
+                <ng-template *appSpinner="isSavePOProgressCheck"></ng-template>
+            </button>
+        </div>
+    </div>
+</div>

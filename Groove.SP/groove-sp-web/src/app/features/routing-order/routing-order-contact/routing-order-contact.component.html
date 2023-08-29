@@ -1,0 +1,42 @@
+<div class="contacts-container">
+    <kendo-grid #grid="kendoGrid" [rowClass]="rowCallback" [data]="contactList" [scrollable]="'vertical'" [selectable]="false" class="custom-edit-grid">
+    
+        <!-- Organization role -->
+        <kendo-grid-column field="organizationRole" title="{{'label.organizationRole' | translate}}"></kendo-grid-column>
+    
+        <!-- Company column -->
+        <kendo-grid-column field="companyName" [title]="'label.company' | translate">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                <span title="{{dataItem.companyName}}">{{dataItem.companyName | default: defaultValue}}</span>
+            </ng-template>
+        </kendo-grid-column>
+
+        <!-- Address -->
+        <kendo-grid-column field="address" [title]="'label.address' | translate" [class]="{'multiple-lines-text': true}">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                <span title="{{dataItem.address}}">{{dataItem.address | default: defaultValue}}</span>
+            </ng-template>
+        </kendo-grid-column>
+    
+        <!-- Contact name -->
+        <kendo-grid-column field="contactName" [title]="'label.contactName' | translate">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                <span title="{{dataItem.contactName}}">{{dataItem.contactName | default: defaultValue}}</span>
+            </ng-template>
+        </kendo-grid-column>
+    
+        <!-- Contact number -->
+        <kendo-grid-column field="contactNumber" title="{{'label.contactNumber' | translate}}">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                <span title="{{dataItem.contactNumber}}">{{dataItem.contactNumber | default: defaultValue}}</span>
+            </ng-template>
+        </kendo-grid-column>
+    
+        <!-- Contact email -->
+        <kendo-grid-column field="contactEmail" [title]="'label.contactEmail' | translate" class="organization-email">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                <a title="{{dataItem.contactEmail}}">{{dataItem.contactEmail | default: defaultValue}}</a>
+            </ng-template>
+        </kendo-grid-column>
+    </kendo-grid>
+</div>

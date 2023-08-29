@@ -1,0 +1,139 @@
+@import "../../../../styles/variables";
+@import "../../../../styles/button";
+
+.add-new-button {
+    width: 110px;
+}
+
+.add-activity-button {
+    width: 110px;
+}
+
+.top-bar-container {
+    margin-top: 25px;
+    margin-bottom: 0px;
+}
+
+.title-grid > h5 {
+    font-weight: bold;
+    height: 40px;
+    line-height: 3;
+}
+
+.padding-bottom {
+    padding-bottom: 13px;
+    margin: 0;
+}
+
+.k-link {
+    color: #007bff;
+}
+
+.see-more {
+    color: #007bff;
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.bill-of-lading-dropdown-btn {
+    width: auto !important;
+    ::ng-deep button {
+        @extend .btn;
+        @extend .header-button;
+        background-color: $theme-color;
+        border-color: $theme-color;
+        color: $theme-color-blank;
+        font-size: 14px;
+        width: 132px !important;
+        border-radius: 5px !important;
+        width: 40px;
+        height: 40px;
+        color: $theme-color-blank;
+        &:hover {
+            background-color: $theme-color-darker;
+            border-color: $theme-color-darker;
+        }
+        &:focus {
+            box-shadow: none;
+        }
+
+        .extended-content {
+            display: none;
+        }
+        .collapsed-content {
+            display: inherit;
+        }
+
+        &[aria-expanded="true"] {
+            .extended-content {
+                display: inherit;
+            }
+            .collapsed-content {
+                display: none;
+            }
+        }
+    }
+}
+
+::ng-deep .bill-of-lading-dropdown-content {
+    width: 137px;
+    li {
+        &::before {
+            content: "+";
+            font-size: 1.5rem;
+            padding-right: 11px;
+            padding-left: 3px;
+            padding-bottom: 3px;
+        }
+        height: 40px;
+    }
+}
+
+.rejected_arrow_box {
+    font-weight: bold;
+    width: 85px;
+    position: relative;
+    left: 15px;
+    top: -2px !important;
+}
+
+::ng-deep .activity-grid {
+    th.k-hierarchy-cell + th {
+        border-width: 0 !important;
+    }
+    td.k-hierarchy-cell {
+        border-right: none !important;
+    }
+    tr.k-master-row {
+        td.k-hierarchy-cell {
+            a {
+                display: none !important;
+            }
+        }
+        &+tr.k-detail-row {
+            display: none;
+        }
+    }
+    tr.k-master-row.expandable {
+        td.k-hierarchy-cell {
+            a {
+                display: block !important;
+                font-size: 18px;
+            }
+        }
+        &+tr.k-detail-row {
+            display: table-row;
+        }
+    }
+}
+
+::ng-deep .nested-grid.k-grid {
+    border-width: 0 !important;
+    th {
+        display: none;
+    }
+    .k-grid-header {
+        border-width: 0;
+    }
+}

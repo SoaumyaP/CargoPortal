@@ -1,0 +1,192 @@
+<kendo-dialog [title]="formTitle | translate" *ngIf="isFormOpen" (close)="onFormClosed()"  novalidate [width]="824" class="survey-question-dialog custom-header-dialog">
+    <form #mainForm="ngForm">
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="question" class="required">{{'label.question' | translate}}</label>
+                    <input class="form-control" name="question" type="text" required [(ngModel)]="model.content" [readonly]="isViewMode" [ngClass]="{'read-only': isViewMode}"/>
+                    <div *ngIf="mainForm.controls['question']?.invalid && mainForm.controls['question']?.touched" class="k-invalid-msg">
+                        <p *ngIf="mainForm.controls['question'].errors.required">
+                            {{ 'validation.requiredField' | translate: {'fieldName': 'label.question' | translate} }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="questionType" class="required">{{'label.questionType' | translate}}</label>
+                    <kendo-dropdownlist
+                        name="questionType"
+                        required
+                        [(ngModel)]="model.type"
+                        class="form-control"
+                        [data]="questionTypeOptions"
+                        [valuePrimitive]="true"
+                        [textField]="'label'"
+                        [valueField]="'value'"
+                        [readonly]="isViewMode"
+                        (valueChange)="questionTypeChange($event)"
+                        [ngClass]="{'read-only': isViewMode}">
+                        <ng-template kendoDropDownListValueTemplate let-dataItem>
+                            {{ dataItem?.label | translate }}
+                        </ng-template>
+                        <ng-template kendoDropDownListItemTemplate let-dataItem>
+                            {{ dataItem?.label | translate }}
+                        </ng-template>
+                    </kendo-dropdownlist>
+                    <div *ngIf="mainForm.controls['questionType']?.invalid && mainForm.controls['questionType']?.touched" class="k-invalid-msg">
+                        <p *ngIf="mainForm.controls['questionType'].errors.required">
+                            {{ 'validation.requiredField' | translate: {'fieldName': 'label.questionType' | translate} }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" *ngIf="isSingleAnswerType || isMultiAnswerType">
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="required">{{'label.answers' | translate}}</label>
+                    <div class="answer_item" *ngFor="let item of model.options; let i = index" [ngClass]="{'removed_row': item.removed}">
+                        <div class="answer_item__container">
+                            <div class="answer_seq">{{item.sequence}}</div>
+                            <input
+                                class="form-control answer_input" 
+                                [placeholder]="'label.enterAnswerText' | translate"
+                                [name]="'answer_' + i" type="text"
+                                required
+                                [(ngModel)]="item.content"
+                                [readonly]="isViewMode"
+                                [ngClass]="{'read-only': isViewMode}"
+                                (ngModelChange)="answerValueChange($event, i)"/>
+                            <div class="answer_action__container" *ngIf="!isViewMode">
+                                <button attr.data-balloon="{{'tooltip.delete' | translate}}" data-balloon-pos="up" type="button"
+                                    class="btn ml-0 btn-default grid-remove-icon-button" (click)="deleteAnswer(i)">
+                                    <i class="ei ei-icon_minus-06"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div *ngIf="mainForm.controls['answer_' + i]?.invalid && mainForm.controls['answer_' + i]?.touched" class="k-invalid-msg answer_item_error__container" style="margin-left: 7%;">
+                            <p *ngIf="mainForm.controls['answer_' + i].errors.required">
+                                {{ 'validation.requiredField' | translate: {'fieldName': 'label.answer' | translate} }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="switch-btn-container" style="margin-left: 7%;">
+                        <kendo-switch
+                            name="isIncludeOpenEndedText"
+                            class="switch-btn mr-1"
+                            [(ngModel)]="model.isIncludeOpenEndedText"
+                            [onLabel]="'\r'"
+                            [offLabel]="'\r'"
+                            [disabled]="isViewMode">
+                        </kendo-switch>
+                        {{'label.includeOpenEndedTextField' | translate}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                
+            </div>
+        </div>
+
+        <div class="row" *ngIf="isRatingScaleType">
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="lowValueLabel" class="required">{{'label.lowEndOfTheScale' | translate}}</label>
+                    <input class="form-control" name="lowValueLabel" type="text" required [(ngModel)]="model.lowValueLabel" (focusout)="validateLowValueLabel()" [readonly]="isViewMode" [ngClass]="{'read-only': isViewMode}"/>
+                    <div *ngIf="mainForm.controls['lowValueLabel']?.invalid && mainForm.controls['lowValueLabel']?.touched" class="k-invalid-msg answer_item_error__container">
+                        <p *ngIf="mainForm.controls['lowValueLabel'].errors.invalid">
+                            {{ 'validation.maxLengthInput' | translate: {'maxValue': '50'} }}
+                        </p>
+                        <p *ngIf="mainForm.controls['lowValueLabel'].errors.required">
+                            {{ 'validation.requiredField' | translate: {'fieldName': 'label.lowEndOfTheScale' | translate} }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="highValueLabel" class="required">{{'label.highEndOfTheScale' | translate}}</label>
+                    <input class="form-control" name="highValueLabel" type="text" required [(ngModel)]="model.highValueLabel" (focusout)="validateHighValueLabel()" [readonly]="isViewMode" [ngClass]="{'read-only': isViewMode}"/>
+                    <div *ngIf="mainForm.controls['highValueLabel']?.invalid && mainForm.controls['highValueLabel']?.touched" class="k-invalid-msg answer_item_error__container">
+                        <p *ngIf="mainForm.controls['highValueLabel'].errors.invalid">
+                            {{ 'validation.maxLengthInput' | translate: {'maxValue': '50'} }}
+                        </p>
+                        <p *ngIf="mainForm.controls['highValueLabel'].errors.required">
+                            {{ 'validation.requiredField' | translate: {'fieldName': 'label.highEndOfTheScale' | translate} }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="isRatingScaleType">
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-label">{{'label.starRating' | translate}}</label>
+                    <div class="radio-wrapper" #anchor>
+                        <input id="5_star_rating"
+                                type="radio"
+                                class="k-radio"
+                                name="5_star_rating"
+                                [disabled]="isViewMode"
+                                [value]="5"
+                                [(ngModel)]="model.starRating"/>
+                        <label class="k-radio-label" for="5_star_rating" style="margin-right: 15%;">5</label>
+
+                        <input id="7_star_rating"
+                                type="radio"
+                                class="k-radio"
+                                name="7_star_rating"
+                                [disabled]="isViewMode"
+                                [value]="7"
+                                [(ngModel)]="model.starRating"/>
+                        <label class="k-radio-label" for="7_star_rating" style="margin-right: 15%;">7</label>
+
+                        <input id="10_star_rating"
+                                type="radio"
+                                class="k-radio"
+                                name="10_star_rating"
+                                [disabled]="isViewMode"
+                                [value]="10"
+                                [(ngModel)]="model.starRating"/>
+                        <label class="k-radio-label" for="10_star_rating" style="margin-right: 15%;">10</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+            </div>
+        </div>
+
+        <div class="row" *ngIf="isOpenEndedType || isOpenEndedWithMultiLines">
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="required">{{'label.answers' | translate}}</label>
+                    <input class="form-control" required name="answer_placeholder" [placeholder]="'label.enterPlaceholderText' | translate" type="text"
+                            [(ngModel)]="model.placeHolderText"
+                            [readonly]="isViewMode"
+                            [ngClass]="{'read-only': isViewMode}"
+                            (focusout)="validatePlaceholderText()"/>
+
+                    <div *ngIf="mainForm.controls['answer_placeholder']?.invalid && mainForm.controls['answer_placeholder']?.touched" class="k-invalid-msg answer_item_error__container">
+                        <p *ngIf="mainForm.controls['answer_placeholder'].errors.invalid">
+                            {{ 'validation.maxLengthInput' | translate: {'maxValue': '50'} }}
+                        </p>
+                        <p *ngIf="mainForm.controls['answer_placeholder'].errors.required">
+                            {{ 'validation.requiredField' | translate: {'fieldName': 'label.placeholderText' | translate} }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+
+            </div>
+        </div>
+    </form>
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()" #Cancel>{{'label.cancel' | translate}}</button>
+        <button type="button" *ngIf="!isViewMode" class="btn prim-button dialog-button"  (click)="onFormSave()">{{(isEditMode ? 'label.save' : 'label.add') | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

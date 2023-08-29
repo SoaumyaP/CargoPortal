@@ -1,0 +1,9 @@
+::ng-deep .k-dialog {
+    .k-multiselect {
+        .k-multiselect-wrap {
+            min-height: 46px;
+            max-height: 104px;
+            overflow: auto;
+        }
+    }
+}

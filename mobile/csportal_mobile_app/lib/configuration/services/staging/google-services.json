@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "4095757677",
+    "project_id": "csportal-uat",
+    "storage_bucket": "csportal-uat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:4095757677:android:948cc52914a8820db99e64",
+        "android_client_info": {
+          "package_name": "com.cargofe.cspoportal.cargoreceive.staging"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "4095757677-0mcb3681cjrejv4aqdp4ur5a7lt3rp0o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbyXQ2XCscXKx4tKskdgT65N8HvG4cyuw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "4095757677-0mcb3681cjrejv4aqdp4ur5a7lt3rp0o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

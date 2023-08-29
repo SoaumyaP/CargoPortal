@@ -1,0 +1,19 @@
+﻿@model Groove.SP.Application.POFulfillment.ViewModels.AskMissingPOEmailViewModel
+@{
+    Layout = "_EmailLayout.cshtml";
+}
+
+<p>Dear @Model.Name,</p>
+<p>Booking  <a style="text-decoration: none;" href="@Model.BookingDetailPage">@Model.BookingNumber</a> is missing your Purchase Orders to submit.</p>
+<p>Please upload <a style="text-decoration: none;" href="@Model.ListOfPOPage">HERE</a> or send via EDI for Purchase Orders below.</p>
+
+@for (var i = 0; i < Model.POs.Count; i++)
+{
+    <span>@Model.POs[i].PONumber</span>@if (i < Model.POs.Count - 1){<span>, </span>} else {<span>.</span>}
+}
+<p></p>
+<br />
+<p>For PO / booking details, please discuss with vendor @((string.IsNullOrEmpty(Model.CompanyName) ? "" : Model.CompanyName + " ") + Model.EmailBookingOwner).</p>
+<br />
+<p>Regards,</p>
+<p>Shipment Portal Team</p>

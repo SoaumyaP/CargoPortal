@@ -1,0 +1,55 @@
+<kendo-dialog [title]="title | translate" *ngIf="popupOpened" (close)="onFormClosed()" novalidate [width]="824" class="custom-header-dialog">
+    <div class="container">
+        <form #mainForm="ngForm" class="order-note-form">
+            <div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="category" class="form-label required">{{'label.category' | translate}}</label>
+                        <kendo-dropdownlist name="category" [data]="categoryOptions"
+                            [disabled]="isViewMode" [(ngModel)]="model.category" [valuePrimitive]="true"
+                            [textField]="'text'" [valueField]="'value'" class="form-control" required>
+                        </kendo-dropdownlist>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="lineItems" class="form-label">{{'label.item' | translate}}#</label>
+                        <kendo-multiselect name="lineItems" class="note-input form-control"
+                            [data]="filteredLineItemOptionsSource | orderBy:''"
+                            [(ngModel)]="model.lineItems"
+                            [autoClose]="false"
+                            [filterable]="true"
+                            (filterChange)="lineItemsFilterChange($event)"
+                            [disabled]="isViewMode">
+                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                    <input type="checkbox" class="k-checkbox" [checked]="isLineItemSelected(dataItem)">
+                                    <label class="k-checkbox-label">{{ dataItem }}</label>
+                                </ng-template>
+                                <ng-template kendoMultiSelectTagTemplate let-dataItem>
+                                    {{ dataItem }}
+                                </ng-template>
+                        </kendo-multiselect>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-12 mb-0">
+                        <label for="message" class="form-label required">{{'label.message' | translate}}</label>
+                        <textarea rows="4" kendoTextArea name="message" [(ngModel)]="model.noteText"
+                            class="form-control note-textarea" [disabled]="isViewMode" required #message="ngModel">
+                        </textarea>
+                        <div *ngIf="message.invalid && (message.dirty || message.touched)" class="k-invalid-msg">
+                            {{ 'validation.requiredField' | translate: {'fieldName': 'label.message' | translate} }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()"
+            #Cancel>{{(isViewMode ? 'label.close' : 'label.cancel') | translate}}</button>
+        <button type="submit" class="btn prim-button dialog-button" *ngIf="isAddMode" (click)="onAddClick()"
+            >{{'label.save' | translate}}</button>
+        <button type="submit" class="btn prim-button dialog-button" *ngIf="isEditMode" (click)="onEditClick()"
+            >{{'label.save' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

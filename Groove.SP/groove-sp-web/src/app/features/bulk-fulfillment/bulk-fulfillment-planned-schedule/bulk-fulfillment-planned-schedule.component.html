@@ -1,0 +1,37 @@
+<div class="planned-schedule-container">
+    <div [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings,viewSettingModuleIdType.BULKBOOKING_DETAIL_PLANNED_SCHEDULE,'shipmentNo')">
+        <label *ngIf="shipment">{{'label.shipmentNo' | translate}} </label>
+        <a *ngIf="shipment" class="k-link ml-4 mb-2" target="_blank" [title]="shipment.shipmentNo" routerLink="/shipments/{{shipment.id}}" >{{shipment.shipmentNo}}</a>
+    </div>
+    
+
+    <kendo-grid #grid="kendoGrid" [data]="itineraries" [scrollable]="'vertical'" [selectable]="false" class="custom-edit-grid">
+        <kendo-grid-column field="modeOfTransport" title="{{'label.modeOfTransport' | translate}}" [headerClass]="'multiline-header'">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                {{labelFromEnum(modeOfTransportOptions, dataItem.modeOfTransport) | translate}}
+            </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column field="carrierName" [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings,viewSettingModuleIdType.BULKBOOKING_DETAIL_PLANNED_SCHEDULE,'carrierName')" title="{{'label.carrier' | translate}}" [headerClass]="'multiline-header'">
+        </kendo-grid-column>
+
+        <kendo-grid-column field="vesselFlight" [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings,viewSettingModuleIdType.BULKBOOKING_DETAIL_PLANNED_SCHEDULE,'vesselFlight')" title="{{'label.vesselFlight' | translate}}" [headerClass]="'multiline-header'">
+        </kendo-grid-column>
+
+        <kendo-grid-column field="loadingPort" [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings,viewSettingModuleIdType.BULKBOOKING_DETAIL_PLANNED_SCHEDULE,'loadingPort')" title="{{'label.loadingPort' | translate}}" [headerClass]="'multiline-header'">
+            
+        </kendo-grid-column>
+
+        <kendo-grid-column field="etdDate" [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings,viewSettingModuleIdType.BULKBOOKING_DETAIL_PLANNED_SCHEDULE,'etdDate')" title="{{'label.etdDates' | translate}}" format="{0:{{DATE_FORMAT}}}">
+           
+        </kendo-grid-column>
+
+        <kendo-grid-column field="dischargePort" [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings,viewSettingModuleIdType.BULKBOOKING_DETAIL_PLANNED_SCHEDULE,'dischargePort')" title="{{'label.dischargePort' | translate}}" [headerClass]="'multiline-header'">
+           
+        </kendo-grid-column>
+
+        <kendo-grid-column field="etaDate" [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings,viewSettingModuleIdType.BULKBOOKING_DETAIL_PLANNED_SCHEDULE,'etaDate')" title="{{'label.etaDates' | translate}}" format="{0:{{DATE_FORMAT}}}" [headerClass]="'multiline-header'">
+          
+        </kendo-grid-column>
+    </kendo-grid>
+</div>

@@ -1,0 +1,69 @@
+<div class="container-list-wrapper">
+    <kendo-grid #grid="kendoGrid" [data]="containers" [scrollable]="'vertical'" [selectable]="false"
+        class="custom-edit-grid containers-grid mb-3" [rowClass]="loadRowCallback">
+        <kendo-grid-column [width]='5'>
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                <div style="margin-top: 6px;">{{rowIndex + 1}}</div>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="equipmentType" [width]='40'>
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                <kendo-dropdownlist name="{{tabPrefix}}equipmentType_{{rowIndex}}" required
+                    [(ngModel)]="dataItem.containerType" [data]="dataItem.equipmentTypeOptions" [valuePrimitive]="true"
+                    [textField]="'label'" [valueField]="'value'" class="form-control"
+                    (valueChange)="equipmentTypeChanged(rowIndex)" [disabled]="isViewMode">
+                    <ng-template kendoDropDownListValueTemplate let-dataItem>
+                        {{ dataItem?.label | translate }}
+                    </ng-template>
+                    <ng-template kendoDropDownListItemTemplate let-dataItem>
+                        {{ dataItem?.label | translate }}
+                    </ng-template>
+                </kendo-dropdownlist>
+                <div *ngIf="formErrors[tabPrefix + 'equipmentType_' + rowIndex]" class="k-invalid-msg">
+                    {{ formErrors[tabPrefix + 'equipmentType_' + rowIndex] }}
+                </div>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column [width]='5'>
+            <ng-template kendoGridCellTemplate>
+                <div class="text-right" style="margin-top: 6px;">x</div>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="quantity" [width]='20' [headerClass]="'multiline-header'">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                <kendo-numerictextbox
+                    required
+                    [disabled]="isViewMode"
+                    name="{{tabPrefix}}containerQty_{{rowIndex}}"
+                    [min]="1"
+                    [format]="'n0'"
+                    class="form-control"
+                    [step]="1"
+                    [decimals]="0"
+                    [autoCorrect]="true"
+                    [(ngModel)]="dataItem.quantity">
+                </kendo-numerictextbox>
+                <div *ngIf="formErrors[tabPrefix + 'containerQty_' + rowIndex]" class="k-invalid-msg">
+                    {{ formErrors[tabPrefix + 'containerQty_' + rowIndex] }}
+                </div>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column [width]='15'>
+            <ng-template kendoGridCellTemplate>
+                <div style="margin-top: 6px;">{{'label.containers' | translate}}</div>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column [width]='15' class="col-action text-left">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                <button attr.data-balloon="{{'tooltip.delete' | translate}}" *ngIf="!isViewMode"
+                    data-balloon-pos="left" type="button" class="btn ml-0 btn-default grid-remove-icon-button"
+                    (click)="deleteLoad(rowIndex)">
+                    <i class="ei ei-icon_minus-06"></i>
+                </button>
+            </ng-template>
+        </kendo-grid-column>
+    </kendo-grid>
+    <div *ngIf="errorMessages.atLeastOneContainer" class="k-invalid-msg mb-3">
+        {{errorMessages.atLeastOneContainer | translate}}
+    </div>
+</div>

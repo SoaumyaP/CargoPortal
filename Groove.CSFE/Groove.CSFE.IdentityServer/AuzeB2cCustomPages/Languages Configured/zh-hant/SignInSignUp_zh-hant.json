@@ -1,0 +1,53 @@
+{
+  "LocalizedStrings": [
+    {
+      "ElementType": "ClaimsProvider",
+      "ElementId": null,
+      "StringId": "SignUpWithLogonEmailExchange",
+      "Override": true,
+      "Value": "Email signup (TC)"
+    },
+    {
+      "ElementType": "ClaimsProvider",
+      "ElementId": null,
+      "StringId": "FacebookExchange",
+      "Override": true,
+      "Value": ""
+    },
+    {
+      "ElementType": "ClaimsProvider",
+      "ElementId": null,
+      "StringId": "LinkedInExchange",
+      "Override": true,
+      "Value": ""
+    },
+    {
+      "ElementType": "ClaimsProvider",
+      "ElementId": null,
+      "StringId": "GoogleExchange",
+      "Override": true,
+      "Value": ""
+    },
+    {
+      "ElementType": "ClaimsProvider",
+      "ElementId": null,
+      "StringId": "TwitterExchange",
+      "Override": true,
+      "Value": ""
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "social_intro",
+      "Override": true,
+      "Value": "Sign in with your social account (TC)"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "local_intro_email",
+      "Override": true,
+      "Value": "登錄 Cargo"
+    }
+  ]
+}

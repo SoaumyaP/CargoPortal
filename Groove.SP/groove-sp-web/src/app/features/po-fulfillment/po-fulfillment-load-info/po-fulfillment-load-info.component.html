@@ -1,0 +1,221 @@
+<kendo-grid #grid="kendoGrid" [data]="loadList" [scrollable]="'vertical'" [selectable]="false"
+    class="custom-edit-grid" [rowClass]="rowCallback">
+
+    <kendo-grid-column field="loadReferenceNumber"
+                        title="{{'label.loadRefNo' | translate}}"
+                        [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_LOADS, 'loadReferenceNumber')"
+        [headerClass]="'multiline-header'">
+    </kendo-grid-column>
+
+    <kendo-grid-column field="equipmentType"
+                        [headerClass]="'multiline-header'"
+                        [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_LOADS, 'equipmentType')">
+        <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
+            <label class="required" style="margin-bottom: unset;">{{'label.equipmentType' | translate}}</label>
+        </ng-template>
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+            <div class="equipment-type-text" *ngIf="!dataItem.isAddLine">
+                {{labelFromEnum(equipmentTypeOptions, dataItem.equipmentType) | translate}}
+            </div>
+            <kendo-dropdownlist *ngIf="dataItem.isAddLine"
+                                name="{{tabPrefix}}equipmentType_{{rowIndex}}"
+                                required
+                                [(ngModel)]="dataItem.equipmentType"
+                                [data]="filteredEquipmentTypeOptions"
+                                [valuePrimitive]="true"
+                                [textField]="'label'"
+                                [valueField]="'value'"
+                                [disabled]="!isEditable"
+                                class="form-control"
+                                (valueChange)="equipmentTypeChanged(rowIndex)">
+                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                    {{ dataItem?.label | translate }}
+                </ng-template>
+                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                    {{ dataItem?.label | translate }}
+                </ng-template>
+            </kendo-dropdownlist>
+            <div *ngIf="formErrors[tabPrefix + 'equipmentType_' + rowIndex]" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'equipmentType_' + rowIndex] }}
+            </div>
+        </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column field="plannedVolume"
+                        [headerClass]="'multiline-header'"
+                        [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_LOADS, 'plannedVolume')">
+        <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
+            <label class="required" style="margin-bottom: unset;">{{'label.plannedVolumeCBM' | translate}}</label>
+        </ng-template>
+        <ng-template *ngIf="isEditable" kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+            <kendo-numerictextbox name="{{tabPrefix}}plannedVolumeCBM_{{rowIndex}}"
+                                    required
+                                    [min]="0"
+                                    [decimals]="3"
+                                    [spinners]="false"
+                                    [format]="'n3'"
+                                    [disabled]="!isEditable"
+                                    [autoCorrect]="true"
+                                    [(ngModel)]="dataItem.plannedVolume"
+                                    (ngModelChange)="onValidateVolume($event, rowIndex);"
+                                    class="form-control"
+                                    [ngClass]="formErrors[tabPrefix + 'plannedVolumeCBM_' + rowIndex] || formErrors[tabPrefix + 'plannedVolumeCBM_' + rowIndex + '_custom'] ? 'force-invalid' : ''">
+            </kendo-numerictextbox>
+            <div *ngIf="formErrors[tabPrefix + 'plannedVolumeCBM_' + rowIndex]" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'plannedVolumeCBM_' + rowIndex] }}
+            </div>
+            <div *ngIf="formErrors[tabPrefix + 'plannedVolumeCBM_' + rowIndex + '_custom']" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'plannedVolumeCBM_' + rowIndex + '_custom'] }}
+            </div>
+        </ng-template>
+        <ng-template *ngIf="!isEditable" kendoGridCellTemplate let-dataItem="dataItem">
+            {{dataItem.plannedVolume | number: '0.3-3'}}
+        </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column field="plannedGrossWeight"
+                        [headerClass]="'multiline-header'"
+                        [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_LOADS, 'plannedGrossWeight')">
+        <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
+            <label class="required"
+                style="margin-bottom: unset;">{{'label.plannedGrossWeightKGS' | translate}}</label>
+        </ng-template>
+        <ng-template *ngIf="isEditable" kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+            <kendo-numerictextbox name="{{tabPrefix}}plannedGrossWeightKGS_{{rowIndex}}"
+                                    required
+                                    [min]="0"
+                                    [decimals]="2"
+                                    [spinners]="false"
+                                    [format]="'n2'"
+                                    [disabled]="!isEditable"
+                                    [autoCorrect]="true"
+                                    [(ngModel)]="dataItem.plannedGrossWeight"
+                                    (ngModelChange)="onValidateGrossWeight($event, rowIndex)"
+                                    class="form-control"
+                                    [ngClass]="formErrors[tabPrefix + 'plannedGrossWeightKGS_' + rowIndex] || formErrors[tabPrefix + 'plannedGrossWeightKGS_' + rowIndex + '_custom'] ? 'force-invalid' : ''">
+            </kendo-numerictextbox>
+            <div *ngIf="formErrors[tabPrefix + 'plannedGrossWeightKGS_' + rowIndex]" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'plannedGrossWeightKGS_'+ rowIndex ]}}
+            </div>
+            <div *ngIf="formErrors[tabPrefix + 'plannedGrossWeightKGS_' + rowIndex+'_custom']" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'plannedGrossWeightKGS_' + rowIndex+'_custom'] }}
+            </div>
+        </ng-template>
+        <ng-template *ngIf="!isEditable" kendoGridCellTemplate let-dataItem="dataItem">
+            {{dataItem.plannedGrossWeight | number: '0.2-2'}}
+        </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column field="plannedNetWeight"
+                        title="{{'label.plannedNetWeightKGS' | translate}}"
+                        [headerClass]="'multiline-header'"
+                        [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_LOADS, 'plannedNetWeight')">
+        <ng-template *ngIf="isEditable" kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+            <kendo-numerictextbox name="{{tabPrefix}}plannedNetWeightKGS_{{rowIndex}}"
+                                    [min]="0"
+                                    [decimals]="2"
+                                    [spinners]="false"
+                                    [format]="'n2'"
+                                    [disabled]="!isEditable"
+                                    [autoCorrect]="true"
+                                    [(ngModel)]="dataItem.plannedNetWeight"
+                                    (ngModelChange)="onValidateNetWeight($event, rowIndex);"
+                                    class="form-control"
+                                    [ngClass]="formErrors[tabPrefix + 'plannedNetWeightKGS_' + rowIndex] || formErrors[tabPrefix + 'plannedNetWeightKGS_' + rowIndex + '_custom'] ? 'force-invalid' : ''">
+            </kendo-numerictextbox>
+            <div *ngIf="formErrors[tabPrefix + 'plannedNetWeightKGS_' + rowIndex]" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'plannedNetWeightKGS_' + rowIndex] }}
+            </div>
+            <div *ngIf="formErrors[tabPrefix + 'plannedNetWeightKGS_' + rowIndex + '_custom']" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'plannedNetWeightKGS_' + rowIndex + '_custom'] }}
+            </div>
+        </ng-template>
+        <ng-template *ngIf="!isEditable" kendoGridCellTemplate let-dataItem="dataItem">
+            {{dataItem.plannedNetWeight | number: '0.2-2'}}
+        </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column field="plannedPackageQuantity"
+                        [headerClass]="'multiline-header'"
+                        [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_LOADS, 'plannedPackageQuantity')">
+        <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
+            <label class="required" style="margin-bottom: unset;">{{'label.plannedPackageQty' | translate}}</label>
+        </ng-template>
+        <ng-template *ngIf="isEditable" kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+            <kendo-numerictextbox name="{{tabPrefix}}plannedPackageQty_{{rowIndex}}"
+                                    required
+                                    [min]="0"
+                                    [decimals]="0"
+                                    [spinners]="false"
+                                    [format]="'n'"
+                                    [disabled]="!isEditable"
+                                    [autoCorrect]="true"
+                                    [(ngModel)]="dataItem.plannedPackageQuantity"
+                                    (ngModelChange)="onValidatePackageQty($event, rowIndex);"
+                                    class="form-control"
+                                    [ngClass]="formErrors[tabPrefix + 'plannedPackageQty_' + rowIndex] || formErrors[tabPrefix + 'plannedPackageQty_' + rowIndex + '_custom'] ? 'force-invalid' : ''">
+            </kendo-numerictextbox>
+            <div *ngIf="formErrors[tabPrefix + 'plannedPackageQty_' + rowIndex]" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'plannedPackageQty_' + rowIndex] }}
+            </div>
+            <div *ngIf="formErrors[tabPrefix + 'plannedPackageQty_' + rowIndex + '_custom']" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'plannedPackageQty_' + rowIndex + '_custom'] }}
+            </div>
+        </ng-template>
+        <ng-template *ngIf="!isEditable" kendoGridCellTemplate let-dataItem="dataItem">
+            {{dataItem.plannedPackageQuantity | number: '0.0-0'}}
+        </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column field="packageUOM"
+                        [headerClass]="'multiline-header'"
+                        [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_LOADS, 'packageUOM')">
+        <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
+            <label class="required" style="margin-bottom: unset;">{{'label.packageUOM' | translate}}</label>
+        </ng-template>
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+            <div class="equipment-type-text" *ngIf="!dataItem.isAddLine">
+                {{labelFromEnum(packageUOMOptions, dataItem.packageUOM) | translate}}
+            </div>
+            <kendo-dropdownlist *ngIf="dataItem.isAddLine"
+                                name="{{tabPrefix}}packageUOM_{{rowIndex}}"
+                                required
+                                [(ngModel)]="dataItem.packageUOM"
+                                [data]="packageUOMOptions"
+                                [valuePrimitive]="true"
+                                [textField]="'label'"
+                                [valueField]="'value'"
+                                [disabled]="!isEditable"
+                                class="form-control">
+                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                    {{ dataItem?.label | translate }}
+                </ng-template>
+                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                    {{ dataItem?.label | translate }}
+                </ng-template>
+            </kendo-dropdownlist>
+            <div *ngIf="formErrors[tabPrefix + 'packageUOM_' + rowIndex]" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'packageUOM_' + rowIndex] }}
+            </div>
+        </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-command-column *ngIf="isEditable && !canUpdateContainer" title="{{'label.action' | translate}}"
+        [headerStyle]="{'text-align': 'center'}" [headerClass]="'multiline-header'"
+        class="action-column-grid col-action" width="75">
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+            <button attr.data-balloon="{{'tooltip.delete' | translate}}" data-balloon-pos="left" type="button"
+                class="btn ml-0 btn-default grid-remove-icon-button" (click)="onDeleteLoad(rowIndex)">
+                <i class="ei ei-icon_minus-06"></i>
+            </button>
+        </ng-template>
+    </kendo-grid-command-column>
+</kendo-grid>
+
+<div class="margin-add-icon-button" *ngIf="isEditable && !canUpdateContainer">
+    <button type="button" class="btn prim-button add-more-icon-button" [disabled]="isDisableAddMoreButton"
+        attr.data-balloon="{{'label.addMore' | translate}}" data-balloon-pos="up" (click)="addBlankLoad()"
+        id="addMoreBtn">
+        <i class="ei ei-icon_plus"></i>
+    </button>
+</div>

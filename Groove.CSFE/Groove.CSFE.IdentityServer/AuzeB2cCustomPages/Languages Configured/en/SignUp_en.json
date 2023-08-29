@@ -1,0 +1,256 @@
+{
+  "LocalizedStrings": [
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "initial_intro",
+      "Override": true,
+      "Value": "Sign up to Cargo"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "button_continue",
+      "Override": true,
+      "Value": "Sign up"
+    },
+    {
+      "ElementType": "UxElement",
+      "ElementId": null,
+      "StringId": "ver_but_edit",
+      "Override": true,
+      "Value": "Change email"
+    },
+    {
+      "ElementType": "ErrorMessage",
+      "ElementId": null,
+      "StringId": "UserMessageIfClaimsPrincipalAlreadyExists",
+      "Override": true,
+      "Value": "A user with the specified ID already exists. Please sign in with the specified ID or choose a different one to sign up."
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "LengthRange",
+      "StringId": "HelpText",
+      "Override": true,
+      "Value": "The password must be between {0} and {1} characters."
+    },
+    {
+      "ElementType": "InputValidation",
+      "ElementId": "CustomPassword",
+      "StringId": "CharacterClassesAll",
+      "Override": true,
+      "Value": "The password must have at least {0} of the following:"
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "Lowercase",
+      "StringId": "HelpText",
+      "Override": true,
+      "Value": "a lowercase letter"
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "Number",
+      "StringId": "HelpText",
+      "Override": true,
+      "Value": "a number"
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "Symbol",
+      "StringId": "HelpText",
+      "Override": true,
+      "Value": "a symbol"
+    },
+    {
+      "ElementType": "Predicate",
+      "ElementId": "Uppercase",
+      "StringId": "HelpText",
+      "Override": true,
+      "Value": "an uppercase letter"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_PhoneNumber",
+      "StringId": "UserHelpText",
+      "Override": true,
+      "Value": "Phone number"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_PhoneNumber",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "Phone number"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_CompanyName",
+      "StringId": "UserHelpText",
+      "Override": true,
+      "Value": "Your company name"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_CompanyName",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "Your company name"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_CompanyAddress",
+      "StringId": "UserHelpText",
+      "Override": true,
+      "Value": "Your company address"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_CompanyAddress",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "Your company address"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_CompanyWeChatOrWhatsApp",
+      "StringId": "UserHelpText",
+      "Override": true,
+      "Value": "Your company WeChat ID/WhatsApp"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_CompanyWeChatOrWhatsApp",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "Your company WeChat ID/WhatsApp"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_Customer",
+      "StringId": "UserHelpText",
+      "Override": true,
+      "Value": "Your customer"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_Customer",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "Your customer"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "newPassword",
+      "StringId": "UserHelpText",
+      "Override": true,
+      "Value": "New password"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "newPassword",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "New password"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "reenterPassword",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "Confirm password"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "reenterPassword",
+      "StringId": "UserHelpText",
+      "Override": true,
+      "Value": "Confirm password"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "email",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "Enter your email"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "displayName",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "Display name"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_OP_EmailAddress",
+      "StringId": "UserHelpText",
+      "Override": true,
+      "Value": "OP Contact email"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_OP_EmailAddress",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "OP Contact email"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_OP_Name",
+      "StringId": "UserHelpText",
+      "Override": true,
+      "Value": "OP Contact name"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_OP_Name",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "OP Contact name"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_OP_CountryID",
+      "StringId": "UserHelpText",
+      "Override": true,
+      "Value": "OP Contact country"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_OP_CountryID",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "OP Contact country"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_OP_Location",
+      "StringId": "UserHelpText",
+      "Override": true,
+      "Value": "OP Contact city"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_OP_Location",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "OP Contact city"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_TaxpayerID",
+      "StringId": "UserHelpText",
+      "Override": true,
+      "Value": "Taxpayer ID"
+    },
+    {
+      "ElementType": "ClaimType",
+      "ElementId": "extension_TaxpayerID",
+      "StringId": "DisplayName",
+      "Override": true,
+      "Value": "Taxpayer ID"
+    }
+  ]
+}

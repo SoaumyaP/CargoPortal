@@ -1,0 +1,11 @@
+﻿@model  Groove.SP.Application.Shipments.ViewModels.ShipmentCancelledEmailTemplateViewModel
+@{
+    Layout = "_EmailLayout.cshtml";
+}
+
+<p>Dear @Model.Name,</p>
+<p>Please be informed that Shipment <a href="@Model.DetailPage">@Model.ShipmentNo</a> has been cancelled.</p>
+<p>For more information, you are welcome to contact our customer service representatives by emailing us at @Model.SupportEmail.</p>
+<br />
+<p>Regards,</p>
+<p>Shipment Portal Team.</p>

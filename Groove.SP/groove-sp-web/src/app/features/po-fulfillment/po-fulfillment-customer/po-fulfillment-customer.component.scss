@@ -1,0 +1,17 @@
+@import '../../../../styles/variables';
+
+.icon-top {
+    position: relative;
+}
+
+.icon-top .icon-info {
+    position: absolute;
+    top: -15px;
+    right: -20px;
+}
+
+::ng-deep {
+    .action-header{
+        text-align: center !important;
+    }
+}

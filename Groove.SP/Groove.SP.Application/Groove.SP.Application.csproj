@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Carrier\**" />
+    <Compile Remove="Port\**" />
+    <EmbeddedResource Remove="Carrier\**" />
+    <EmbeddedResource Remove="Port\**" />
+    <None Remove="Carrier\**" />
+    <None Remove="Port\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="MasterBillOfLadingContact\Validations\" />
+    <Folder Include="POFulfillmentShortshipOrder\Mappers\" />
+    <Folder Include="ShipmentContact\Mappers\" />
+    <Folder Include="ShipmentContact\Services\Interfaces\" />
+    <Folder Include="Translations\Validations\" />
+    <Folder Include="Users\Mappers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.5.1" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.15.0" />
+    <PackageReference Include="EPPlus" Version="4.5.3.3" />
+    <PackageReference Include="FluentValidation" Version="10.3.6" />
+    <PackageReference Include="HangFire.Core" Version="1.7.25" />
+    <PackageReference Include="IdentityModel" Version="6.0.0" />
+    <PackageReference Include="MediatR" Version="10.0.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.20.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Localization" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.10" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.15.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="RazorLight" Version="2.0.0-rc.4" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Groove.SP.Core\Groove.SP.Core.csproj" />
+    <ProjectReference Include="..\Groove.SP.Infrastructure.CSFE\Groove.SP.Infrastructure.CSFE.csproj" />
+    <ProjectReference Include="..\Groove.SP.Infrastructure.DinkToPdf\Groove.SP.Infrastructure.DinkToPdf.csproj" />
+    <ProjectReference Include="..\Groove.SP.Infrastructure.EBookingManagementAPI\Groove.SP.Infrastructure.EBookingManagementAPI.csproj" />
+    <ProjectReference Include="..\Groove.SP.Infrastructure.Excel\Groove.SP.Infrastructure.Excel.csproj" />
+    <ProjectReference Include="..\Groove.SP.Infrastructure.MicrosoftGraphAPI\Groove.SP.Infrastructure.MicrosoftGraphAPI.csproj" />
+    <ProjectReference Include="..\Groove.SP.Infrastructure.QRCoder\Groove.SP.Infrastructure.QRCoder.csproj" />
+    <ProjectReference Include="..\Groove.SP.Infrastructure.RazorLight\Groove.SP.Infrastructure.RazorLight.csproj" />
+  </ItemGroup>
+
+</Project>

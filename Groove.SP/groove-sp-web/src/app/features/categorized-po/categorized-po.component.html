@@ -1,0 +1,114 @@
+<div class="categorized_po__wrapper">
+    <div class="header__wrapper">
+        <p class="header_title">{{'label.categorizedPO' | translate}}</p>
+    </div>
+    <div class="menu__wrapper" (mouseleave)="closePopupContext()">
+        <ul class="categorized_type__list">
+            <li *ngFor="let item of menu" class="categorized_type__item" [class.active]="item.categoryType === selectedCategory">
+                <div class="category_title" (mouseenter)="openPopupContext(item.categoryType)">
+                    <fa-icon class="category_icon" [icon]="item.icon"></fa-icon>
+                    <br>
+                    <span class="category_name">{{item.name | translate}}</span>
+                </div>
+            </li>
+        </ul>
+
+        <kendo-popup [anchor]="anchor" *ngIf="isPopupOpening" class="popup-context">
+            <div [ngSwitch]="selectedCategory" class="popup_content">
+                <div *ngSwitchCase="categorizedPOType.Stage">
+                    <div class="col milestone-content">
+                        <div class="milestone-item" *ngFor="let item of poStages">
+                            <span class="icon" [ngClass]="item.class"></span>
+                            <h5 class="milestone-title link" (click)="onNavigate(item.value)">{{ item.title | translate}}</h5>
+                        </div>
+                    </div>
+                </div>
+                <div *ngSwitchCase="categorizedPOType.Status">
+                    <ul class="po_status__category">
+                        <li>
+                            <fa-icon [icon]="faPowerOff" class="active_status__style"></fa-icon>
+                            <br/>
+                            <span class="link" (click)="onNavigate(purchaseOrderStatus.Active)">{{'label.active' | translate}}</span>
+                        </li>
+                        <li>
+                            <fa-icon [icon]="faPowerOff" class="cancel_status__style"></fa-icon>
+                            <br/>
+                            <span class="link" (click)="onNavigate(purchaseOrderStatus.Cancel)">{{'label.cancel' | translate}}</span>
+                        </li>
+                    </ul>
+                </div>
+                <div *ngSwitchDefault class="row">
+                    <div class="col-4 r_separate__line">
+                        <div class="recent_list__container">
+                            <p class="recent_list__title">{{labelMapping[selectedCategory].recentTitle | translate}}</p>
+                            <ul>
+                                <li *ngFor="let item of recentCategorizedDataSource">
+                                    <span class="link" (click)="onNavigate(item)">{{item}}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-8">
+                        <div class="category_list__container">
+                            <div tabindex="-1" role="presentation">
+                                <div class="search__wrapper k-textbox">
+                                    <input
+                                            name="searchCategory"
+                                            type="text"
+                                            [(ngModel)]="searchTerm"
+                                            placeholder="{{'label.search' | translate}}"
+                                            autocomplete="off"
+                                            (ngModelChange)="searchCategoryKeyUp$.next($event)">
+                                    <a class="k-icon">
+                                        <fa-icon [icon]="faSearch"></fa-icon>
+                                    </a>
+                                    <div *ngIf="onFetchingDataSource" class="k-i-loading"></div>
+                                </div>
+                            </div>
+                            <div class="categories mt-3">
+                                <div class="row" *ngIf="categorizedDataSource?.items.length > 0; else noDataFoundTemplate" style="min-height: 125px;">
+                                    <div class="col">
+                                        <ul>
+                                            <ng-container *ngFor="let item of categorizedDataSource?.items; let i = index">
+                                                <li *ngIf="i < 4">
+                                                    <span class="link" (click)="onNavigate(item)">{{item}}</span>
+                                                </li>
+                                            </ng-container>
+                                            
+                                        </ul>
+                                    </div>
+                                    <div class="col">
+                                        <ul>
+                                            <ng-container *ngFor="let item of categorizedDataSource?.items; let i = index">
+                                                <li *ngIf="i >= 4 && i < 8">
+                                                    <span class="link" (click)="onNavigate(item)">{{item}}</span>
+                                                </li>
+                                            </ng-container>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <ng-template #noDataFoundTemplate>
+                                    <h5 class="no_record_found"><span class="k-icon k-i-warning mb-2"></span><br />{{'label.noDataAvailable' | translate}}</h5>
+                                </ng-template>
+                            </div>
+                            <div class="pagination__wrapper" *ngIf="categorizedDataSource?.pageTotal > 0">
+                                <app-pager
+                                        [current]="currentPage"
+                                        [total]="categorizedDataSource?.pageTotal"
+                                        [firstRecordIndex]="firstRecordIndex"
+                                        [lastRecordIndex]="lastRecordIndex"
+                                        [recordCount]="categorizedDataSource?.totalItem"
+                                        (goTo)="onGoTo($event)"
+                                        (next)="onNext($event)"
+                                        (previous)="onPrevious($event)"
+                                >
+                                </app-pager>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </kendo-popup>
+    </div>
+</div>

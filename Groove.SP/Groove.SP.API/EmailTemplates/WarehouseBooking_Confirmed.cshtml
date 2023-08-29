@@ -1,0 +1,93 @@
+﻿@model Groove.SP.Application.WarehouseFulfillment.ConfirmedWarehouseBookingEmailModel
+@{
+    Layout = "_EmailLayout.cshtml";
+}
+@{
+    const string DATE_FORMAT = "yyyy-MM-dd";
+
+    var primaryRowColor = "background-color: #DDEBF7";
+}
+<p>Dear Supplier,</p>
+<p>Please arrange the delivery on @Model.ConfirmedHubArrivalDate?.ToString(DATE_FORMAT) @Model.Period under below SO number and bring along with 3 x booking form (with SO number.) and 2 x packing list for good received</p>
+<br />
+<table border="1" cellpadding="0" cellspacing="0" width="1000" class="tb-header-left" style="margin: unset !important">
+    <tr style="@primaryRowColor">
+        <th style="width:100px">Rec. Booking</th>
+        <th style="width:100px">Cfm. Deliver</th>
+        <th style="width:119px">SO No.</th>
+        <th style="width:70px">Plant#</th>
+        <th style="width:70px">Company</th>
+        <th style="width:248px">Vendor</th>
+        <th style="width:113px">PO</th>
+        <th style="width:60px">Ctn</th>
+        <th style="width:60px">QTY</th>
+        <th style="width:60px">CBM</th>
+    </tr>
+    <tr>
+        <td>@Model.CreatedDate.ToString(DATE_FORMAT)</td>
+        <td>@Model.ConfirmedHubArrivalDate?.ToString(DATE_FORMAT)</td>
+        <td>@Model.SONo</td>
+        <td>@Model.PlantNo</td>
+        <td>@Model.CompanyNo</td>
+        <td>@Model.Supplier</td>
+        <td colspan="4" height="10px">
+            <table cellpadding="0" cellspacing="0" width="100%" height="100%" class="nested-tb">
+                @for (var i = 0; i < Model.Orders?.Count; i++)
+                {
+                    <tr style="@(i > 0 ? "border-top: 1px solid" : "")">
+                        <td style="width:113px">@Model.Orders[i].PONumber</td>
+                        <td style="width:60px; text-align: right">@(Model.Orders[i].Ctn > 0 ? Model.Orders[i].Ctn.ToString("#,##0") : Model.Orders[i].Ctn)</td>
+                        <td style="width:60px; text-align: right">@(Model.Orders[i].Qty > 0 ? Model.Orders[i].Qty.ToString("#,##0") : Model.Orders[i].Qty)</td>
+                        <td style="width:60px; text-align: right">@(Model.Orders[i].CBM > 0 ? Model.Orders[i].CBM.ToString("#,##0.##0") : Model.Orders[i].CBM)</td>
+                    </tr>
+                }
+            </table>
+        </td>
+    </tr>
+    <tr style="@primaryRowColor; font-weight: bold;">
+        <td>Total</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td style="text-align: right">@(Model.Orders != null && Model.Orders.Any() ? Model.Orders.Sum(x => x.Ctn).ToString("#,##0") : "")</td>
+        <td style="text-align: right">@(Model.Orders != null && Model.Orders.Any() ? Model.Orders.Sum(x => x.Qty).ToString("#,##0") : "")</td>
+        <td style="text-align: right">@(Model.Orders != null && Model.Orders.Any() ? Model.Orders.Sum(x => x.CBM).ToString("#,##0.##0") : "")</td>
+    </tr>
+</table>
+<br />
+<p class="mb-0"><span>@("<<")</span>Delivery Date Notice<span>@(">>")</span></p>
+<br />
+<p class="mb-0">Please be noticed that delivery date will be confirmed by Independent cargo consolidators LTD.</p>
+<br />
+@if (Model.AddressLine1 != null)
+{
+    <p>@Model.AddressLine1</p>
+}
+@if (Model.AddressLine2 != null)
+{
+    <p>@Model.AddressLine2</p>
+}
+@if (Model.AddressLine3 != null)
+{
+    <p>@Model.AddressLine3</p>
+}
+@if (Model.AddressLine4 != null)
+{
+    <p>@Model.AddressLine4</p>
+}
+@if (Model.City != null)
+{
+    <p>@Model.City, @Model.Country</p>
+}
+<br />
+<p class="mt-0">For any enquiry, please contact</p>
+@if (Model.ContactName != null)
+{
+    <p>@Model.ContactName</p>
+}
+<p>Direct: @(Model.ContactNumber ?? "")</p>
+<p>Email: @(Model.ContactEmail ?? "")</p>
+

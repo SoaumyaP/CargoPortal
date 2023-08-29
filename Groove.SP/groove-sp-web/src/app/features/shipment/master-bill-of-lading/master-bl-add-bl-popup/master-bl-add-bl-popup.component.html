@@ -1,0 +1,109 @@
+<kendo-dialog [title]="'label.assignHouseBL' | translate" *ngIf="isFormOpened" (close)="onFormClosed()"
+    novalidate [width]="830" class="custom-header-dialog master-bl-add-bl-dialog">
+    <div class="container">
+        <form #mainForm="ngForm">
+            <div>
+                <label class="required">{{'label.selectHouseBLNo' | translate}}</label>
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        <kendo-autocomplete name="houseBLNumber"
+                            #houseBLAutoComplete
+                            required
+                            (valueChange)="onHouseBLValueChange($event)"
+                            (filterChange)="houseBLKeyUp$.next($event)"
+                            [valueField]="'billOfLadingNo'"
+                            [data]="houseBLDataSource"
+                            [filterable]="true" class="form-control"
+                            [(ngModel)]="selectedHouseBLNumber"
+                            [loading]="isHouseBLLoading"
+                            [virtual]="true">
+                        </kendo-autocomplete>
+
+                        <div *ngIf="getControl('houseBLNumber')?.errors?.required && getControl('houseBLNumber').touched" class="k-invalid-msg">
+                            {{'validation.requiredThisField' | translate}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="house-bl-info">
+                <ng-container *ngIf="!isSelectedHouseBLBlank">
+                    <h5 class="title-grid mt-0">
+                        {{'label.selectedHouseBL' | translate}}
+                    </h5>
+                    <hr class="colored" />
+                    <div class="row">
+                        <div class="col content-details">
+                            <div class="row">
+                                <div class="col-md-5 text-label">{{'label.billOfLadingNo' | translate}}</div>
+                                <div class="col-md-7 value-label">{{model.billOfLadingNo | default: defaultValue}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5 text-label">{{'label.jobNo' | translate}}</div>
+                                <div class="col-md-7 value-label">{{model.jobNumber | default: defaultValue}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5 text-label">{{'label.issueDates' | translate}}</div>
+                                <div class="col-md-7 value-label">{{model.issueDate | date: DATE_FORMAT | default: defaultValue}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5 text-label">{{'label.modeOfTransport' | translate}}</div>
+                                <div class="col-md-7 value-label">{{model.modeOfTransport | default: defaultValue}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5 text-label">{{'label.billOfLadingType' | translate}}</div>
+                                <div class="col-md-7 value-label">{{model.billOfLadingType | default: defaultValue}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5 text-label">{{'label.etdDates' | translate}}</div>
+                                <div class="col-md-7 value-label">{{model.shipFromETDDate | date: DATE_FORMAT | default: defaultValue}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5 text-label">{{'label.etaDates' | translate}}</div>
+                                <div class="col-md-7 value-label">{{model.shipToETADate | date: DATE_FORMAT | default: defaultValue}}</div>
+                            </div>
+                        </div>
+                        <div class="col content-details">
+                            <div class="row location">
+                                <div class="col-md-5 text-label">{{'label.shipFrom' | translate}}</div>
+                                <div class="col-md-7 value-label">{{model.shipFrom | default: defaultValue}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5 text-label">{{'label.shipTo' | translate}}</div>
+                                <div class="col-md-7 value-label">{{model.shipTo | default: defaultValue}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5 text-label">{{'label.originAgent' | translate}}</div>
+                                <div class="col-md-7 value-label">{{model.originAgent | default: defaultValue}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5 text-label">{{'label.destinationAgent' | translate}}</div>
+                                <div class="col-md-7 value-label">{{model.destinationAgent | default: defaultValue}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5 text-label">{{'label.customer' | translate}}</div>
+                                <div class="col-md-7 value-label">{{model.nominationPrincipal | default: defaultValue}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5 text-label">{{'label.movement' | translate}}</div>
+                                <div class="col-md-7 value-label">{{model.movement | default: defaultValue}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5 text-label">{{'label.incoterm' | translate}}</div>
+                                <div class="col-md-7 value-label">{{model.incoterm | default: defaultValue}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </form>
+    </div>
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()"
+            #Cancel>{{'label.cancel' | translate}}</button>
+        <button type="submit" class="btn prim-button dialog-button" *ngIf="!isAddingNewHouseBL"
+            (click)="onBtnSelectClick()" >{{'label.select' | translate}}</button>
+        <button type="submit" class="btn prim-button dialog-button" *ngIf="isAddingNewHouseBL" (click)="onBtnSaveClick()"
+            [disabled]="!mainForm.valid">{{'label.save' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

@@ -1,0 +1,41 @@
+<div class="content__header">
+    <div class="container-fluid">
+
+        <div class="row header-group">
+            <label class="list-header">{{'label.listOfMasterBill' | translate}}</label>
+            <span class="k-i-loading k-icon loading" *ngIf="service.gridLoading"></span>
+        </div>
+
+        <div class="row">
+            <kendo-grid #grid="kendoGrid" [data]="view | async" [filterable]="true" [filter]="service.state.filter"
+                [pageable]="true" [pageSize]="service.state.take" [skip]="service.state.skip" [sortable]="true" [sort]="service.state.sort"
+                (dataStateChange)="gridStateChange($event)" (pageChange)="service.pageChange($event)" (sortChange)="service.sortChange($event)"
+                [scrollable]="'vertical'"
+                class="custom-border-grid">
+
+                <kendo-grid-column field="masterBillOfLadingNo" title="{{'label.masterBillNo' | translate}}" [filterable]="true"
+                    [sortable]="true">
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                        <a class="k-link" [title]="dataItem.masterBillOfLadingNo" routerLink="/{{listName}}/{{dataItem.id}}">{{dataItem.masterBillOfLadingNo}}</a>
+                    </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column field="carrierName" title="{{'label.carrier' | translate}}" [filterable]="true"
+                    [sortable]="true">
+                </kendo-grid-column>
+                <kendo-grid-column field="realContractNo" title="{{'label.contractNo' | translate}}" [filterable]="true"
+                    [sortable]="true">
+                </kendo-grid-column>
+                <kendo-grid-column field="contractType" title="{{'label.contractType' | translate}}" [filterable]="true"
+                    [sortable]="true">
+                </kendo-grid-column>
+                <kendo-grid-column field="onBoardDate" title="{{'label.onBoardDates' | translate }}" [filterable]="true"
+                    filter="date" format="{0:{{DATE_FORMAT}}}" [sortable]="true">
+                </kendo-grid-column>
+
+                <ng-template kendoPagerTemplate>
+                    <app-custom-grid-pager [service]="service" (pageSizeChanged)="gridPageSizeChange($event)"></app-custom-grid-pager>
+                </ng-template>
+            </kendo-grid>
+        </div>
+    </div>
+</div>

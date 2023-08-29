@@ -1,0 +1,9 @@
+<kendo-dialog [title]="title | translate | titlecase" (close)="closePopup()"
+    class="dynamic-notification-popup">
+    <!-- Do not change template as redundant space may be added by incident -->
+    <p class="headline" *ngIf="!StringHelper.isNullOrEmpty(headline)">{{headline}}</p>
+    <p *ngFor="let item of content">{{item}}</p>
+    <kendo-dialog-actions>
+        <button type="button" class="btn prim-button dialog-button" (click)="closePopup()">{{'label.ok' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

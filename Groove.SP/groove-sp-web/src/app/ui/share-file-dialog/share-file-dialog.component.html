@@ -1,0 +1,56 @@
+<div class="modal fade share-file-dialog" id="shareFileModal" #shareFileModal role="dialog" data-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+
+    <div class="modal-content">
+      <div class="modal-body">
+
+        <div class="container-fluid">
+          <div class="row justify-content-center">
+            <span class="k-icon img-email"></span>
+          </div>
+          <div class="row justify-content-center">
+            <label class="dialog-header text-center">{{'label.shareFile' | translate}}</label>
+          </div>
+
+          <form class="row" #mainForm="ngForm" novalidate (ngSubmit)="onSubmit()">
+            <div class="col">
+              <div class="row">
+                <tag-input #tagInput [ngClass]="isShowBorderError()?'invalid-control':''" [(ngModel)]="mailingList" name="mailingList" placeholder="{{'label.shareFileTo' | translate}}"
+                            secondaryPlaceholder="{{'label.shareFileTo' | translate}}"
+                            [errorMessages]="errorMessages"  [validators]="validators">
+                </tag-input>
+                <div *ngIf="isShowRequiredError()" style="font-size: 11.2px;" class="k-invalid-msg">
+                  {{ tagInputControl.errors[0] }}
+                </div>
+                
+                <span class="k-icon"></span>
+
+                <div class="file-list">
+                    <label class="empty-file-list" *ngIf="selectedAttachments?.length == 0">{{'label.emptyFileList' | translate}}</label>
+                    <ul>
+                      <li *ngFor="let file of selectedAttachments">
+                        <span class="k-icon icon-{{checkFileName(file.fileName)}}"></span>
+                        <div kendoTooltip class="d-inline">
+                          <label [title]="file.fileName">{{truncateFilename(file.fileName, 45)}}</label>
+                        </div>
+                        <a (click)="onClickRemove(file.id)">
+                          <span class="k-icon icon-remove-item"></span>
+                        </a>
+                      </li>
+                    </ul>
+                </div>
+
+                <div class="button-bar">
+                    <button type="button" class="btn second-button dialog-button" data-dismiss="modal" (click)="onCancel()" #Cancel>{{'label.cancel' | translate}}</button>
+                    <button type="submit" class="btn prim-button dialog-button">{{'label.send' | translate}}</button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

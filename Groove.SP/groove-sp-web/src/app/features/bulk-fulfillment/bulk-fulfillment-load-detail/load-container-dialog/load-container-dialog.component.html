@@ -1,0 +1,83 @@
+<kendo-dialog [title]="(isViewModeLocal ? 'label.containerInfo': 'label.updateContainerInfo') | translate" *ngIf="loadContainerFormOpened" (close)="onFormClosed()" novalidate [width]="824" [height]="482" class="custom-header-dialog">
+    <div class="load-container-wrapper px-3 container">
+        <div class="edit-info">
+            <form class="edit-info-form-input" #mainForm="ngForm">
+                
+                <div class="row mb-2">
+                    <div class="col-md-6" [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS_CONTAINERINFO,'loadReferenceNumber')">
+                        <div class="form-group">
+                            <label for="activityType">{{'label.loadRefNo' | translate}}</label>
+                            <br/>
+                            <span class="load-ref-no">{{model.loadReferenceNumber}}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6" [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS_CONTAINERINFO,'equipmentType')">
+                        <div class="form-group">
+                            <label class="form-label">{{'label.equipmentType' | translate}}</label>
+                            <br/>
+                            <span class="load-ref-no">{{model.equipmentType}}</span>
+                        </div>
+                    </div>
+                
+                    <div class="col-md-6" [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS_CONTAINERINFO,'containerNumber')">
+                        <div class="form-group" [class.force-invalid]="formErrors['containerNumber']">
+                            <label for="containerNumber" class="required">{{'label.containerNo' | translate}}</label>
+                            <input type="text" class="form-control" name="containerNumber" [disabled]="isViewModeLocal"
+                                 [(ngModel)]="model.containerNumber" required (ngModelChange)="onContainerChange($event)"
+                                 (focusout)="checkInvalidContainerNumber()"/>
+                            <div *ngIf="formErrors['containerNumber']" class="k-invalid-msg">
+                                {{formErrors.containerNumber}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6" [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS_CONTAINERINFO,'sealNumber')">
+                        <div class="form-group" [class.force-invalid]="formErrors['sealNumber']">
+                            <label for="sealNumber" class="required">{{'label.sealNo' | translate}}</label>
+                            <input type="text" class="form-control" name="sealNumber" [disabled]="isViewModeLocal" required  [(ngModel)]="model.sealNumber"/>
+                            <div *ngIf="formErrors['sealNumber']" class="k-invalid-msg">
+                                {{formErrors.sealNumber}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6" [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS_CONTAINERINFO,'gateInDate')">
+                        <div class="form-group">
+                            <label class="form-label required">{{'label.gateInDates' | translate}}</label>
+                            <kendo-datepicker name="gateInDate" class="form-control" [disabled]="isViewModeLocal" required
+                                [(ngModel)]="model.gateInDate">
+                            </kendo-datepicker>
+                            <div *ngIf="formErrors['gateInDate']" class="k-invalid-msg">
+                                {{formErrors.gateInDate}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6" [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS_CONTAINERINFO,'sealNumber2')">
+                        <div class="form-group">
+                            <label for="sealNumber2">{{'label.sealNo2' | translate}}</label>
+                            <input type="text" class="form-control" name="sealNumber2" [disabled]="isViewModeLocal" [(ngModel)]="model.sealNumber2"/>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6" [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS_CONTAINERINFO,'loadingDate')">
+                        <div class="form-group mb-0">
+                            <label class="form-label">{{'label.loadingDates' | translate}}</label>
+                            <kendo-datepicker name="loadingDate" class="form-control" [disabled]="isViewModeLocal"
+                                [(ngModel)]="model.loadingDate">
+                            </kendo-datepicker>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()"
+            #Cancel>{{(isViewModeLocal ? 'label.close' : 'label.cancel') | translate}}</button>
+        <button type="button" class="btn prim-button dialog-button" *ngIf="isEditModeLocal" (click)="onEditClick()"
+           >{{'label.update' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

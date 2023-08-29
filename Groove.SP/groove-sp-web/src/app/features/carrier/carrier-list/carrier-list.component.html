@@ -1,0 +1,94 @@
+<div class="content__header">
+    <div class="container-fluid">
+        <div class="row header-group">
+            <label class="list-header">{{'label.listOfCarriers' | translate}}</label>
+            <span class="k-i-loading k-icon loading" *ngIf="service.gridLoading"></span>
+            <div class="col-sm text-right">
+                <button *hasPermission="[AppPermissions.Organization_Carrier_Detail_Add]" (click)="onAddNewCarrier()" type="button" class="btn header-button add-new-button">
+                    <div class="icon-circle">
+                        <fa-icon [icon]="faPlus"></fa-icon>
+                    </div>
+                    <span class="icon-circle-label">{{'label.addNew' | translate}}</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <kendo-grid #grid="kendoGrid" [data]="view | async" [filterable]="true" [filter]="service.state.filter"
+                [pageable]="true" [pageSize]="service.state.take" [skip]="service.state.skip" [sortable]="true"
+                [sort]="service.state.sort" (dataStateChange)="gridStateChange($event)"
+                (pageChange)="service.pageChange($event)" (sortChange)="service.sortChange($event)"
+                class="custom-border-grid list-of-carrier-grid">
+
+                <kendo-grid-column *ngFor="let column of columns" [sortable]="column.sortable" [field]="column.field"
+                    [title]="column.title | translate" [class]="column.class" [width]="column.width"
+                    [format]="column.format" [filter]="column.filter">
+
+                    <!-- Mode of transport -->
+                    <ng-template kendoGridFilterCellTemplate let-filter="filter" *ngIf="column.field === 'modeOfTransport'">
+                        <app-drop-down-list-filter [filter]="filter"
+                                                    fieldName="modeOfTransport"
+                                                    [data]="service.carrierModeOfTransport"
+                                                    textField="text"
+                                                    valueField="value">
+                        </app-drop-down-list-filter>
+                    </ng-template>
+
+                    <!-- Status -->
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" *ngIf="column.field === 'status'">
+                        <span [className]="dataItem.status == carrierStatus.Active ? 'active-status' : 'inactive-status'">{{dataItem.statusName | translate}}</span>
+                    </ng-template>
+                    <ng-template kendoGridFilterCellTemplate let-filter="filter" *ngIf="column.field === 'status'">
+                        <app-drop-down-list-filter [filter]="filter"
+                                                    fieldName="status"
+                                                    [data]="service.carrierStatus"
+                                                    textField="text"
+                                                    valueField="value">
+                        </app-drop-down-list-filter>
+                    </ng-template>
+
+                    <!-- Action -->
+                    <ng-template kendoGridCellTemplate let-dataItem *ngIf="column.field === 'action'" class="col-action">
+                        <div *hasPermission="[AppPermissions.Organization_Carrier_Detail_Edit]">
+                            <button attr.data-balloon="{{'label.edit' | translate}}"
+                                    data-balloon-pos="right"
+                                    type="button"
+                                    (click)="onEditCarrier(dataItem)"
+                                    class="btn grid-edit-icon-button ml-0">
+                                <fa-icon [icon]="faPencilAlt"></fa-icon>
+                            </button>
+                            <button *ngIf="dataItem.status === carrierStatus.Active"
+                                    attr.data-balloon="{{'label.deactivate' | translate}}"
+                                    data-balloon-pos="right"
+                                    type="button"
+                                    class="btn grid-deactivate-icon-button"
+                                    (click)="onUpdateStatus(dataItem, carrierStatus.Inactive)">
+                                <fa-icon [icon]="faPowerOff"></fa-icon>
+                            </button>
+                            <button *ngIf="dataItem.status === carrierStatus.Inactive"
+                                    attr.data-balloon="{{'label.activate' | translate}}"
+                                    data-balloon-pos="right" type="button"
+                                    class="btn btn-default grid-activate-icon-button"
+                                    (click)="onUpdateStatus(dataItem, carrierStatus.Active)">
+                                <fa-icon [icon]="faPowerOff"></fa-icon>
+                            </button>
+                        </div>
+                    </ng-template>
+                    <ng-template kendoGridFilterCellTemplate let-filter *ngIf="column.field === 'action'"></ng-template>
+                </kendo-grid-column>
+                <ng-template kendoPagerTemplate>
+                    <app-custom-grid-pager [service]="service" (pageSizeChanged)="gridPageSizeChange($event)">
+                    </app-custom-grid-pager>
+                </ng-template>
+            </kendo-grid>
+        </div>
+    </div>
+</div>
+<app-carrier-form
+    [model]="carrierFormModel"
+    [formMode]="carrierFormMode"
+    [carrierFormOpened]="carrierFormOpened"
+    (close)="carrierFormClosedHandler()"
+    (add)="carrierAddedHandler($event)"
+    (edit)="carrierEditedHandler($event)">
+</app-carrier-form>

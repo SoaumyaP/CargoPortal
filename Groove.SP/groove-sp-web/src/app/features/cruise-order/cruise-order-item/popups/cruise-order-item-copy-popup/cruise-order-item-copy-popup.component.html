@@ -1,0 +1,240 @@
+<kendo-dialog [title]="title | translate" *ngIf="itemCopyPopupOpened" (close)="onFormClosed()" novalidate [width]="824" [height]="710" class="custom-header-dialog cruise-order-item-popup max-screen-1280x768">
+    <div class="container">
+        <form #mainForm="ngForm">
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <label for="poLine" class="form-label required">{{'label.poLine' | translate}}</label>
+                    <kendo-numerictextbox
+                            name="poLine"
+                            class="form-control"
+                            [(ngModel)]="model.poLine" [autoCorrect]="true" [format]="'n'"
+                            [decimals]="0"
+                            disabled>
+                    </kendo-numerictextbox>
+                </div>
+                <div class=" form-group col-sm-6">
+                    <div class="form-group">
+                        <label for="requestLine" class="form-label">{{'label.reqLine' | translate}}</label>
+                        <kendo-numerictextbox
+                                name="requestLine"
+                                class="form-control"
+                                [(ngModel)]="model.requestLine" [autoCorrect]="true" [format]="'n'"
+                                [decimals]="0"
+                                disabled>
+                        </kendo-numerictextbox>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="itemId">{{'label.itemNumber' | translate}}</label>
+                        <input kendoTextBox
+                            name="itemId"
+                            maxlength="100"
+                            type="text"
+                            class="form-control"
+                            [(ngModel)]="model.itemId"
+                        />
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="itemName">{{'label.itemName' | translate}}</label>
+                        <input kendoTextBox
+                            name="itemName"
+                            maxlength="256"
+                            type="text"
+                            class="form-control"
+                            [(ngModel)]="model.itemName"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="origin">{{'label.origin' | translate}}</label>
+                        <kendo-autocomplete name="origin" (filterChange)="portFilterChange($event)"
+                            [maxlength]='500' [valueField]="'locationDescription'" [(ngModel)]="model.origin"
+                            [data]="filteredPortOptions" [filterable]="true"
+                            [placeholder]="'label.location' | translate "
+                            class="form-control">
+                        </kendo-autocomplete>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <label for="destination">{{'label.destination' | translate}}</label>
+                    <kendo-autocomplete name="destination" (filterChange)="portFilterChange($event)"
+                        [maxlength]='100' [valueField]="'locationDescription'" [(ngModel)]="model.destination"
+                        [data]="filteredPortOptions" [filterable]="true"
+                        [placeholder]="'label.location' | translate " (valueChange)="destinationValueChange($event)"
+                        class="form-control"
+                        name="destination">
+                    </kendo-autocomplete>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="deliveryPort">{{'label.deliveryPort' | translate}}</label>
+                        <kendo-autocomplete name="deliveryPort" (filterChange)="portFilterChange($event)"
+                            [maxlength]='100' [valueField]="'locationDescription'" [(ngModel)]="model.deliveryPort"
+                            [data]="filteredPortOptions" [filterable]="true"
+                            [placeholder]="'label.portOrLocation' | translate " class="form-control" name="deliveryPort">
+                        </kendo-autocomplete>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="destinationCountry">{{'label.destinationCountry' | translate}}</label>
+                        <kendo-autocomplete name="destinationCountry"
+                            (filterChange)="destinationCountryFilterChange($event)" [maxlength]='100'
+                            [valueField]="'name'" [(ngModel)]="model.destinationCountry"
+                            [data]="destinationCountryOptions" [filterable]="true"
+                            [placeholder]="'label.country' | translate " class="form-control" name="destinationCountry">
+                        </kendo-autocomplete>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="requestLineShoreNotes">{{'label.reqLineShoreNotes' | translate}}</label>
+                        <input kendoTextBox
+                            name="requestLineShoreNotes"
+                            maxlength="500"
+                            type="text"
+                            class="form-control"
+                            [(ngModel)]="model.requestLineShoreNotes"
+                        />
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="shipRequestLineNotes">{{'label.shipREQLineNotes' | translate}}</label>
+                        <input kendoTextBox
+                            name="shipRequestLineNotes"
+                            maxlength="500"
+                            type="text"
+                            class="form-control"
+                            [(ngModel)]="model.shipRequestLineNotes"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="requestQuantity">{{'label.requestedQty' | translate}}</label>
+                        <kendo-numerictextbox
+                                name="requestQuantity"
+                                class="form-control"
+                                [(ngModel)]="model.requestQuantity" [autoCorrect]="true" [format]="'n'"
+                                [decimals]="0">
+                        </kendo-numerictextbox>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="orderQuantity">{{'label.orderedQty' | translate}}</label>
+                        <kendo-numerictextbox
+                                name="orderQuantity"
+                                class="form-control"
+                                [(ngModel)]="model.orderQuantity" [autoCorrect]="true" [format]="'n'"
+                                [decimals]="0">
+                        </kendo-numerictextbox>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="makerReferenceOfItemName2">{{'label.markerRefOfItemName2' | translate}}</label>
+                        <input kendoTextBox
+                            name="makerReferenceOfItemName2"
+                            maxlength="100"
+                            type="text"
+                            class="form-control"
+                            [(ngModel)]="model.makerReferenceOfItemName2"
+                        />
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="quantityDelivered">{{'label.quantityDelivered' | translate}}</label>
+                        <kendo-numerictextbox
+                                name="quantityDelivered"
+                                class="form-control"
+                                [(ngModel)]="model.quantityDelivered" [autoCorrect]="true" [format]="'n'"
+                                [decimals]="0">
+                        </kendo-numerictextbox>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="netUnitPrice">{{'label.netUnitPrice' | translate}}</label>
+                        <kendo-numerictextbox
+                                name="netUnitPrice"
+                                class="form-control"
+                                [(ngModel)]="model.netUnitPrice" [autoCorrect]="true" [format]="'n2'"
+                                [decimals]="2">
+                        </kendo-numerictextbox>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="netUSUnitPrice">{{'label.netUnitPriceUSD' | translate}}</label>
+                        <kendo-numerictextbox
+                                name="netUSUnitPrice"
+                                class="form-control"
+                                [(ngModel)]="model.netUSUnitPrice" [autoCorrect]="true" [format]="'n2'"
+                                [decimals]="2">
+                        </kendo-numerictextbox>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="totalOrderPrice">{{'label.totalOrderPrice' | translate}}</label>
+                        <kendo-numerictextbox
+                                name="totalOrderPrice"
+                                class="form-control"
+                                [(ngModel)]="model.totalOrderPrice" [autoCorrect]="true" [format]="'n2'"
+                                [decimals]="2">
+                        </kendo-numerictextbox>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    
+                </div>
+
+            </div>
+            
+
+            
+        </form>
+    </div>
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()">{{'label.close' | translate}}</button>
+        <button type="button" class="btn btn prim-button dialog-button" (click)="onFormClosed(true)">{{'label.save' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

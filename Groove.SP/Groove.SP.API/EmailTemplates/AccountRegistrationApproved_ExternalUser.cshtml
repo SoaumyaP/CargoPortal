@@ -1,0 +1,10 @@
+﻿@model Groove.SP.Application.Users.ViewModels.UserProfileEmailViewModel
+@{
+    Layout = "_EmailLayout.cshtml";
+}
+
+<p>Dear @Model.Name,</p>
+<p>Congratulations! Your account has been accepted. Please click <a href="@Model.ClientLoginUrl">here</a> to visit Shipment Portal website.</p>
+<br />
+<p>Regards,</p>
+<p>Shipment Portal Team.</p>

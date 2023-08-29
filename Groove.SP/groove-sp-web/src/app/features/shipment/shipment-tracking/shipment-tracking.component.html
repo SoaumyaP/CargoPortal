@@ -1,0 +1,907 @@
+<div class="content__header">
+    <div class="typing_loader" *ngIf="!isInitDataLoaded"></div>
+    <div class="container-fluid" *ngIf="isInitDataLoaded">
+        <div class="row header-group">
+            <div class="col-sm-7 pl-0">
+                <button attr.data-balloon="{{'tooltip.backToList' | translate}}" data-balloon-pos="up" type="button" class="btn btn-default back-button"
+                    (click)="backList()">
+                    <i class="ei ei-arrow_left"></i>
+                </button>
+                <label class="form-header">{{'label.shipment' | translate}} #{{ model.shipmentNo }}</label>
+                <app-status-label [status]="standardizationShipmentStatus" [statusName]="model.status"
+                        [statusEnum]="shipmentStatus">
+                </app-status-label>
+                <span class="rejected_arrow_box" *ngIf="model && model.isException">Exception</span>
+            </div>
+            <div class="col-sm-5 text-right pr-0">
+                <button
+                    *hasPermission="[AppPermissions.Shipment_Detail_Edit]"
+                    attr.data-balloon="{{'label.edit' | translate}}" data-balloon-pos="up" type="button"
+                    [hidden]="model.status === shipmentStatus.Inactive"
+                    class="btn edit-icon-button" routerLink="/shipments/edit/{{model.id}}">
+                    <fa-icon [icon]="faPencilAlt"></fa-icon>
+                </button>
+                <button *hasPermission="[AppPermissions.Shipment_ConsolidationDetail_Add]" type="button" class="btn header-button btn-color-green" [hidden]="isHiddenBtnConsolidate || !isDisableConsolidateButton"
+                    attr.data-balloon="{{'tooltip.addConsolidationMissingCargoDetails' | translate}}"
+                    data-balloon-pos="left"
+                    [disabled]="isDisableConsolidateButton">
+                    <fa-icon [icon]="faBoxes"></fa-icon>
+                    {{ 'label.consolidate' | translate}}
+                </button>
+                <button *hasPermission="[AppPermissions.Shipment_ConsolidationDetail_Add]" type="button" class="btn header-button btn-color-green" [hidden]="isHiddenBtnConsolidate || isDisableConsolidateButton"
+                    (click)="onConsolidateBtnClick()">
+                    <fa-icon [icon]="faBoxes"></fa-icon>
+                    {{ 'label.consolidate' | translate}}
+                </button>
+
+                <ng-container *ngIf="isShowHAWBButton else seaFreightShipment">
+                    <button
+                        class="btn header-button btn-color-blue"
+                        (click)="onClickHAWBBtn()"
+                        data-balloon-pos="left">
+                        <fa-icon [icon]="faBoxes"></fa-icon>
+                        {{ 'label.hawb' | translate}}
+                    </button>
+                </ng-container>
+
+                <ng-template #seaFreightShipment>
+                    <kendo-dropdownbutton
+                    *ngIf="isShowBillOfLadingButton"
+                    [data]="getBLMoreActionMenu()"
+                    [popupSettings]="{ popupClass: 'bill-of-lading-dropdown-content'}"
+                    textField="actionName"
+                    class="bill-of-lading-dropdown-btn">
+                    <fa-icon [icon]="faMinus" class="extended-content"></fa-icon>
+                    <fa-icon [icon]="faPlus" class="collapsed-content"></fa-icon>
+                    {{'label.billOfLadings' | translate}}
+                    </kendo-dropdownbutton>
+                </ng-template>
+                
+                <button *hasPermission="[AppPermissions.BillOfLading_MasterBLDetail_Edit]" type="button" class="btn header-button btn-color-orange"
+                    [hidden]="isHiddenBtnUnlinkMaster || stringHelper.caseIgnoredCompare(model.modeOfTransport,modeOfTransportType.Air)"
+                    (click)="onBtnUnlinkMasterClick()">
+                    <fa-icon [icon]="faUnlink"></fa-icon>
+                    {{ 'label.unlinkMaster' | translate}}
+                </button>
+                <button type="button" class="btn header-button btn-color-grey" [disabled]= "!isReadyForCancelShipment"
+                    *ngIf="isShowCancelButton"
+                    (click)="onCancelShipmentClick()">
+                    <fa-icon [icon]="faBan" class=""></fa-icon>
+                        {{'label.cancel' | translate}}
+                    <ng-template *appSpinner="!isReadyForCancelShipment"></ng-template>
+                </button>
+            </div>
+        </div>
+
+        <app-milestone #milestone [data] class="row" [type]="milestoneType" [isInitDataLoaded]="isInitDataLoaded"></app-milestone>
+
+        <div class="content-tabs mt-5 row position-relative">
+            <kendo-tabstrip #tab [keepTabContent]='true'>
+                <kendo-tabstrip-tab [title]="'label.general' | translate" [selected]="true">
+                    <ng-template kendoTabContent>
+                        <div class="row">
+                            <div class="col content-details">
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.shipmentNo' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.shipmentNo }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{ (stringHelper.caseIgnoredCompare(model.modeOfTransport, modeOfTransportType.Air) ? 'label.hawbNo' : 'label.houseBLNo') | translate}}</div>
+                                    <div class="col-8 value-label">
+                                        <!-- Do not change below template -->
+                                        <ng-container *ngFor="let billOfLadingNo of model?.billOfLadingNos; let last = last">
+                                            <a *ngIf="isCanClickHouseBL else billOfLadingNoText" routerLink="/bill-of-ladings/{{billOfLadingNo.item1}}" routerLinkActive="active" target="_blank">{{billOfLadingNo.item2}}</a>
+                                            <ng-template #billOfLadingNoText class="value-label">{{ billOfLadingNo.item2 }}</ng-template>{{ !last ? ", " : ""}}
+                                        </ng-container>
+
+                                        <ng-container *ngIf="!model?.billOfLadingNos || model?.billOfLadingNos.length === 0">
+                                            {{defaultValue}}
+                                        </ng-container>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{ (stringHelper.caseIgnoredCompare(model.modeOfTransport, modeOfTransportType.Air) ? 'label.mawbNo' : 'label.masterBLNo') | translate}}</div>
+                                    <div class="col-8 value-label">
+                                        <!-- Do not change below template -->
+                                        <ng-container *ngFor="let masterBOL of model?.masterBillNos; let last = last">
+                                            <a *ngIf="isCanClickMasterBL else masterBOLText" routerLink="/master-bill-of-ladings/{{masterBOL.item1}}" routerLinkActive="active"target="_blank">{{masterBOL.item2}}</a>
+                                            <ng-template #masterBOLText class="value-label">{{ masterBOL.item2 }}</ng-template>{{ !last ? ", " : ""}}
+                                        </ng-container>
+
+                                        <ng-container *ngIf="!model?.masterBillNos || model?.masterBillNos.length === 0">
+                                            {{defaultValue}}
+                                        </ng-container>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.modeOfTransport' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.modeOfTransport }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.containerNo' | translate}}</div>
+                                    <div *ngIf="model.modeOfTransport === modeOfTransportType.Air" class="col-8 value-label">
+                                        {{'label.uld' | translate}}
+                                    </div>
+
+                                    <div *ngIf="model.modeOfTransport === modeOfTransportType.Sea" class="col-8 value-label">
+                                        <!-- Do not change below template -->
+                                        <ng-container *ngFor="let item of containerLimit index as i; let last = last">
+                                            <a *ngIf="isCanClickContainer && item.isConfirmed else containerLimitText" class="k-link" routerLinkActive="active" target="_blank" routerLink="/containers/{{item.id}}">{{item.containerNo}}</a>
+                                            <ng-template #containerLimitText class="value-label">{{ item.containerNo }}</ng-template>{{ !last ? ", " : ""}}
+                                        </ng-container>
+
+                                        <small *ngIf="container.length > 2" [class]="isCanClickContainer ? 'see-more ml-1':'ml-1'" (click)="onOpenCargoTab()"><i>{{('label.seeMore'|  translate).toLowerCase()}}</i></small>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.serviceType' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.serviceType }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.shipmentType' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.shipmentType | default:defaultValue }}</div>
+                                </div>
+
+
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.movement' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.movement | default:defaultValue}}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.incoterm' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.incoterm }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.totalPackage' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.totalPackage | number:'0.0' }} {{ model.totalPackageUOM }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.totalVolume' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.totalVolume | number:'0.3' }} {{ model.totalVolumeUOM }}</div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.totalGrossWeight' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.totalGrossWeight | number:'0.2' }} {{ model.totalGrossWeightUOM }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.totalNetWeight' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.totalNetWeight | number:'0.2' }} {{ model.totalNetWeightUOM }}</div>
+                                </div>
+
+                                <div class="row" *ngIf="model != null && model.enforceCommercialInvoiceFormat !== undefined && !model.enforceCommercialInvoiceFormat">
+                                    <div class="col-4 text-label">{{'label.commercialInvoiceNo' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.commercialInvoiceNo | default:defaultValue }}</div>
+                                </div>
+
+                                <div class="row" *ngIf="model != null && model.enforceCommercialInvoiceFormat !== undefined && !model.enforceCommercialInvoiceFormat">
+                                    <div class="col-4 text-label">{{'label.invoiceDates' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.invoiceDate | date: DATE_FORMAT | default:defaultValue }}</div>
+                                </div>
+                            </div>
+
+                            <div class="col content-details">
+                                <div class="row location">
+                                    <div class="col-4 text-label">{{'label.shipFrom' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.shipFrom }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.shipTo' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.shipTo }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.originAgent' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.originAgent }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.destinationAgent' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.destinationAgent }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.shipper' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.shipper }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.consignee' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.consignee }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.customer' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.nominee }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.contractNo' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.contractMaster?.realContractNo | default: defaultValue }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.contractType' | translate}}</div>
+                                    <div class="col-8 value-label">{{  model?.contractMaster?.contractType | default: defaultValue }}</div>
+                                </div>
+
+                                <div class="row" *ngIf="model.fulfillmentNumber">
+                                    <div class="col-4 text-label">{{'label.fulfillmentNo' | translate}}</div>
+                                    <div class="col-8 value-label">
+                                        <a *ngIf="isCanClickBooking else fulfillmentNumberText" class="k-link" 
+                                            routerLinkActive="active" 
+                                            target="_blank"
+                                            [routerLink]="model.fulfillmentType === fulfillmentType.PO ? '/po-fulfillments/view/' + model.fulfillmentId 
+                                                : '/bulk-fulfillments/view/'+ model.fulfillmentId "
+                                            [queryParams]="{formType: formModeType.View}">
+                                            {{ model.fulfillmentNumber }}
+                                        </a>
+
+                                        <ng-template #fulfillmentNumberText class="value-label">{{ model.fulfillmentNumber }}</ng-template>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.customerReferenceNo' | translate}}</div>
+                                    <div class="col-8 value-label">{{model?.customerReferenceNo | default: defaultValue}}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.agentReferenceNo' | translate}}</div>
+                                    <div class="col-8 value-label">{{model?.agentReferenceNo | default: defaultValue}}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.shipperReferenceNo' | translate}}</div>
+                                    <div class="col-8 value-label">{{model?.shipperReferenceNo | default: defaultValue}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+
+                <kendo-tabstrip-tab [title]="'label.activity' | translate">
+                    <ng-template kendoTabContent>
+                        <div class="title-grid mt-0 clearfix" *ngIf="canAddActivity" >
+                            <button class="btn header-button add-activity-button float-right" type="button"
+                                (click)="onAddActivityClick()">
+                                <div class="icon-circle">
+                                    <fa-icon [icon]="faPlus"></fa-icon>
+                                </div>
+                                <span class="icon-circle-label">{{'label.addNew' | translate}}</span>
+                            </button>
+                        </div>
+
+                        <kendo-grid #grid="kendoGrid" [data]="groupedActivityList"
+                            [selectable]="false" class="activity-grid custom-edit-grid" [sortable]="true"
+                            [sort]="[{field: 'activityDate', dir: 'desc'}]" [rowClass]="rowCallback">
+                            <kendo-grid-column field="activityCode" title="{{'label.eventCode' | translate}}"
+                                [headerClass]="'multiline-header'">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    <a class="k-link"
+                                        (click)="openActivityPopup(dataItem)">{{dataItem.activityCode}}</a>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="activityLevel"
+                                title="{{'label.activityLevel' | translate}}"
+                                [headerClass]="'multiline-header'">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="activityDescription"
+                                title="{{'label.activityDescription' | translate}}"
+                                [headerClass]="'multiline-header'">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="activityDate" title="{{'label.activityDates' | translate}}"
+                                format="{0:{{DATE_FORMAT}}}" [headerClass]="'multiline-header'">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="location" title="{{'label.location' | translate}}"
+                                [headerClass]="'multiline-header'">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="remark" title="{{'label.remark' | translate}}"
+                                [headerClass]="'multiline-header'">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column width="30" *ngIf="stringHelper.caseIgnoredCompare(model.status,shipmentStatus.Active)">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                    <div *ngIf="currentUser.isInternal || isAgentUser || dataItem.createdBy === currentUser.username">
+                                        <div kendoTooltip #tooltip="kendoTooltip"
+                                            [tooltipTemplate]="actionMenuTooltip" filter="button" showOn="click"
+                                            position="left" offset="-20" showAfter="200">
+                                            <button #activityButton type="button" class="btn">
+                                                <fa-icon [icon]="faEllipsisV"></fa-icon>
+                                            </button>
+                                        </div>
+
+                                        <ng-template #actionMenuTooltip let-anchor>
+                                            <div class="row action-button"
+                                                (click)="onEditActivityClick(dataItem); tooltip.toggle(activityButton)">
+                                                <button type="button" class="btn">
+                                                    <fa-icon [icon]="faPencilAlt" class="action-grid-icon">
+                                                    </fa-icon>
+                                                    <span
+                                                        class="action-grid-label">{{'label.edit' | translate}}</span>
+                                                </button>
+                                            </div>
+                                            <div class="row action-button"
+                                                (click)="onDeleteActivityClick(dataItem.id); tooltip.toggle(activityButton)">
+                                                <button type="button" class="btn">
+                                                    <fa-icon [icon]="faTrashAlt" class="action-grid-icon"></fa-icon>
+                                                    <span
+                                                        class="action-grid-label">{{'tooltip.delete' | translate}}</span>
+                                                </button>
+                                            </div>
+                                        </ng-template>
+                                    </div>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <ng-template kendoGridDetailTemplate let-dataItem let-rowIndex="rowIndex" *ngIf="isShowNestedActivityGrid">
+                                <kendo-grid #grid="kendoGrid" [data]="dataItem.nestedList"
+                                    [selectable]="false" class="custom-edit-grid nested-grid" [sortable]="true"
+                                    [sort]="[{field: 'activityDate', dir: 'desc'}]">
+                                    <kendo-grid-column field="activityCode" title="{{'label.eventCode' | translate}}"
+                                        [headerClass]="'multiline-header'">
+                                        <ng-template kendoGridCellTemplate let-dataItem>
+                                            <a class="k-link"
+                                                (click)="openActivityPopup(dataItem)">{{dataItem.activityCode}}</a>
+                                        </ng-template>
+                                    </kendo-grid-column>
+
+                                    <kendo-grid-column field="activityLevel"
+                                        title="{{'label.activityLevel' | translate}}"
+                                        [headerClass]="'multiline-header'">
+                                    </kendo-grid-column>
+
+                                    <kendo-grid-column field="activityDescription"
+                                        title="{{'label.activityDescription' | translate}}"
+                                        [headerClass]="'multiline-header'">
+                                    </kendo-grid-column>
+
+                                    <kendo-grid-column field="activityDate" title="{{'label.activityDates' | translate}}"
+                                        format="{0:{{DATE_FORMAT}}}" [headerClass]="'multiline-header'">
+                                    </kendo-grid-column>
+
+                                    <kendo-grid-column field="location" title="{{'label.location' | translate}}"
+                                        [headerClass]="'multiline-header'">
+                                    </kendo-grid-column>
+
+                                    <kendo-grid-column field="remark" title="{{'label.remark' | translate}}"
+                                        [headerClass]="'multiline-header'">
+                                    </kendo-grid-column>
+
+                                    <kendo-grid-column width="30" *ngIf="stringHelper.caseIgnoredCompare(model.status,shipmentStatus.Active)">
+                                        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                            <div *ngIf="currentUser.isInternal || isAgentUser || dataItem.createdBy === currentUser.username">
+                                                <div kendoTooltip #tooltip="kendoTooltip"
+                                                    [tooltipTemplate]="actionMenuTooltip" filter="button" showOn="click"
+                                                    position="left" offset="-20" showAfter="200">
+                                                    <button #activityButton type="button" class="btn">
+                                                        <fa-icon [icon]="faEllipsisV"></fa-icon>
+                                                    </button>
+                                                </div>
+
+                                                <ng-template #actionMenuTooltip let-anchor>
+                                                    <div class="row action-button"
+                                                        (click)="onEditActivityClick(dataItem); tooltip.toggle(activityButton)">
+                                                        <button type="button" class="btn">
+                                                            <fa-icon [icon]="faPencilAlt" class="action-grid-icon">
+                                                            </fa-icon>
+                                                            <span
+                                                                class="action-grid-label">{{'label.edit' | translate}}</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="row action-button"
+                                                        (click)="onDeleteActivityClick(dataItem.id); tooltip.toggle(activityButton)">
+                                                        <button type="button" class="btn">
+                                                            <fa-icon [icon]="faTrashAlt" class="action-grid-icon"></fa-icon>
+                                                            <span
+                                                                class="action-grid-label">{{'tooltip.delete' | translate}}</span>
+                                                        </button>
+                                                    </div>
+                                                </ng-template>
+                                            </div>
+                                        </ng-template>
+                                    </kendo-grid-column>
+                                </kendo-grid>
+                            </ng-template>
+                        </kendo-grid>
+                        <app-shipment-activity-form *ngIf="activityFormOpened" [activityFormOpened]="activityFormOpened"
+                            [allEventOptions]="allEventOptions"
+                            [activityFormMode]="activityFormMode" (add)="onActivityAdded($event)"
+                            (edit)="onActivityEdited($event)" (close)="onActivityFormClosed()"
+                            [orderType]="model.orderType"
+                            [model]="activityDetails" [shipmentId]="model.id" [heightPopup]="heightActivity">
+                        </app-shipment-activity-form>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+
+                <kendo-tabstrip-tab [title]="'label.itinerary' | translate">
+                    <ng-template kendoTabContent>
+                        <div class="title-grid mt-0 clearfix" *ngIf="stringHelper.caseIgnoredCompare(model.status, shipmentStatus.Active)">
+                            <h5 class="float-left">{{'label.itinerary' | translate}}
+                                <span kendoTooltip [tooltipTemplate]="tooltipTemplate" *ngIf="model.fulfillmentStage >= poFulfillmentStageType.ForwarderBookingConfirmed && model.modeOfTransport !== modeOfTransportType.Air"
+                                    tooltipClass="itinerary-info-tooltip-container" position="right" filter="button">
+                                        <button *ngIf="!isItineraryInfoMouseEnter" type="button"
+                                            (mouseenter) ="isItineraryInfoMouseEnter = true"
+                                            (mouseleave) ="isItineraryInfoMouseEnter = false"
+                                            class="btn grid-green-icon-button">
+                                            <fa-icon [icon]="faInfo"></fa-icon>
+                                        </button>
+                                        <button *ngIf="isItineraryInfoMouseEnter" type="button"
+                                            (mouseenter) ="isItineraryInfoMouseEnter = true"
+                                            (mouseleave) ="isItineraryInfoMouseEnter = false"
+                                            class="btn grid-edit-icon-button" (click)="onEditItineraryConfirmClick()">
+                                            <fa-icon [icon]="faPencilAlt"></fa-icon>
+                                        </button>
+                                        <ng-template #tooltipTemplate let-anchor>
+                                            <div class="itinerary-info-tooltip">
+                                                <ng-container *ngIf="isItineraryTooltipEmpty; else confirmItineraryInfo">
+                                                    {{(isCFSMovement ? 'label.updateCFSClosingDates' : 'label.updateCYClosingDates') | translate}}
+                                                </ng-container>
+                                                <ng-template #confirmItineraryInfo>
+                                                    <span *ngIf="isCFSMovement">{{'label.cfsClosingDates' | translate}} <strong>{{model.cfsClosingDate | date: DATE_FORMAT | default: defaultValue}}</strong> {{'label.at' | translate | lowercase}} <strong>{{model.cfsWarehouseDescription | default: defaultValue}}</strong></span>
+                                                    <span *ngIf="!isCFSMovement">{{'label.cyClosingDates' | translate}} <strong>{{model.cyClosingDate | date: DATE_FORMAT | default: defaultValue}}</strong> {{'label.at' | translate | lowercase}} <strong>{{model.cyEmptyPickupTerminalDescription | default: defaultValue}}</strong></span>
+                                                </ng-template>
+                                            </div>
+                                        </ng-template>
+                                </span>
+                            </h5>
+                            <button class="btn header-button add-new-button float-right" type="button" (click)="onAddItineraryClick()"
+                                *hasPermission="[AppPermissions.Consignment_Detail_Edit]" [disabled]="isDisabledAddItineraryButton">
+                                <div class="icon-circle">
+                                    <fa-icon [icon]="faPlus"></fa-icon>
+                                </div>
+                                <span class="icon-circle-label">{{'label.addNew' | translate}}</span>
+                            </button>
+                            <ng-container *ngIf="model.fulfillmentId">
+                                <button class="btn header-button btn-color-blue float-right" type="button"
+                                    *hasPermission="[AppPermissions.Shipment_Detail_Confirm_Itinerary]"
+                                    [disabled]="(itineraries === undefined || itineraries.length == 0 || model.isItineraryConfirmed)"
+                                    (click)="onConfirmItineraryClick()">
+                                    <fa-icon [icon]="faCheck" class=""></fa-icon>
+                                    <span>{{'label.confirm' | translate}}</span>
+                                </button>
+                            </ng-container>
+                        </div>
+
+                        <kendo-grid #grid="kendoGrid" [data]="itineraries | orderBy:'sequence'" [scrollable]="'vertical'">
+                            <kendo-grid-column field="modeOfTransport" title="{{'label.modeOfTransport' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="carrierName" title="{{'label.carrier' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="vesselFlight" title="{{'label.vesselFlight' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                    <a *ngIf="isCanClickVesselFlight && dataItem.scheduleId else vesselFlightText" target="_blank" routerLink="/freight-schedulers/schedule-detail/{{dataItem.scheduleId}}">{{dataItem.vesselFlight}}</a>
+
+                                    <ng-template #vesselFlightText>{{dataItem.vesselFlight}}</ng-template>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="loadingPort" title="{{'label.loadingPort' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="etdDate" format="{0:{{DATE_FORMAT}}}" title="{{'label.etdDates' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                    {{ dataItem.modeOfTransport.toLowerCase() === modeOfTransportType.Air.toLowerCase() ? (dataItem.etdDate | date: "MM/dd/yyyy hh:mm' 'a") : (dataItem.etdDate | date: DATE_FORMAT) }}
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="dischargePort" title="{{'label.dischargePort' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="etaDate" format="{0:{{DATE_FORMAT}}}" title="{{'label.etaDates' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                    {{ dataItem.modeOfTransport.toLowerCase() === modeOfTransportType.Air.toLowerCase() ? (dataItem.etaDate | date: "MM/dd/yyyy hh:mm' 'a") : (dataItem.etaDate | date: DATE_FORMAT) }}
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <ng-container *hasPermission="[AppPermissions.Consignment_Detail_Edit]">
+                                <kendo-grid-command-column *ngIf="stringHelper.caseIgnoredCompare(model.status,shipmentStatus.Active)" width="40" [headerStyle]="{'text-align': 'center'}" [headerClass]="'multiline-header'" class="action-column-grid col-action">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                        <div kendoTooltip #tooltip="kendoTooltip" [tooltipTemplate]="actionMenuTooltip" filter="button"
+                                            showOn="click" position="left" offset="-20" showAfter="200">
+                                            <button #itineraryButton type="button" class="btn">
+                                                <fa-icon [icon]="faEllipsisV"></fa-icon>
+                                            </button>
+                                        </div>
+
+                                        <ng-template #actionMenuTooltip let-anchor>
+                                            <div class="row action-button"
+                                                (click)="onEditItineraryClick(dataItem); tooltip.toggle(itineraryButton)">
+                                                <button type="button" class="btn">
+                                                    <fa-icon [icon]="faPencilAlt" class="action-grid-icon">
+                                                    </fa-icon>
+                                                    <span class="action-grid-label">{{'label.edit' | translate}}</span>
+                                                </button>
+                                            </div>
+                                            <div class="row action-button" *ngIf="canDeleteItinerary(dataItem.id)"
+                                                (click)="onDeleteItineraryClick(dataItem); tooltip.toggle(itineraryButton)">
+                                                <button type="button" class="btn">
+                                                    <fa-icon [icon]="faTrashAlt" class="action-grid-icon"></fa-icon>
+                                                    <span class="action-grid-label">{{'tooltip.delete' | translate}}</span>
+                                                </button>
+                                            </div>
+                                        </ng-template>
+                                    </ng-template>
+                                </kendo-grid-command-column>
+                            </ng-container>
+                        </kendo-grid>
+                        <app-consignment-itinerary-form
+                            [consignments]='consignment'
+                            [itineraries]='itineraries'
+                            [shipment]='model'
+                            [formDialogOpened]="consignmentItineraryFormDialogOpened"
+                            (close)="onConsignmentItineraryFormDialogClosed()"
+                            [itineraryFormMode]="consignmentItineraryFormMode"
+                            (add)="onConsignmentItineraryAdded($event)"
+                            (edit)="onConsignmentItineraryEdited($event)"
+                            [model]="itineraryDetails">
+                        </app-consignment-itinerary-form>
+
+                        <div class="title-grid mt-4 clearfix">
+                            <h5 class="float-left">{{'label.consignment' | translate}}</h5>
+                            <ng-container *ngIf="stringHelper.caseIgnoredCompare(model.status,shipmentStatus.Active)">
+                                <button class="btn header-button add-new-button float-right" type="button"
+                                    [disabled]="isDisableAddNewConsignment"
+                                    (click)="onAddConsignmentClick()" *hasPermission="[AppPermissions.Consignment_Detail_Add]">
+                                    <div class="icon-circle">
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                    </div>
+                                    <span class="icon-circle-label">{{'label.addNew' | translate}}</span>
+                                </button>
+                            </ng-container>
+                        </div>
+
+                        <kendo-grid #grid="kendoGrid" [data]="consignment" [scrollable]="'vertical'">
+                            <kendo-grid-column field="id" title="{{'label.consignmentId' | translate}}" [filterable]="true" [sortable]="true" [class]="isViewableConsigneeDetail ? 'link-code':''" [width]="150">
+                                <ng-template *ngIf="isViewableConsigneeDetail" kendoGridCellTemplate let-dataItem>
+                                    <a class="k-link" [title]="dataItem.id" routerLinkActive="active" routerLink="/consignments/view/{{dataItem.id}}" target="_blank">{{dataItem.id}}</a>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="sequence" title="{{'label.sequence' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="consignmentType" title="{{'label.consignmentType' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="consignmentDate" format="{0:{{DATE_FORMAT}}}" title="{{'label.consignmentDates' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="executionAgent" title="{{'label.executionAgent' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="shipFrom" title="{{'label.shipFrom' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="shipTo" title="{{'label.shipTo' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="status" title="{{'label.status' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                    <span [className]="dataItem.status.toLowerCase().trim() === 'active' ? 'active-status' : 'inactive-status'">{{dataItem.status}}</span>
+                                </ng-template>
+                            </kendo-grid-column>
+                        </kendo-grid>
+                        <app-consignment-form-dialog [consignmentFormDialogOpened]="consignmentFormDialogOpened"
+                            [consignments]="consignment"
+                            (add)="onConsignmentAdded($event)" (close)="onConsignmentFormDialogClosed()">
+                        </app-consignment-form-dialog>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+
+                <kendo-tabstrip-tab [title]="'label.cargoDetails' | translate" >
+                    <ng-template kendoTabContent>
+                        <div *ngIf="!model.isFCL && model.modeOfTransport === modeOfTransportType.Sea">
+                            <h5 class="title-grid mt-0">{{'label.consolidation' | translate}}</h5>
+                            <kendo-grid #grid="kendoGrid" [data]="consolidation" [scrollable]="'vertical'">
+                                <kendo-grid-column field="consolidationNo" title="{{'label.loadPlanId' | translate}}">
+                                    <ng-template kendoGridCellTemplate let-dataItem *hasPermission="[AppPermissions.Shipment_ConsolidationDetail]">
+                                        <a class="k-link" target="_blank" routerLink="/consolidations/{{dataItem.id}}" routerLinkActive="active">{{dataItem.consolidationNo}}</a>
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="originCFS" title="{{'label.originCFS' | translate}}">
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="cfsCutoffDate" format="{0:{{DATE_FORMAT}}}" title="{{'label.cfsCutoffDates' | translate}}">
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="containerNo" title="{{'label.containerNo' | translate}}">
+                                    <ng-template kendoGridCellTemplate let-dataItem>
+                                        <ng-container *ngIf="!isCanClickContainer || !dataItem.containerId || dataItem.stage !== ConsolidationStage.Confirmed else clickableContainerNumberTemplate">
+                                            {{dataItem.containerNo}}
+                                        </ng-container>
+                                        <ng-template #clickableContainerNumberTemplate>
+                                            <a class="k-link" target="_blank" routerLink="/containers/{{dataItem.containerId}}" routerLinkActive="active">{{dataItem.containerNo}}</a>
+                                        </ng-template>
+                                    </ng-template>
+                                </kendo-grid-column>
+                            </kendo-grid>
+                        </div>
+
+                        <h5 class="title-grid {{model.isFCL ? 'mt-0' : ''}}">{{'label.cargoDetails' | translate}}</h5>
+                        <kendo-grid #grid="kendoGrid" [data]="cargoDetail" [scrollable]="'vertical'">
+                            <kendo-grid-column field="shippingMarks" title="{{'label.shippingMarks' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="description" title="{{'label.cargoDescription' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    {{dataItem.description | showless: 100}} <a class="k-link" *ngIf="dataItem.description?.length > 100" style="font-weight: normal;" (click)="seeMoreCargoDescription(dataItem.description)">{{'label.seeMore' | translate | lowercase}}</a>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="unit" title="{{'label.unitQuantity' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    {{ dataItem.unit | number:'0.0-0' }} {{dataItem.unitUOM }}
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="package" title="{{'label.package' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    {{dataItem.package | number:'0.0-0' }} {{dataItem.packageUOM }}
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="volume" title="{{'label.volume' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    {{dataItem.volume | number:'0.3' }} {{dataItem.volumeUOM }}
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="grossWeight" title="{{'label.grossWeight' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    {{dataItem.grossWeight | number:'0.2' }} {{dataItem.grossWeightUOM }}
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <!-- Customer PO # -->
+                            <kendo-grid-column field="customerPONumber" title="{{'label.poNo' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex>
+                                    <div *ngIf="!dataItem.purchaseOrderId; else linkedCustomerPONumber">
+                                        {{dataItem.customerPONumber}}
+                                    </div>
+                                    <ng-template #linkedCustomerPONumber>
+                                        <a *ngIf="dataItem.orderType === 1 && isCanClickPO" class="k-link" target="_blank" routerLink="/purchase-orders/{{dataItem.purchaseOrderId}}" routerLinkActive="active">{{dataItem.customerPONumber}}</a>
+                                        <a *ngIf="dataItem.orderType === 2 && isCanClickPO" class="k-link" target="_blank" routerLink="/cruise-orders/view/{{dataItem.purchaseOrderId}}" routerLinkActive="active">{{dataItem.customerPONumber}}</a>
+
+                                        <span *ngIf="!isCanClickPO"> {{dataItem.customerPONumber}} </span>
+                                    </ng-template>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="lineOrder" title="{{'label.poSeq' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="productCode" title="{{'label.itemNo' | translate}}">
+                            </kendo-grid-column>
+                        </kendo-grid>
+
+                        <app-cargo-description-detail-popup *ngIf="openCargoDescriptionDetailPopup"
+                            [cargoDescription]="cargoDescriptionDetail"
+                            (close)="onCargoDescriptionDetailPopupClosed()">
+                        </app-cargo-description-detail-popup>
+
+                        <div *ngIf="model.isFCL">
+                            <h5 class="title-grid">{{'label.container' | translate}}</h5>
+                            <kendo-grid #grid="kendoGrid" [data]="container" [scrollable]="'vertical'">
+                                <kendo-grid-column field="containerNo" title="{{'label.containerNo' | translate}}">
+                                    <ng-template *ngIf="isCanClickContainer" kendoGridCellTemplate let-dataItem>
+                                        <a class="k-link" target="_blank" routerLink="/containers/{{dataItem.id}}" routerLinkActive="active">{{dataItem.containerNo}}</a>
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="containerTypeName" title="{{'label.containerType' | translate}}">
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="sealNo" title="{{'label.sealNo' | translate}}">
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="totalGrossWeight" title="{{'label.grossWeight' | translate}}">
+                                    <ng-template kendoGridCellTemplate let-dataItem>
+                                        {{dataItem.totalGrossWeight | number:'0.2' }} {{dataItem.totalGrossWeightUOM }}
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="totalNetWeight" title="{{'label.netWeight' | translate}}">
+                                    <ng-template kendoGridCellTemplate let-dataItem>
+                                        {{dataItem.totalNetWeight | number:'0.2' }} {{dataItem.totalNetWeightUOM }}
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="totalVolume" title="{{'label.volume' | translate}}">
+                                    <ng-template kendoGridCellTemplate let-dataItem>
+                                        {{dataItem.totalVolume | number:'0.3' }} {{dataItem.totalVolumeUOM }}
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="latestActivity" title="{{'label.latestActivity' | translate}}">
+                                </kendo-grid-column>
+                            </kendo-grid>
+                        </div>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+
+                <kendo-tabstrip-tab [title]="'label.contact' | translate">
+                    <ng-template kendoTabContent>
+                        <kendo-grid #grid="kendoGrid" [data]="contacts | contactSequence" [scrollable]="'vertical'">
+                            <kendo-grid-column field="organizationRole" title="{{'label.organizationRole' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="companyName" title="{{'label.company' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="address" title="{{'label.address' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                    <div [innerHTML]="dataItem.address | linebreak"></div>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="contactName" title="{{'label.contactName' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="contactNumber" title="{{'label.contactNumber' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="contactEmail" title="{{'label.contactEmail' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                    <a breakLine title="{{dataItem.contactEmail}}">{{dataItem.contactEmail}}</a>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                        </kendo-grid>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+
+                <kendo-tabstrip-tab [title]="'label.attachment' | translate">
+                    <ng-template kendoTabContent>
+                        <div class="col-sm text-right top-bar-container padding-bottom" *ngIf="stringHelper.caseIgnoredCompare(model.status,shipmentStatus.Active)">
+                            <button type="button" class="btn header-button upload-button" (click)="uploadAttachment()">
+                                <div class="icon-circle">
+                                    <fa-icon [icon]="faCloudUploadAlt"></fa-icon>
+                                </div>
+                                <span class="icon-circle-label">{{'label.upload' | translate}}</span>
+                            </button>
+
+                            <button type="button" class="btn header-button download-button" (click)="downloadAttachments()" [disabled]="selectedAttachments.length == 0">
+                                <fa-icon [icon]="faCloudDownloadAlt"></fa-icon>
+                                {{'label.download' | translate}}
+                            </button>
+
+                            <button type="button" class="btn header-button upload-button" [disabled]="selectedAttachments.length == 0" data-toggle="modal" data-target="#shareFileModal">
+                                <div class="icon-circle">
+                                    <fa-icon [icon]="faShare"></fa-icon>
+                                </div>
+                                <span class="icon-circle-label">{{'label.share' | translate}}</span>
+                            </button>
+                        </div>
+
+                        <kendo-grid #grid="kendoGrid" [data]="attachments" [scrollable]="'vertical'" [selectable]="{enabled: true, checkboxOnly: true }"
+                            [kendoGridSelectBy]="selectAttachment" [selectedKeys]="selectedAttachments">
+                            <kendo-grid-checkbox-column showSelectAll="true" [width]="50"></kendo-grid-checkbox-column>
+
+                            <kendo-grid-column field="documentLevel" title="{{'label.documentLevel' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    {{getDocumentLevelText(dataItem.documentLevel)}}
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="attachmentType" title="{{'label.documentType' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="fileName" title="{{'label.fileName' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    <a class="k-link" target="_blank" (click)="downloadFile(dataItem.id, dataItem.fileName)">{{dataItem.fileName}}</a>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="referenceNo" title="{{'label.referenceNo' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="uploadedBy" title="{{'label.uploadedBy' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                    <a title="{{dataItem.uploadedBy}}">{{dataItem.uploadedBy}}</a>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="uploadedDate" title="{{'label.uploadedDates' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                    {{dataItem.uploadedDateTime | convertUTCDateToLocalDate | date : "MM/dd/yyyy hh:mm' 'a"}}
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column width="30" *ngIf="stringHelper.caseIgnoredCompare(model.status,shipmentStatus.Active)">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                    <div *ngIf="(currentUser.isInternal || dataItem.uploadedBy === currentUser.username) && dataItem.documentLevel === documentLevel.Shipment">
+                                        <div kendoTooltip #tooltip="kendoTooltip" [tooltipTemplate]="actionMenuTooltip" filter="button"
+                                            showOn="click" position="left" offset="-20" showAfter="200">
+                                            <button #attachmentButton type="button" class="btn">
+                                                <fa-icon [icon]="faEllipsisV"></fa-icon>
+                                            </button>
+                                        </div>
+
+                                        <ng-template #actionMenuTooltip let-anchor>
+                                            <div class="row action-button" (click)="editAttachment(dataItem.id); tooltip.toggle(attachmentButton)">
+                                                <button type="button" class="btn">
+                                                    <fa-icon [icon]="faPencilAlt" class="action-grid-icon"></fa-icon>
+                                                    <span class="action-grid-label">{{'label.edit' | translate}}</span>
+                                                </button>
+                                            </div>
+                                            <div class="row action-button" (click)="deleteAttachment(dataItem.id); tooltip.toggle(attachmentButton)">
+                                                <button type="button" class="btn">
+                                                    <fa-icon [icon]="faTrashAlt" class="action-grid-icon"></fa-icon>
+                                                    <span class="action-grid-label">{{'tooltip.delete' | translate}}</span>
+                                                </button>
+                                            </div>
+                                        </ng-template>
+                                    </div>
+                                </ng-template>
+                            </kendo-grid-column>
+                        </kendo-grid>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+                <kendo-tabstrip-tab [title]="'label.dialog' | translate">
+                    <ng-template kendoTabContent>
+                        <app-shipment-note-list
+                            [shipmentId]="model.id"
+                            [cargoDetail]="cargoDetail"
+                            [currentUser]="currentUser"
+                            [canAddNote]="isEditMode"
+                            [canEditAllNotes]="isEditMode"
+                        ></app-shipment-note-list>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+            </kendo-tabstrip>
+
+            <app-share-file-dialog [fileList]="selectedAttachments"></app-share-file-dialog>
+            <app-attachment-upload-popup [formMode]="attachmentFormMode" [formOpened]="importFormOpened" (close)="importFormOpened = false;"
+            (add)="attachmentAddHandler($event)" (edit)="attachmentEditHandler($event)" [model]="attachmentModel"></app-attachment-upload-popup>
+        </div>
+
+    </div>
+</div>
+
+<app-shipment-add-house-bl-popup
+    [shipmentModel]="model"
+    [currentUser]="currentUser"
+    [consignments]="consignment"
+    [isOpenHouseBLPopup]="isOpenHouseBLPopup"
+    (houseBLPopupSavedSuccessfully)="houseBLPopupSavedSuccessfully()"
+    (houseBLPopupClosed)="houseBLPopupClosed()"
+    >
+</app-shipment-add-house-bl-popup>
+
+<app-shipment-add-master-bl-popup
+    [inputMetaData]="masterBLPopupMetaData"
+    (close)="onMasterBOLPopupClosed($event)">
+</app-shipment-add-master-bl-popup>
+
+<app-consolidation-popup
+    [popupOpened]="consolidationPopupOpened"
+    [consignments]="consignment"
+    (add)="onCreateConsolidation($event)"
+    (close)="onConsolidationPopupClosed()">
+</app-consolidation-popup>
+
+<app-shipment-itinerary-confirm-popup [isOpen]="confirmItineraryPopupOpened" [model]="confirmItineraryModel" [mode]="confirmItineraryPopupMode" [isCFSMovement]="isCFSMovement" [schedulerId]="firstItinerary?.scheduleId"
+    (close)="onConfirmItineraryPopupClosed()" (confirm)="onItineraryConfirm($event)" (save)="onItineraryConfirmSave($event)">
+</app-shipment-itinerary-confirm-popup>

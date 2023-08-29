@@ -1,0 +1,60 @@
+.question-container {
+    margin-top: 30px;
+}
+
+.answer-container {
+    margin-left: 14px;
+}
+
+.star-container {
+    display: flex;
+    margin-left: -14px;
+    &:hover {
+        cursor: pointer;
+    }
+    ::ng-deep {
+        fa-icon {
+            font-size: 20px;
+        }
+    }
+}
+
+.star-label-container {
+    display: flex;
+    justify-content: space-between;
+    .low-star-label {
+        width: 100px;
+        text-align: left;
+        margin-left: -11px;
+    }
+    .high-star-label {
+        width: 100px;
+        text-align: right;
+    }
+}
+
+.margin-bottom-star-container {
+    margin-bottom: 48px;
+}
+
+.question-text {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.include-text {
+    height: 30px !important;
+}
+
+.opt-input {
+    &::before {
+        top: 6px;
+    }
+    &::after {
+        top: 10px;
+    }
+}
+
+.ml-27 {
+    margin-left: 27px;
+}

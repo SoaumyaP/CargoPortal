@@ -1,0 +1,180 @@
+
+.error.itemLevel {
+    color: #f44336;
+    font-size: 1.5rem;
+}
+
+    .error.itemLevel p {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+.error.pageLevel {
+    color: #f44336;
+}
+
+.attrEntry input, select,
+.attrEntry textarea,
+.attrEntry select {
+    margin-bottom: 10px;
+    color: #333333;
+}
+
+#attributeVerification {
+    height: 530px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#attributeList ul {
+    list-style-type: none;
+    padding-left: 4px;
+}
+
+.attrEntry .error.itemLevel,
+.attrEntry .helpText,
+.attrEntry .tiny {
+    display: none !important;
+}
+
+    .attrEntry .error.itemLevel.show {
+        display: block !important;
+    }
+
+.divider {
+    display: none !important;
+}
+
+.error.itemLevel p {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.error.pageLevel {
+    color: #f44336;
+}
+
+.errorText {
+    background: inherit;
+    border: inherit;
+    margin: inherit;
+    padding: inherit;
+}
+
+.errorText,
+.verificationErrorText {
+    color: #f44336;
+}
+/* --------- End Error --------------------------- */
+
+.inner_container.signup {
+    padding: 50px 0 0 0;
+}
+
+.Password {
+    width: 397px;
+}
+
+    .Password #newPassword,
+    .Password #reenterPassword {
+        width: 100%;
+    }
+
+.intro p {
+    text-align: center;
+    height: 33px;
+    font-size: 24px;
+    color: #009FFF;
+    margin-top: 30px;
+    margin-bottom: 28.6px;
+    font-family: Noto Sans;
+    font-weight: bold;
+}
+
+.attrEntry label {
+    display: none;
+    padding: 0;
+    margin: 0;
+}
+
+/*.attrEntry .dropdown_single {
+    font-weight: 400;
+    height: calc(2.25rem + 2px);
+    padding-left: 15px;
+    width: 100%;
+    -webkit-box-sizing: border-box;*/ /* Safari/Chrome, other WebKit */
+    /*-moz-box-sizing: border-box;*/ /* Firefox, other Gecko */
+    /*box-sizing: border-box;*/ /* Opera/IE 8+ */
+    /*border-radius: 5px;
+    box-shadow: none;
+    border: 1px;
+    border-style: solid;
+    border-color: #D4D9E2;
+}*/
+
+.dropdown-menu {
+    width: unset !important;
+    top: unset !important;
+    bottom: 100%;
+    right: 2%;
+}
+    .dropdown-menu .dropdown-item {
+        display: block;
+        padding-left: 15px;
+        padding-right: 15px;
+        color: black;
+        text-decoration: none;
+    }
+
+div.verify button {
+    margin-bottom: 10px;
+    width: 397px;
+}
+
+div.buttons {
+    display: inline !important;
+}
+
+    div.buttons #cancel,
+    div.buttons #email_ver_but_resend,
+    div.buttons #email_ver_but_edit {
+        background-color: #DDF1FA;
+        color: #009FFF;
+        font-weight: bold;
+    }
+
+    div.buttons #continue, #cancel, #email_ver_but_verify, #email_ver_but_resend, #fake-continue {
+        width: 47.4%;
+    }
+
+    div.buttons #email_ver_input_label {
+        display: none !important;
+    }
+
+    div.buttons #cancel:hover,
+    div.buttons #email_ver_but_resend:hover,
+    div.buttons #email_ver_but_edit:hover {
+        background-color: rgb(172, 215, 235);
+    }
+
+@media screen and (max-width: 1366px) {
+    div .buttons #cancel {
+        margin-left: 3px;
+    }
+
+    .intro p {
+        font-size: 20px;
+    }
+}
+
+@media screen and (min-width: 1920px) {
+    div.buttons #cancel {
+        margin-left: 3px;
+    }
+
+    .intro p {
+        font-size: 24px;
+    }
+}

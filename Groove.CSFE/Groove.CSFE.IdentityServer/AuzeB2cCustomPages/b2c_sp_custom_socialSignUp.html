@@ -1,0 +1,148 @@
+<html>
+
+<head>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Noto+Serif|Nunito|Open+Sans|Quicksand" rel="stylesheet" />
+
+    <!-- QC cargoportalstorage.blob.core.windows.net -->
+    <!-- Staging uatshipmentportal.blob.core.windows.net -->
+    <!-- PRD cargofecsportal.blob.core.windows.net -->
+
+
+    <link href="https://cargoportalstorage.blob.core.windows.net/shipmentportalb2cui/images/favicon.ico" rel="icon" type="image/x-icon" />
+    <link href="https://cargoportalstorage.blob.core.windows.net/shipmentportalb2cui/styles/b2c_sp_custom_style.css" rel="stylesheet" />
+    <link href="https://cargoportalstorage.blob.core.windows.net/shipmentportalb2cui/styles/b2c_sp_custom_signUp_style.css" rel="stylesheet" />
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>Shipment Portal - Sign Up</title>
+</head>
+
+<body>
+    <div id="background_branding_container">
+        <img id="background_background_image" src="https://cargoportalstorage.blob.core.windows.net/shipmentportalb2cui/images/ship.png" alt="Illustration">
+    </div>
+    <div class="panel" id="panel">
+        <div class="api_container normaltext">
+            <div class="inner_container">
+                <img src="https://cargoportalstorage.blob.core.windows.net/shipmentportalb2cui/images/logo_v2.png" height="70" class="logo" />
+
+                <div id="api" data-name="SelfAsserted">
+                    <div class="intro">
+                        <p>Sign up to Cargo</p>
+                    </div>
+                    <div id="attributeVerification" role="form">
+
+                        <div class="attr" id="attributeList">
+                            <ul>
+                                <li class="TextBox">
+                                    <div class="attrEntry">
+                                        <div>
+                                            <div class="verificationInfoText" id="email_intro" style="display: inline;" aria-hidden="false" role="alert" aria-live="polite"></div>
+                                            <div class="verificationInfoText" id="email_info" style="display:none" aria-hidden="true"></div>
+                                            <div class="verificationSuccessText" id="email_success" style="display:none" aria-hidden="true"></div>
+                                            <div class="verificationErrorText error" id="email_fail_retry" style="display:none" aria-hidden="true">That code is incorrect. Please try again.</div>
+                                            <div class="verificationErrorText error" id="email_fail_no_retry" style="display:none" aria-hidden="true">You've made too many incorrect attempts. Please try again later.</div>
+                                            <div class="verificationErrorText error" id="email_fail_throttled" style="display:none" aria-hidden="true">There have been too many requests to verify this email address. Please wait a while, then try again.</div>
+                                            <div class="verificationErrorText error" id="email_fail_code_expired" style="display:none" aria-hidden="true">That code is expired. Please request a new code.</div>
+                                            <div class="verificationErrorText error" id="email_fail_server" style="display:none" aria-hidden="true">We are having trouble verifying your email address. Please enter a valid email address and try again.</div>
+                                            <div class="verificationErrorText error" id="email_incorrect_format" style="display:none" aria-hidden="true"></div>
+                                        </div>
+
+                                        <label for="email">Email Address</label>
+
+                                        <div class="error itemLevel" aria-hidden="true"><p>Please enter a valid email address.</p></div>
+
+
+                                        <input id="email" class="textInput" type="text" placeholder="Email Address" pattern="^[a-zA-Z0-9!#$%&amp;'+^_`{}~-]+(?:\.[a-zA-Z0-9!#$%&amp;'+^_`{}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$" title="Email address that can be used to contact you." required="" aria-required="true" aria-label="Please enter a valid email address., Email Address">
+
+                                        <a href="javascript:void(0)" data-help="Email address that can be used to contact you." class="helpLink tiny">What is this?</a>
+
+                                        <div class="buttons verify" claim_id="email">
+                                            <div id="email_success_screenreader_msg" aria-label="E-mail address verified. You can now continue."></div>
+                                            <label id="email_ver_input_label" for="email_ver_input" aria-hidden="true" style="display: none;">Verification code</label>
+                                            <input id="email_ver_input" class="verifyInput" type="text" placeholder="Verification code" style="display:none" aria-hidden="true">
+                                            <button id="email_ver_but_send" class="sendButton" type="button" style="display: none;" aria-label="Send verification code" aria-hidden="false">Send verification code</button>
+                                            <button id="email_ver_but_verify" class="verifyButton" type="button" style="display:none" aria-label="Verify code" aria-hidden="true">Verify code</button>
+                                            <button id="email_ver_but_resend" class="sendButton" type="button" style="display:none" aria-label="Send new code" aria-hidden="true">Send new code</button>
+
+                                            <button id="email_ver_but_edit" class="editButton" type="button" style="display:none" aria-label="Change e-mail" aria-hidden="true">Change email</button>
+
+                                            <button id="email_ver_but_default" class="defaultButton" type="button" style="display:none" aria-label="Default">Default</button>
+                                        </div>
+
+
+
+                                    </div>
+
+                                <li class="TextBox">
+                                    <div class="attrEntry">
+
+                                        <label for="extension_Phone">Phone</label>
+                                        <div class="error itemLevel" aria-hidden="true"><p></p></div>
+
+                                        <input id="extension_Phone" class="textInput" type="text" placeholder="Phone" title="Phone number" aria-label=", Phone">
+
+                                        <a href="javascript:void(0)" data-help="Phone number" class="helpLink tiny">What is this?</a>
+                                    </div>
+                                </li>
+                                <li class="TextBox">
+                                    <div class="attrEntry">
+
+                                        <label for="displayName">Display name</label>
+
+                                        <div class="error itemLevel" aria-hidden="true"><p>This information is required.</p></div>
+
+
+                                        <input id="displayName" class="textInput" type="text" placeholder="Display name" title="Your display name." required="" aria-required="true" aria-label="This information is required., Display name">
+
+
+
+
+
+
+
+
+                                        <a href="javascript:void(0)" data-help="Your display name." class="helpLink tiny">What is this?</a>
+                                    </div>
+                                </li>
+                                <li class="TextBox">
+                                    <div class="attrEntry">
+
+                                        <label for="extension_CompanyName">Company name</label>
+
+                                        <div class="error itemLevel" aria-hidden="true"><p>This information is required.</p></div>
+
+
+                                        <input id="extension_CompanyName" class="textInput" type="text" placeholder="Company name" title="Company Name" required="" aria-required="true" aria-label="This information is required., Company name">
+
+
+
+
+
+
+
+
+                                        <a href="javascript:void(0)" data-help="Company Name" class="helpLink tiny">What is this?</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="buttons">
+                            <button id="continue" disabled="" aria-label="Create">Create</button>
+                            <button id="cancel" aria-label="Cancel" formnovalidate="">Cancel</button>
+                        </div>
+
+                        <div class="verifying-modal">
+                            <div id="verifying_blurb"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

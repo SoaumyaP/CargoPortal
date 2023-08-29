@@ -1,0 +1,486 @@
+﻿@using Groove.SP.Core.Models;
+@model Groove.SP.Application.WarehouseFulfillment.ViewModels.WarehouseSOFormViewModel
+@using System.Globalization;
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" type="text/css"
+          href="https://fonts.googleapis.com/css?family=Noto+Sans+SC:400,700|Noto+Sans+TC:400,700|Noto+Sans:400,400i,700&subset=chinese-simplified,chinese-traditional">
+    <style>
+        body {
+            width: 100%;
+            font-family: 'Noto Sans SC', sans-serif;
+            font-family: 'Noto Sans TC', sans-serif;
+            font-family: 'Noto Sans', sans-serif;
+            font-family: 'Microsoft Yahei';
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 99.4%;
+            page-break-inside: auto;
+
+        }
+
+        td,
+        th {
+            font-size: 14px;
+            text-align: left;
+            padding: 8px;
+            border: 1px solid #000;
+            min-width: 35px;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+
+        .customer-info-tbl {
+            border: 0 !important;
+            width: 100% !important;
+        }
+        .customer-info-tbl td {
+            padding: 0;
+            margin: 0;
+            border: 0 !important;
+        }
+
+        .product-table th, td:first-child:not(.infor-table th,td) {
+            border-top: 0;
+        }
+
+        .product-table th, .product-table td {
+            text-align: center;
+            padding: 4px;
+        }
+
+        .remarks-table td:first-child {
+            border-top: 0;
+        }
+        .logo{
+            padding:1px;
+        }
+        .title {
+            font-weight: bold;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .part-break {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .sub-title {
+            font-size: 12px;
+            color: #0054a6;
+        }
+
+        .text-right {
+            text-align: right !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-break-line {
+            white-space: pre-line
+        }
+
+        .w-50 {
+            width: 50%;
+        }
+
+        .w-25 {
+            width: 25%;
+        }
+
+        .w-75 {
+            width: 75%;
+        }
+
+        .mt-1 {
+            margin-top: .25rem;
+        }
+        .big-font-size {
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <table class="info-table">
+        <tr>
+            <td class="text-center" colspan="4">
+                <div class="title">SHIPPING ORDER FORM</div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" class="logo">
+                @if (!string.IsNullOrEmpty(Model.FixedLogo))
+                {
+                    <img style="float:left" src="@Model.FixedLogo" />
+                }
+                @if (!string.IsNullOrEmpty(Model.CustomerLogo))
+                {
+                    <img style="float:right; height:94px" src="@Model.CustomerLogo" />
+                }
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="w-50">
+                <div class="title big-font-size">Cargo Services Far East Limited</div>
+            </td>
+            <td colspan="2" rowspan="4" class="w-50">
+                <table class="customer-info-tbl">
+                    <tr>
+                        <td colspan="3" rowspan="4" class="w-25">
+                            @if (Model.QRCode != null)
+                            {
+                            <img src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(Model.QRCode))" height="140" width="140"/> 
+                            }
+                        </td>
+                        <td colspan="8" rowspan="4" class="text-right w-75">
+                            <div class="title">Customer: <span class="big-font-size">@Model.CompanyName</span></div>
+                            <div class="text-break-line">@Model.CustomerAddress</div>
+                            <div class="text-break-line">@Model.CustomerAddressLine2</div>
+                            <div class="text-break-line">@Model.CustomerAddressLine3</div>
+                            <div class="text-break-line">@Model.CustomerAddressLine4</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td><div class="title">Contact Name</div></td>
+            <td><div class="">@Model.ContactPerson</div></td>
+        </tr>
+        <tr>
+            <td><div class="title">Contact Number</div></td>
+            <td><div class="">@Model.ContactPhone</div></td>
+        </tr>
+        <tr>
+            <td><div class="title">Contact Email</div></td>
+            <td><div class="">@Model.ContactEmail</div></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div class="title">Delivery Address: <span class="big-font-size">@Model.LocationName</span></div>
+                <div class="">@Model.AddressLine1</div>
+                <div class="">@Model.AddressLine2</div>
+                <div class="">@Model.AddressLine3</div>
+                <div class="">@Model.AddressLine4</div>
+            </td>
+            <td colspan="2" class="text-right">
+                <div class="title">Supplier: <span class="big-font-size">@Model.SupplierCompanyName</span></div>
+                <div class="text-break-line">@Model.SupplierAddress</div>
+                <div class="text-break-line">@Model.SupplierAddressLine2</div>
+                <div class="text-break-line">@Model.SupplierAddressLine3</div>
+                <div class="text-break-line">@Model.SupplierAddressLine4</div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><div class="text-break-line"><span class="title">Working hours:</span> @Model.WorkingHours</div>
+            @{
+                    if (string.IsNullOrWhiteSpace(Model.WorkingHours))
+                    {
+                        <br />
+                    }
+            }
+            </td>
+            <td colspan="2" class="text-right">
+                <div><span class="title">SO No.: </span>@Model.ShipmentNo </div>
+                <div><span class="title">Booking No.: </span>@Model.BookingNo </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="title">Company No.</div>
+                <div class="">
+                @{
+                    if (!string.IsNullOrWhiteSpace(Model.CompanyNo))
+                    {
+                        <div>@Model.CompanyNo</div>
+                    }
+                    else
+                    {
+                        <br />
+                    }
+                }
+                </div>
+            </td>
+            <td>
+                <div class="title">Plant No.</div>
+                <div>
+                @{
+                    if (!string.IsNullOrWhiteSpace(Model.PlanNo))
+                    {
+                        <div>@Model.PlanNo</div>
+                    }
+                    else
+                    {
+                        <br />
+                    }
+                }
+                </div>
+            </td>
+            <td>
+                <div class="title">Actual Time Arrival </div>
+                <div class="">
+                @{
+                    if (!string.IsNullOrWhiteSpace(Model.ActualTimeArrival))
+                    {
+                        <div>@Model.ActualTimeArrival</div>
+                    }
+                    else
+                    {
+                        <br />
+                    }
+                }
+                </div>
+            </td>
+            <td>
+                <div class="title">Confirmed Hub Arrival Date </div>
+                <div class="">
+                @{
+                    if (!string.IsNullOrWhiteSpace(Model.ConfirmedHubArrivalDate))
+                    {
+                        <div>
+                        @{
+                            if(Model.ConfirmedHubArrivalDate.Split(" ")[0] == Model.ExpectedHubArrivalDate)
+                            {
+                                @Model.ConfirmedHubArrivalDate
+                            }
+                            else
+                            {
+                                <del>@Model.ExpectedHubArrivalDate</del> @Model.ConfirmedHubArrivalDate
+                            }
+                        }
+                        </div>
+                    }
+                    else
+                    {
+                        <br />
+                    }
+                }
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="title">Container No.</div>
+                <div class="">
+                @{
+                    if (!string.IsNullOrWhiteSpace(Model.ContainerNo))
+                    {
+                        <div>@Model.ContainerNo</div>
+                    }
+                    else
+                    {
+                        <br />
+                    }
+                }
+                </div>
+            </td>
+            <td>
+                <div class="title">HAWB No.</div>
+                <div>
+                @{
+                    if (!string.IsNullOrWhiteSpace(Model.HAWBNo))
+                    {
+                        <div>@Model.HAWBNo</div>
+                    }
+                    else
+                    {
+                        <br />
+                    }
+                }
+                </div>
+            </td>
+            <td>
+                <div class="title">Delivery Mode</div>
+                <div class="">
+                @{
+                    if (!string.IsNullOrWhiteSpace(Model.DeliveryMode))
+                    {
+                        <div>@Model.DeliveryMode</div>
+                    }
+                    else
+                    {
+                        <br />
+                    }
+                }
+                </div>
+            </td>
+            <td>
+                <div class="title">Incoterms</div>
+                @{
+                    if (Model.Incoterm != 0)
+                    {
+                        <div>@Model.Incoterm</div>
+                    }
+                    else
+                    {
+                        <br />
+                    }
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="title">ETD Origin</div>
+                <div class="">
+                @{
+                    if (!string.IsNullOrWhiteSpace(Model.ETDOrigin))
+                    {
+                        <div>@Model.ETDOrigin</div>
+                    }
+                    else
+                    {
+                        <br />
+                    }
+                }
+                </div>
+            </td>
+            <td>
+                <div class="title">ETA Destination</div>
+                <div>
+                @{
+                    if (!string.IsNullOrWhiteSpace(Model.ETADestination))
+                    {
+                        <div>@Model.ETADestination</div>
+                    }
+                    else
+                    {
+                        <br />
+                    }
+                }
+                </div>
+            </td>
+            <td>
+                <div class="title">Origin</div>
+                <div class="">
+                @{
+                    if (!string.IsNullOrWhiteSpace(Model.ShipFromName))
+                    {
+                        <div>@Model.ShipFromName</div>
+                    }
+                    else
+                    {
+                        <br />
+                    }
+                }
+                </div>
+            </td>
+            <td>
+                <div class="title">Name of International Account</div>
+                <div class="">
+                @{
+                    if (!string.IsNullOrWhiteSpace(Model.NameofInternationalAccount))
+                    {
+                        <div>@Model.NameofInternationalAccount</div>
+                    }
+                    else
+                    {
+                        <br />
+                    }
+                }
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="text-center " colspan="4"><div class="title">PARTICULARS FURNISHED BY VENDOR</div> </td>
+        </tr>
+    </table>
+
+    <table class="product-table">
+        <tr>
+            <th>Shipping Marks</th>
+            <th>PO No.</th>
+            <th>Product code</th>
+            <th>Season Code</th>
+            <th>Style No.</th>
+            <th>Style Name</th>
+            <th>Colour<br>Code</th>
+            <th>Colour<br>Name</th>
+            <th>Size</th>
+            <th>No. of Piece</th>
+            <th>(Pcs/<br>Pair)</th>
+            <th>No. of Ctn</th>
+            <th>N.W.(Kgs)</th>
+            <th>G.W.(Kgs)</th>
+            <th>Length</th>
+            <th>Width</th>
+            <th>Height</th>
+            <th>Cbm</th>
+        </tr>
+        @foreach (var item in Model.Orders)
+        {
+            <tr>
+                <td>@item.ShippingMarks</td>
+                <td>@item.CustomerPONumber</td>
+                <td style="min-width:100px">@item.ProductCode</td>
+                <td>@item.SeasonCode</td>
+                <td>@item.StyleNo</td>
+                <td>@item.StyleName</td>
+                <td>@item.ColourCode</td>
+                <td>@item.ColourName</td>
+                <td>@item.Size</td>
+                <td class="text-right">@item.FulfillmentUnitQty</td>
+                <td>@item.UnitUOM</td>
+                <td class="text-right">@item.BookedPackage</td>
+                <td class="text-right">@item.NetWeight</td>
+                <td class="text-right">@item.GrossWeight</td>
+                <td class="text-right">@item.Length</td>
+                <td class="text-right">@item.Width</td>
+                <td class="text-right">@item.Height</td>
+                <td class="text-right">@item.Volume</td>
+            </tr>
+        }
+        <tr>
+            <td class="title text-right" colspan="9">Total</td>
+            <td class="title text-right">@Model.Orders.Sum(c => c.FulfillmentUnitQty)</td>
+            <td class="title"></td>
+            <td class="title text-right">@Model.Orders.Sum(c => c.BookedPackage)</td>
+            <td class="title text-right">@Model.Orders.Sum(c => c.NetWeight)</td>
+            <td class="title text-right">@Model.Orders.Sum(c => c.GrossWeight)</td>
+            <td class="title"></td>
+            <td class="title"></td>
+            <td class="title"></td>
+            <td class="title text-right">@(string.Format("{0:#,0.000}", Model.Orders.Sum(c => c.Volume)))</td>
+        </tr>
+    </table>
+
+    <table class="remarks-table">
+        <tr>
+            <td colspan="2">
+                <div><span class="title">Remark: </span> @Model.Remarks</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="w-50">
+                <div class="title">Sender</div>
+            </td>
+            <td>
+                <div class="title">Receiver</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="w-50">
+                <div class="title">Date</div>
+            </td>
+            <td>
+                <div class="title">Date</div>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>

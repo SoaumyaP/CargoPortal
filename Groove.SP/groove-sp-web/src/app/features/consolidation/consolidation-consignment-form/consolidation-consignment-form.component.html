@@ -1,0 +1,114 @@
+
+<div class="consolidation-consignment-form-container">
+    <form #mainForm="ngForm" (ngSubmit)="onSubmit()">
+        <kendo-grid #grid="kendoGrid" [data]="consignmentList" [scrollable]="'vertical'" [selectable]="false" [rowClass]="rowCallback"
+            class="custom-edit-grid">
+            <!-- Consignment ID -->
+            <kendo-grid-column title="{{'label.consignmentId' | translate}}" width="15">
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                    <a class="k-link link-code" target="_blank" routerLink="/consignments/view/{{dataItem.id}}" [title]="dataItem.id" routerLinkActive="active">
+                        {{dataItem.id}}
+                    </a>
+                </ng-template>
+            </kendo-grid-column>
+            <!-- Shipment No. -->
+            <kendo-grid-column title="{{'label.shipmentNo' | translate}}" width="15">
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                    <a *ngIf="!dataItem.isAddLine" class="k-link link-code" target="_blank" routerLink="/shipments/{{dataItem.shipmentId}}" [title]="dataItem.shipment?.shipmentNo" routerLinkActive="active">
+                        {{dataItem.shipment?.shipmentNo}}
+                    </a>
+                    <div class="form-group" *ngIf="dataItem.isAddLine">
+                        <kendo-autocomplete required
+                            [virtual]="true"
+                            name="shipmentNumber"
+                            (valueChange)="_shipmentNumberValueChange($event)"
+                            (filterChange)="shipmentNumberSearchTermKeyUp$.next($event)" [valueField]="'text'"
+                            [(ngModel)]="dataItem.shipment.shipmentNo" [data]="shipmentNumberOptionsSource" [filterable]="true"
+                            [loading]="isShipmentNumberSearching" [placeholder]="'placeholder.egThing' | translate: {thing: ('label.shipmentNumber' | translate)}">
+                            <ng-template kendoAutoCompleteNoDataTemplate>
+                                <h4><span class="k-icon k-i-warning"></span><br /><br />{{'kendo.autocomplete.noDataText' | translate}}</h4>
+                            </ng-template>
+                        </kendo-autocomplete>
+                        <div *ngIf="formErrors['shipmentNumber']" class="k-invalid-msg">
+                            {{formErrors.shipmentNumber}}
+                        </div>
+                    </div>
+                </ng-template>
+            </kendo-grid-column>
+            <!-- Execution Agent -->
+            <kendo-grid-column title="{{'label.executionAgent' | translate}}" width="24">
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                    <ng-container *ngIf="!dataItem.isAddLine">
+                        {{dataItem.executionAgentName}}
+                    </ng-container>
+                    <div class="form-group" *ngIf="dataItem.isAddLine">
+                        <kendo-dropdownlist required
+                                            name="executionAgent"
+                                            [disabled]="isDisableExecutionAgentSelection || !currentUser.isInternal"
+                                            [valuePrimitive]="true"
+                                            [textField]="'text'"
+                                            [valueField]="'value'"
+                                            [(ngModel)]="dataItem.id"
+                                            [data]="executionAgentOptionsSource"
+                                            (valueChange)="_executionAgentValueChange($event)"
+                                            class="form-control">
+                            <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                {{ dataItem?.text | translate }}
+                            </ng-template>
+                            <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                {{ dataItem?.text | translate }}
+                            </ng-template>
+                        </kendo-dropdownlist>
+                        <div *ngIf="formErrors['executionAgent']" class="k-invalid-msg">
+                            {{formErrors.executionAgent}}
+                        </div>
+                    </div>
+                </ng-template>
+            </kendo-grid-column>
+            <!-- Package -->
+            <kendo-grid-column title="{{'label.package' | translate}}" width="12">
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                    {{dataItem.package | number:'0.0'}} {{dataItem.packageUOM}}
+                </ng-template>
+            </kendo-grid-column>
+            <!-- Volume -->
+            <kendo-grid-column title="{{'label.volume' | translate}}" width="12">
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                    {{dataItem.volume | number:'0.3'}} {{dataItem.volumeUOM}}
+                </ng-template>
+            </kendo-grid-column>
+            <!-- Gross Weight -->
+            <kendo-grid-column title="{{'label.grossWeight' | translate}}" width="12">
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                    {{dataItem.grossWeight | number:'0.2'}} {{dataItem.grossWeightUOM}}
+                </ng-template>
+            </kendo-grid-column>
+            <!-- Actions -->
+            <kendo-grid-command-column *hasPermission="[AppPermissions.Shipment_ConsolidationDetail_Edit]" [hidden]="stage === ConsolidationStage.Confirmed"
+                title="{{'label.action' | translate}}"
+                class="col-action" width="10">
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                    <button attr.data-balloon="{{'tooltip.delete' | translate}}" data-balloon-pos="left" type="button"
+                        class="btn ml-0 btn-default grid-remove-icon-button"
+                        [disabled]="isDisableDeleteButton && !dataItem.isAddLine"
+                        (click)="onRemoveClicked(dataItem, rowIndex)">
+                        <i class="ei ei-icon_minus-06"></i>
+                    </button>
+                    <button *ngIf="dataItem.isAddLine" attr.data-balloon="{{'label.save' | translate}}" data-balloon-pos="left" type="button"
+                        class="btn btn-default grid-approve-icon-button"
+                        (click)="onSaveClicked(dataItem, rowIndex)" [disabled]="!this.mainForm.valid">
+                        <i class="ei ei-icon_check"></i>
+                    </button>
+                </ng-template>
+            </kendo-grid-command-column>
+        </kendo-grid>
+        <div class="margin-add-icon-button" *hasPermission="[AppPermissions.Shipment_ConsolidationDetail_Edit]"
+            [hidden]="stage === ConsolidationStage.Confirmed">
+            <button type="button" class="btn prim-button add-more-icon-button"
+                attr.data-balloon="{{'label.addMore' | translate}}" data-balloon-pos="up"
+                (click)="addBlankRow()" id="addMoreBtn" [disabled]="isAddingConsignment">
+                <i class="ei ei-icon_plus"></i>
+            </button>
+        </div>
+    </form>
+</div>

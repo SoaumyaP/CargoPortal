@@ -1,0 +1,11 @@
+﻿@model Groove.SP.Application.POFulfillment.ViewModels.POFulfillmentEmailViewModel
+@{
+    Layout = "_EmailLayout.cshtml";
+}
+
+<p>Dear @Model.Name,</p>
+<p>A booking has been submitted with new shipping documents: <a href="@Model.DetailPage">@Model.BookingRefNumber</a></p>
+<p>For more information, you are welcome to contact our customer service representatives by emailing us at @Model.SupportEmail.</p>
+<br />
+<p>Regards,</p>
+<p>Shipment Portal Team.</p>

@@ -1,0 +1,32 @@
+@import '../../../../styles/variables';
+
+.panel-group {
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-top: 25px;
+}
+
+.content-details .value-label {
+    color: #333333;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.form-label {
+    color: $color-grey-bright-1;
+    font-size: 14px;
+}
+
+.blue-link {
+    color: $theme-color !important;
+    font-weight: normal !important;
+}
+
+.note-textarea {
+    height: 86px !important;
+}
+
+.container-fluid {
+    padding-right: 0px;
+    padding-left: 0px;
+}

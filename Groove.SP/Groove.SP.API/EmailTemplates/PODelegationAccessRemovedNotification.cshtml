@@ -1,0 +1,11 @@
+﻿@model  Groove.SP.Application.PurchaseOrders.ViewModels.PODelegationEmailTemplateViewModel
+@{
+    Layout = "_EmailLayout.cshtml";
+}
+
+<p>Dear @Model.Name,</p>
+<p>Purchase Order @Model.PONumber has been removed from your access by @Model.CompanyName.</p>
+<p>For more information, you are welcome to contact our customer service representatives by emailing us at @Model.SupportEmail.</p>
+<br />
+<p>Regards,</p>
+<p>Shipment Portal Team.</p>

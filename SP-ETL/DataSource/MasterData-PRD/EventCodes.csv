@@ -1,0 +1,127 @@
+ActivityCode,ActivityDescription,ActivityTypeCode
+1000,PO Issued,PM
+1001,PO on hold,PE
+1002,PO Acknowledged,PA
+1003,PO Amendment,PA
+1004,PO Amendment Failure,PE
+1005,PO cancelled,PE
+1006,PO Cancellation Failure,PA
+1007,Forwarder Booking Request,PA
+1008,Forwarder Booking Confirmed,PM
+1009,Shipment Dispatch,PM
+1010,PO Closed,PM
+1011,PO Reopen,PA
+1012,PO Completed,PM
+1050,Booking Planning,FM
+1051,Forwarder Booking Request,FA
+1052,Forwarder Booking Itinerary Ready,FA
+1053,Forwarder Booking Accepted,FA
+1054,Forwarder Booking Denied,FA
+1055,Forwarder Booking Approval Request,FE
+1056,Forwarder Booking Amendment,FA
+1057,Forwarder Booking Cancellation,FE
+1058,Booking Approval Accepted,FA
+1059,Booking Approval Denied,FA
+1060,Booking Approval Overdue,FA
+1061,Forwarder Booking Confirmation,FM
+1062,Plan to ship,FA
+1063,Packing List Ready,FA
+1064,Packing List Approval Request,FE
+1065,PO Invoice Ready,FA
+1066,PO Invoice Approval Request,FE
+1067,Ready to ship,FA
+1068,Goods Dispatch,FM
+1069,Shipment Amendment,FE
+1070,Shipment Cancellation,FE
+1071,Booking Closed,FM
+1072,Reopen Booking,FE
+1073,Booking Completed,FM
+2000,Booking received,SA
+2001,Booking on hold,SE
+2002,Booking approved by principal,SA
+2003,Booking cancelled by shipper,SE
+2004,Booking cancelled by principal,SE
+2005,Booking confirmed,SM
+2006,Container(s) released to shipper,SA
+2007,Shipper packing list submitted,SA
+2008,Shipper commercial invoice submitted,SA
+2009,Partial handover in origin CFS,SA
+2010,Complete handover at origin,SA
+2011,Non-conformance cargo found,SE
+2012,Pulled for inspection,SA
+2013,Shipment loading port gate in,SA
+2014,Cargo handover at origin,SM
+2015,Shipment booked with carrier,SA
+2016,Shipment rejected by carrier,SA
+2017,Shipment re-book with alternative carrier/schedule,SA
+2018,Shipment itinerary ready ,SA
+2019,Shipment consolidation arranged,SA
+2020,Shipment house bill document ready,SA
+2021,Shipment pending for shipper document,SE
+2022,Shipment ASN Sent,SA
+2023,Shipment waybill surrendered,SA
+2024,Shipment house bill surrendered,SA
+2025,Shipment export documents ready,SA
+2026,Shipment export customs hold,SE
+2027,Shipment export cleared,SA
+2028,Shipment late departure alert,SE
+2029,Shipment actual departure from origin port,SM
+2030,Transhipment port actual arrival,SA
+2031,Transhipment port actual departure,SA
+2032,Shipper charges invoiced,SA
+2033,Shipper charges settled,SA
+2034,Bill of Lading released to Shipper,SA
+2035,Shipment ETA changed,SA
+2036,Shipment ASN Update,SA
+2037,Shipment import documents sent,SA
+2038,Prioritised handling alert,SE
+2039,Shipment actual arrival at discharge port,SM
+2040,Shipment import customs hold,SA
+2041,Shipment import customs cleared,SA
+2042,Shipment house bill released,SA
+2043,BOL surrendered received at destination,SA
+2044,Container(s) released by carrier,SA
+2045,Container yard gate in,SA
+2046,Container yard gate out,SA
+2047,Transload depot booking confirmed,SA
+2048,Shipment discharge port gate out,SA
+2049,Inland deport gate in,SA
+2050,Inland deport gate out,SA
+2051,Inland deport trailer load,SA
+2052,Inland deport trailer unload,SA
+2053,Appointment made with consignee,SA
+2054,Shipment handover to consignee,SM
+2055,Shipment unloaded by consignee,SA
+2056,Container De-Rigging notification,SE
+2057,Empty container check out by consignee,SA
+2058,Empty container return to inland depot,SA
+2059,Empty container return to port,SA
+3000,Container - Empty Pickup,CA
+3001,Container - Gate In,CM
+3002,Container - Vessel Load,CM
+3003,Container - Actual Port Departure,CM
+3004,Container - Actual Port Arrival,CM
+3005,Container - Vessel Unload,CM
+3006,Container - Gate Out,CM
+3007,Container - Empty Return,CA
+3008,Tran-shipment Vessel Departure (Z5),CA
+3009,Tran-shipment Vessel Arrival (Z2),CA
+3010,Loaded at Port of Tran-shipment (Z3),CA
+3011,Discharge at Port of Tran-shipment (Z4),CA
+3012,Vessel Change - Load (W6),CA
+3013,Vessel Change - Departure (X2),CA
+3014,Vessel Change - Arrival (W7),CA
+3015,Vessel Change - Discharge (W8),CA
+3016,Customs Hold (PA),CA
+3017,Customs Released (CT),CA
+3018,Carrier Hold (X9),CA
+3019,Carrier Release (CR),CA
+3020,Carrier and Customs Released (CU),CA
+3021,Gate In at Inland Terminal (W1),CA
+3022,Gate Out at Inland Terminal (W2),CA
+3023,Actual Door Pickup (AF),CA
+3024,Actual Door Delivery (D),CA
+3025,Demurrage Alert,CE
+3026,Detention Alert,CE
+4000,Shipment Completed,ES
+4001,Shipment Abandoned,EE

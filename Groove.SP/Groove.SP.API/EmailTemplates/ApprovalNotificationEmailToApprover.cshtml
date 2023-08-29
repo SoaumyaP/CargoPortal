@@ -1,0 +1,18 @@
+﻿@model Groove.SP.Application.POFulfillment.ViewModels.PendingBookingEmailTemplateViewModel
+@{
+    Layout = "_EmailLayout.cshtml";
+}
+
+@if (string.IsNullOrEmpty(Model.Name))
+{
+    <p>Dear,</p>
+}
+else
+{
+    <p>Dear @Model.Name,</p>
+}
+<p>Booking <a href="@Model.DetailPage">@Model.BookingRefNumber</a> needs your approval.</p>
+<p>For more information, you are welcome to contact our customer service representatives by emailing us at @Model.SupportEmail.</p>
+<br />
+<p>Regards,</p>
+<p>Shipment Portal Team.</p>

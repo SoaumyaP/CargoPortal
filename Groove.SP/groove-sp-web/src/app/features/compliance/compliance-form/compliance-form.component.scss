@@ -1,0 +1,64 @@
+.compliance-form-container {
+
+    :host ::ng-deep .k-tabstrip > .k-content {
+        background-color: transparent;
+        border: 0px;
+        padding: 0px;
+    }
+
+    .panel-group {
+        margin-top: 0px;
+        margin-bottom: 10px;
+    }
+
+    .note-textarea {
+        height: 90px !important;
+        padding: 10px !important;
+    }
+
+    .bot-bar {
+        margin-top: 25px;
+        margin-bottom: 10px;
+        margin-left: 663px;
+    }
+
+    .default-booking-container {
+        margin-top: 20px;
+    }
+
+    .default-booking-label {
+        text-align: right;
+    }
+
+    .default-booking {
+        margin-top: 15px;
+    }
+
+    .equipment-type-text {
+        margin-top: 6px;
+    }
+
+    .container-fluid {
+        padding-right: 0px;
+        padding-left: 0px;
+    }
+
+    .tab-container {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    ::ng-deep {
+        .notifyDay-container {
+            width: 53px !important;
+            input {
+                height: 40px !important;
+                text-align: center;
+            }
+        }
+
+        .switch-btn-container {
+            font-size: 7px;
+        }
+    }
+}

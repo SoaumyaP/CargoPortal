@@ -1,0 +1,202 @@
+<div class="content__header">
+    <div class="container-fluid">
+        <div class="header-group" *ngIf="isInitDataLoaded">
+            <div class="row">
+                <div class="col-sm-7">
+                    <button attr.data-balloon="{{'tooltip.backToList' | translate}}" data-balloon-pos="up" type="button"
+                        class="btn btn-default back-button" (click)="backList()">
+                        <i class="ei ei-arrow_left"></i>
+                    </button>
+                    <label class="form-header">{{ model.reference }}</label>
+                    <app-status-label [status]="model.stage" [statusName]="model.stageName | translate"
+                        [statusEnum]="buyerApprovalStageType">
+                    </app-status-label>
+                </div>
+                <div class="col-sm-5 text-right">
+                    <button type="button" class="btn header-button btn-color-red"
+                        *hasPermission="[AppPermissions.Order_PendingApproval_Detail_Edit]" (click)="onReject()"
+                        [hidden]="hiddenBtn">
+                        <fa-icon [icon]="faTimes" class="reject-icon"></fa-icon>
+                        {{'label.reject' | translate}}
+                    </button>
+                    <button type="button" class="btn header-button btn-color-green"
+                        *hasPermission="[AppPermissions.Order_PendingApproval_Detail_Edit]" (click)="onApprove()"
+                        [hidden]="hiddenBtn">
+                        <fa-icon [icon]="faCheck" class=""></fa-icon>
+                        {{'label.approve' | translate}}
+                    </button>
+                </div>
+            </div>
+            <div class="row text-muted create-title">
+                <span>{{'label.createdOn' | translate}}</span>
+                <span class="font-weight-bold pl-1">{{ model?.createdDate | date: DATE_FORMAT }}</span>
+                <div *ngIf="model.owner">
+                    <span class="mx-2">
+                        <img src="/assets/images/dote-icon.png" />
+                    </span>
+                    {{'label.owner' | translate}}: <span class="font-weight-bold pl-1">{{ model.owner }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="typing_loader" *ngIf="!isInitDataLoaded"></div>
+        <div class="col-12 panel-group remove-padding-first-panel" *ngIf="isInitDataLoaded">
+            <label class="panel-header">{{'label.general' | translate}}</label>
+            <div class="row">
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.exceptionType' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('exceptionTypeName') | translate }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.customer' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('customer') }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.exceptionActivity' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('exceptionActivity') }}</div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label class="form-label">{{'label.exceptionDetail' | translate}}</label>
+                                    <textarea kendoTextArea name="exceptionDetail" [(ngModel)]="model.exceptionDetail"
+                                        class="form-control note-textarea"
+                                        [readOnly]="model.stage !== buyerApprovalStageType.Pending" maxlength="500">
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.dueOn' | translate}}</div>
+                        <div class="col-6 value-label">
+                            {{ model.dueOnDate ? (model.dueOnDate | date: DATE_HOUR_FORMAT) : ('label.noExpiration' | translate)}}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.approver' | translate}}</div>
+                        <div class="col-6 value-label">
+                            {{ model.approverSetting === approverSettingType.AnyoneInOrganization? ('label.anyoneInOrganization' | translate) : (model.approverUser | breakOn: ',') }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.responseOn' | translate}}</div>
+                        <div class="col-6 value-label">
+                            {{ model.responseOn ? (model.responseOn | date: DATE_FORMAT) : '--' }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.activityDates' | translate}}</div>
+                        <div class="col-6 value-label">
+                            {{  model.activityDate ? (model.activityDate | date: DATE_FORMAT) : '--'}}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label class="form-label">{{'label.failureReason' | translate}}</label>
+                                <div class="col-12 value-label multiple-lines-text"
+                                    [innerHTML]="model.reason ? model.reason : '--'"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 panel-group" *ngIf="isInitDataLoaded">
+            <label class="panel-header">{{'label.poFulfillmentSummary' | translate}}</label>
+            <div class="row">
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.fulfillmentNumber' | translate}}</div>
+                        <div class="col-6 value-label">
+                            <a target="_blank" *ngIf="model.poFulfillment?.fulfillmentType === fulfillmentType.Warehouse; else poBookingHref" routerLink="/warehouse-bookings/view/{{model.poFulfillment?.id}}">{{ model.poFulfillment?.number }} </a>
+                            <ng-template #poBookingHref>
+                                <a target="_blank" routerLink="/po-fulfillments/view/{{model.poFulfillment?.id}}" [queryParams]="{formType: formModeType.View}">{{ model.poFulfillment?.number }} </a>
+                            </ng-template>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.bookingCargoReadyDates' | translate}}</div>
+                        <div class="col-6 value-label">
+                            {{  model.poFulfillment?.cargoReadyDate ? (model.poFulfillment.cargoReadyDate | date: DATE_FORMAT) : '--' }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.customer' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.poFulfillment?.customer }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.supplier' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.poFulfillment?.supplier }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.modeOfTransport' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.poFulfillment?.modeOfTransport ? model.poFulfillment.modeOfTransport : '--' }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.poNo' | translate}}</div>
+                        <div class="col-6 value-label">
+                            <ng-container *ngFor="let item of model.poFulfillment?.purchaseOrderNos; let i = index; let l = count">
+                                <a *ngIf="item.item1 && item.item1 !== 0; else poNoText" routerLink="/purchase-orders/{{item.item1}}" target="_blank">{{item.item2}}</a>
+                                <ng-template #poNoText>{{item.item2}}</ng-template>{{(i < l - 1 ? ", " : "")}}
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.logisticsServiceType' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.poFulfillment?.logisticsServiceName ? (model.poFulfillment?.logisticsServiceName | translate)  : '--'}}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.movementType' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.poFulfillment?.movementTypeName ? model.poFulfillment.movementTypeName : '--' }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.shipFrom' | translate}}</div>
+                        <div class="col-6 value-label">{{ getLocationName(model.poFulfillment?.shipFrom) }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.shipTo' | translate}}</div>
+                        <div class="col-6 value-label">{{ getLocationName(model.poFulfillment?.shipTo) }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.expectedShipDates' | translate}}</div>
+                        <div class="col-6 value-label">
+                            {{ model.poFulfillment?.expectedShipDate ? (model.poFulfillment.expectedShipDate | date: DATE_FORMAT) : '--' }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.expectedDeliveryDates' | translate}}</div>
+                        <div class="col-6 value-label">
+                            {{  model.poFulfillment?.expectedDeliveryDate | date: DATE_FORMAT }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-dynamic-notification-popup [title]="'label.poFulfillment' | translate" [content]="saveBookingErrors" (popupClosing)="saveBookingFailed = false;" *ngIf="saveBookingFailed"></app-dynamic-notification-popup>
+

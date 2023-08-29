@@ -1,0 +1,38 @@
+﻿@if (Request.IsAuthenticated)
+{
+    <text>
+        <span class="k-link cs-portal-link-header">
+            <span class="rs-kendo-icon k-i-user"></span>
+            <span class="header__nav-item-text">
+                <span id="currentUsername">@User.Identity.Name</span>
+                <span class="k-icon k-i-arrow-s" style="opacity:1"></span>
+            </span>
+        </span>
+
+        <ul id="login">
+            <li data-bind="attr:{aria-label: accessibility.menu.changePassword, title: menu.changePassword}" onclick="loaderVisibility(true)">
+                <a href="@Url.Action("ChangePassword", "Account")" tabindex="-1"
+                   data-bind="text: menu.changePassword"
+                   onclick="ga('send', 'event', 'top menu', 'change password'); return true;"></a>
+            </li>
+            <li data-bind="attr:{aria-label: accessibility.menu.logOut, title: menu.logOut}" onclick="loaderVisibility(true)">
+                <a href="javascript:document.getElementById('logoutForm').submit()"
+                   class="logoutItem" tabindex="-1"
+                   data-bind="text: menu.logOut"
+                   onclick="ga('send', 'event', 'top menu', 'log out'); return true;"></a>
+            </li>
+        </ul>
+        @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+        {
+            @Html.AntiForgeryToken()
+        }
+
+    </text>
+}
+else
+{
+    @*<ul>
+        <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+    </ul>*@
+}

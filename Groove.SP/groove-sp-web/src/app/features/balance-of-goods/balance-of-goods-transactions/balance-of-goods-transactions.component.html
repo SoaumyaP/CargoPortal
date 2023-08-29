@@ -1,0 +1,144 @@
+<div class="container-fluid">
+    <div class="row">
+        <kendo-grid
+            [data]="view | async"
+            [filterable]="true"
+            [filter]="state.filter"
+            [pageable]="true"
+            [pageSize]="state.take"
+            [skip]="state.skip"
+            [sortable]="true"
+            [sort]="state.sort"
+            [navigable]="true"
+            [resizable]="true"
+            (dataStateChange)="gridStateChange($event)"
+            (pageChange)="pageChange($event)"
+            (filterChange)="filterChange($event)"
+            (sortChange)="sortChange($event)"
+            class="custom-border-grid">
+
+            <kendo-grid-column
+                field="principleCode" title="{{'label.principleCode' | translate}}"
+                [filterable]="true" [sortable]="true" width="200">
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="principleName" title="{{'label.principleName' | translate}}"
+                [filterable]="true" [sortable]="true" width="200" >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="articleCode" title="{{'label.articleCode' | translate}}"
+                [filterable]="true"
+                [sortable]="true" width="200">
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="articleName" title="{{'label.articleName' | translate}}"
+                [filterable]="true" [sortable]="true" width="200" >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="warehouseCode" title="{{'label.warehouseCode' | translate}}"
+                [filterable]="true"
+                [sortable]="true" width="200" >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="warehouseName" title="{{'label.warehouseName' | translate}}"
+                [filterable]="true" [sortable]="true" width="200" >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="locationName" title="{{'label.locationName' | translate}}"
+                [filterable]="true" [sortable]="true" width="200" >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="transactionType" title="{{'label.transactionType' | translate}}"
+                [filterable]="true" [sortable]="true" width="200" >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="transactionDate" title="{{'label.transactionDate' | translate}}"
+                [filterable]="true" [sortable]="true" width="200"
+                filter="date" >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    {{dataItem.transactionDate | date: 'MM-dd-yyyy'}}
+                </ng-template>
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="transactionBy" title="{{'label.transactionBy' | translate}}"
+                [filterable]="true" [sortable]="true" width="200" >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="quantity" title="{{'label.quantity' | translate}}"
+                [filterable]="true" [sortable]="true" width="200"
+                filter="numeric" >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="quantityUOM" title="{{'label.quantityUOM' | translate}}"
+                [filterable]="true" [sortable]="true" width="200" >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="poNumber" title="{{'label.poNumber' | translate}}"
+                [filterable]="true" [sortable]="true" width="200" >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="soNumber" title="{{'label.soNumber' | translate}}"
+                [filterable]="true" [sortable]="true" width="200" >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="blNumber" title="{{'label.blNumber' | translate}}"
+                [filterable]="true" [sortable]="true" width="200" >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="documentNumber" title="{{'label.documentNumber' | translate}}"
+                [filterable]="true" [sortable]="true" width="200" >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="noOfPackage" title="{{'label.noOfPackage' | translate}}"
+                [filterable]="true" [sortable]="true"  width="200">
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="packageUOM" title="{{'label.packageUOM' | translate}}"
+                [filterable]="true" [sortable]="true" width="200" >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="cbm" title="{{'label.cbm' | translate}}"
+                [filterable]="true" [sortable]="true" width="200"
+                filter="numeric">
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="packageUOM" title="{{'label.packageUOM' | translate}}"
+                [filterable]="true" [sortable]="true" width="200" >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+                field="grossWeight" title="{{'label.grossWeight' | translate}}"
+                [filterable]="true" [sortable]="true" width="200"
+                filter="numeric">
+            </kendo-grid-column>
+
+            <div *kendoGridDetailTemplate="let dataItem">
+                <div>{{dataItem.remarks}}</div>
+            </div>
+
+            <ng-template kendoPagerTemplate>
+                <app-custom-grid-pager [service]="service" (pageSizeChanged)="gridPageSizeChange($event)"></app-custom-grid-pager>
+            </ng-template>
+
+        </kendo-grid>
+    </div>
+</div>

@@ -1,0 +1,234 @@
+@import "../../../../styles/variables";
+
+.load-plan-wrapper {
+
+    .load-plan-grid {
+        width: 100%;
+
+        &-header {
+            font-weight: bold;
+            background-color: $color-white-dark-1;
+            color: #000;
+        }
+
+        .load-plan-grid-action {
+            width: 30px;
+            position: relative;
+
+            .child-icon {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-60%);
+                left: 40%;
+            }
+        }
+
+        &-row {
+            width: 100%;
+
+            .main-line {
+                width: 100%;
+                display: flex;
+            }
+
+            .subtotal-line {
+                width: 100%;
+                display: flex;
+                font-weight: bold;
+                color: $color-green-primary;
+                .load-plan-grid-item {
+                    width: 100%;
+                    padding: 7px 0;
+                    div {
+                        padding-left: 12px;
+                        box-sizing: border-box;
+                    }
+                    // Blank
+                    div:nth-child(1) {
+                        width: 20%;
+                    }
+                    // Subtotal
+                    div:nth-child(2) {
+                        width: 23%;
+                    }
+                    // Total loaded package
+                    div:nth-child(3) {
+                        width: 13%;
+                    }
+                    // Total loaded qty
+                    div:nth-child(4) {
+                        width: 13%;
+                    }
+                    // Total volume
+                    div:nth-child(5) {
+                        width: 13%;
+                    }
+                    // Total gross weight
+                    div:nth-child(6) {
+                        width: 18%;
+                    }
+                }
+            }
+
+            .load-plan-grid-item-image {
+                min-width: 200px;
+                .load-plan-container {
+                    position: relative;
+                    width: 140px;
+                    height: 80px;
+                    border: 1px solid $color-white-dark-2;
+                    background-color: $color-white-dark-1;
+                    .load-plan-container-icon {
+                        height: 40px;
+                        width: 80px;
+                        background-image: url('../../../../assets/images/container-icon/small/container.png');
+                        background-repeat: no-repeat;
+                        display: inline-block;
+                        text-align: center;
+                        font-weight: bold;
+                        font-size: 20px;
+                        color: $color-grey-dark-3;
+                    }
+                    .load-button-icon {
+                        position: absolute;
+                        top: 22px;
+                        right: -42px;
+                        margin-left: 0;
+                    }
+                    .container-edit-icon {
+                        cursor: pointer;
+                        position: absolute;
+                        top: 1px;
+                        right: 5px;
+                    }
+                }
+            }
+
+            .load-plan-grid-header-item-group {
+                width: 100%;
+                display: flex;
+
+                &:last-child {
+                    border-bottom: none !important;
+                }
+
+                div {
+                    padding-left: 12px;
+                    box-sizing: border-box;
+                }
+
+                // Seq.
+                div:nth-child(1) {
+                    width: 7%;
+                }
+                // Item No.
+                div:nth-child(2) {
+                    width: 13%;
+                }
+                // Description Of Goods.
+                div:nth-child(3) {
+                    width: 23%;
+                }
+                // Loaded Package
+                div:nth-child(4) {
+                    width: 13%;
+                }
+                // Loaded Qty
+                div:nth-child(5) {
+                    width: 13%;
+                }
+                // Volume
+                div:nth-child(6) {
+                    width: 13%;
+                }
+                // Gross weight
+                div:nth-child(7) {
+                    width: 13%;
+                }
+                // Actions
+                div:nth-child(8) {
+                    width: 5%;
+                }
+            }
+        }
+
+        ::ng-deep .load-details-kendo-grid {
+            &.k-widget {
+                border-width: 0;
+            }
+            
+            .k-grid-header {
+                border-bottom: 0;
+            }
+
+            th {
+                display: none;
+            }
+
+            tr:last-child {
+                td {
+                    border-bottom: 0 !important;
+                }
+            }
+
+            tr {
+                // Seq.
+                td:nth-child(1) {
+                    width: 7%;
+                }
+                // Item No.
+                td:nth-child(2) {
+                    width: 13%;
+                }
+                // Description of goods.
+                td:nth-child(3) {
+                    width: 23%;
+                }
+                // Loaded Package
+                td:nth-child(4) {
+                    width: 13%;
+                }
+                // Loaded Qty
+                td:nth-child(5) {
+                    width: 13%;
+                }
+                // Volume
+                td:nth-child(6) {
+                    width: 13%;
+                }
+                // Gross weight
+                td:nth-child(7) {
+                    width: 13%;
+                }
+                // Actions
+                td:nth-child(8) {
+                    width: 5%;
+                }
+            }
+            tr.dragging td {
+                background-color: $color-blue-bright-1 !important;
+            }
+            &.draggable {
+                tr {
+                    cursor: move;
+                }
+            }
+            .order-drag-container:hover .hover-drag {
+                margin-left: 21px;
+            }
+        }
+    }
+}
+
+.middle-header {
+    display: flex;
+    align-items: center;
+}
+
+.wrap-text {
+    word-break: break-word;
+}
+
+.k-link {
+    color: $theme-color !important;
+}

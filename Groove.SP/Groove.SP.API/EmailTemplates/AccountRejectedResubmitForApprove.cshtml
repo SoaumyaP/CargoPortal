@@ -1,0 +1,89 @@
+﻿@model Groove.SP.Infrastructure.EmailSender.Models.ResubmitUserEmailParameters
+@{
+  Layout = "_EmailLayout.cshtml";
+}
+
+<table role="presentation" aria-hidden="true" class="email-container sp-email-body">
+  <tr>
+    <td class="sp-email-content">
+      <table class="sp-tb-content">
+        <tr>
+          <td class="mso-sp-line-height sp-font-style">
+            Hi Administrator,
+          </td>
+        </tr>
+        <tr>
+          <td class="sp-empty-line"></td>
+        </tr>
+        <tr>
+          <td class="mso-sp-line-height sp-font-style">
+            The new account request for @Model.CompanyName has been rejected. However, @Model.Name wish to you re-submit the request again.
+          </td>
+        </tr>
+        <tr>
+          <td class="sp-empty-line"></td>
+        </tr>
+        <tr>
+          <td>
+            <table class="sp-info-tb">
+              <tr>
+                <td class="mso-sp-line-height sp-font-style sp-info-td-2">
+                  <b>Email</b>
+                </td>
+                <td class="mso-sp-line-height sp-font-style sp-info-td-2">
+                  @Model.Email
+                </td>
+              </tr>
+              <tr>
+                <td class="mso-sp-line-height sp-font-style sp-info-td-2">
+                  <b>Company Name</b>
+                </td>
+                <td class="mso-sp-line-height sp-font-style sp-info-td-2">
+                  @Model.CompanyName
+                </td>
+              </tr>
+              <tr>
+                <td class="mso-sp-line-height sp-font-style sp-info-td-2">
+                  <b>Contact Name</b>
+                </td>
+                <td class="mso-sp-line-height sp-font-style sp-info-td-2">
+                  @Model.Name
+                </td>
+              </tr>
+              <tr>
+                <td class="mso-sp-line-height sp-font-style sp-info-td-2">
+                  <b>Contact Phone</b>
+                </td>
+                <td class="mso-sp-line-height sp-font-style sp-info-td-2">
+                  @Model.Phone
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="sp-empty-line"></td>
+        </tr>
+        <tr>
+          <td class="mso-sp-line-height sp-font-style">
+            Please click <a href="@Model.UserLink">here</a> to review the request.
+          </td>
+        </tr>
+        <tr>
+          <td class="mso-sp-line-height sp-font-style">
+            Regards,
+          </td>
+        </tr>
+        <tr>
+          <td class="sp-break-line"></td>
+        </tr>
+        <tr>
+          <td class="mso-sp-line-height sp-font-style">
+            Shipment Portal Team.
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+

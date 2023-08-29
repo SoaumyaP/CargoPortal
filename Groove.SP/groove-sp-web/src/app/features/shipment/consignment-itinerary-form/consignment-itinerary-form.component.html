@@ -1,0 +1,260 @@
+<kendo-dialog [title]="title | translate" *ngIf="formDialogOpened" (close)="onFormClosed()" novalidate [width]="824"
+    [height]="710" class="custom-header-dialog max-screen-1280x768">
+    <div class="container">
+        <form #mainForm="ngForm">
+            <div>
+                <h5 class="title-grid mt-0">{{'label.itineraryDetail' | translate}}</h5>
+                <hr class="colored" />
+                <div class="form-row content-details">
+                    <div class="form-group col-md-6">
+                        <label for="sequence" class="required">{{'label.consignment' | translate}}</label>
+                        <kendo-dropdownlist name="consignment" required class="form-control" [data]="consignments"
+                            [valuePrimitive]="true" [textField]="'id'" [valueField]="'id'"
+                            [(ngModel)]="model.consignmentId" [disabled]="isViewModeLocal"
+                            (valueChange)="onConsignmentValueChanged($event)">
+                        </kendo-dropdownlist>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="sequence" class="required">{{'label.sequence' | translate}}</label>
+                        <kendo-numerictextbox name="sequence" required [min]="0" [spinners]="false" [format]="'n'"
+                            [disabled]="isViewModeLocal" [autoCorrect]="true" class="form-control"
+                            [(ngModel)]="model.sequence" (ngModelChange)="onSequenceValueChanged()"
+                            #sequence="ngModel">
+                        </kendo-numerictextbox>
+                        <div *ngIf="sequence.invalid" class="k-invalid-msg">
+                            <span *ngIf="(sequence.dirty || sequence.touched) && sequence.hasError('required')">
+                                {{ 'validation.requiredField' | translate: {'fieldName': 'label.sequence' | translate} }}
+                            </span>
+                            <span *ngIf="sequence.hasError('duplicated')">
+                                {{ 'validation.duplicateSequence' | translate: {'fieldName': 'label.sequence' | translate} }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="modeOfTransport" class="required">{{'label.modeOfTransport' | translate}}</label>
+                        <kendo-dropdownlist name="modeOfTransport" required class="form-control"
+                            [data]="modeOfTransportOptions" [valuePrimitive]="true" [textField]="'label'"
+                            [valueField]="'value'" [(ngModel)]="model.modeOfTransport" [disabled]="isViewModeLocal"
+                            (valueChange)="onModeOfTransportChanged($event);">
+                            <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                {{ dataItem?.label | translate }}
+                            </ng-template>
+                            <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                {{ dataItem?.label | translate }}
+                            </ng-template>
+                        </kendo-dropdownlist>
+                        <div *ngIf="formErrors['modeOfTransport']" class="k-invalid-msg">
+                            {{formErrors.modeOfTransport}}
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6" *ngIf="model.modeOfTransport && model.modeOfTransport.toLowerCase() !== modeOfTransportType.Sea.toLowerCase() && model.modeOfTransport.toLowerCase() !== modeOfTransportType.Air.toLowerCase()">
+                        <label for="roadFreightRef" class="required">{{'label.refNumber' | translate}}</label>
+                        <input type="text" class="form-control" name="roadFreightRef" required
+                            [(ngModel)]="model.roadFreightRef" [disabled]="isViewModeLocal"
+                            (ngModelChange)="onRoadFreightRefChange()" />
+                        <div *ngIf="formErrors['roadFreightRef']" class="k-invalid-msg">
+                            {{formErrors.roadFreightRef}}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row" *ngIf="!isSeaOrAir">
+                    <div class="form-group col-md-6">
+                        <label for="carrierName" class="required">{{literalLabels.carrierName | translate}}</label>
+                        <kendo-autocomplete
+                            #carrierName="ngModel"
+                            required
+                            name="carrierName"
+                            [valueField]="'name'"
+                            [(ngModel)]="model.carrierName"
+                            [data]="filteredCarrierSuggestions"
+                            class="form-control"
+                            [disabled]="isViewModeLocal"
+                            (filterChange)="carrierFilterChange($event)"
+                            [filterable]="true"
+                            (valueChange)="onCarrierValueChanged($event)">
+                        </kendo-autocomplete>
+                        <div *ngIf="carrierName.invalid && (carrierName.dirty || carrierName.touched)" class="k-invalid-msg">
+                            {{ 'validation.requiredField' | translate: {'fieldName': literalLabels.carrierName | translate} }}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <!-- Loading Port -->
+                    <div class="form-group col-md-6" *ngIf="isSeaOrAir">
+                        <label for="loadingPort" class="required">{{literalLabels.locationFromName | translate}}</label>
+                        <kendo-dropdownlist
+                            #loadingPort="ngModel"
+                            required
+                            name="loadingPort"
+                            (filterChange)="portFilterChange($event)"
+                            (valueChange)="onLoadingPortValueChange($event)"
+                            [valueField]="'locationDescription'"
+                            [textField]="'locationDescription'"
+                            [(ngModel)]="model.loadingPort"
+                            [data]="filteredPortOptions"
+                            [valuePrimitive]="true"
+                            [filterable]="true"
+                            class="form-control"
+                            [disabled]="isViewModeLocal"
+                            (open)="onPortOptionsOpen()">
+                        </kendo-dropdownlist>
+                        <div *ngIf="loadingPort.invalid && (loadingPort.dirty || loadingPort.touched)" class="k-invalid-msg">
+                            {{ 'validation.requiredField' | translate: {'fieldName': literalLabels.locationFromName | translate} }}
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6" *ngIf="!isSeaOrAir">
+                        <label for="loadingPort" class="required">{{literalLabels.locationFromName | translate}}</label>
+                        <kendo-autocomplete
+                            #loadingPort="ngModel"
+                            required
+                            name="loadingPort"
+                            [valueField]="'locationDescription'"
+                            [(ngModel)]="model.loadingPort"
+                            [data]="filteredPortSuggestions"
+                            class="form-control"
+                            [disabled]="isViewModeLocal"
+                            (filterChange)="portFilterChange($event)"
+                            [filterable]="true"
+                            (valueChange)="onLoadingPortValueChange($event)">
+                        </kendo-autocomplete>
+                        <div *ngIf="loadingPort.invalid && (loadingPort.dirty || loadingPort.touched)" class="k-invalid-msg">
+                            {{ 'validation.requiredField' | translate: {'fieldName': literalLabels.locationFromName | translate} }}
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6" *ngIf="!isSeaOrAir">
+                        <label for="etdDates" class="required">{{'label.etdDates' | translate}}</label>
+                        <kendo-datepicker
+                            name="etdDates"
+                            class="form-control"
+                            required
+                            [disabled]="isViewModeLocal"
+                            [(ngModel)]="model.etdDate"
+                            (ngModelChange)="onETDChange()"
+                            (valueChange)="onChangeDateOrDateTime()">
+                        </kendo-datepicker>
+                        <div *ngIf="formErrors['etdDates']" class="k-invalid-msg">
+                            {{formErrors.etdDates}}
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6" *ngIf="isSeaOrAir">
+                        <label for="dischargePort" class="required">{{literalLabels.locationToName | translate}}</label>
+                        <kendo-dropdownlist #dischargePort="ngModel"
+                            name="dischargePort"
+                            class="form-control"
+                            required
+                            [data]="filteredPortOptions"
+                            [valueField]="'locationDescription'"
+                            [textField]="'locationDescription'"
+                            [valuePrimitive]="true"
+                            [filterable]="true"
+                            [disabled]="isViewModeLocal"
+                            [(ngModel)]="model.dischargePort"
+                            (valueChange)="onDischargePortValueChange($event)"
+                            (filterChange)="portFilterChange($event)"
+                            (open)="onPortOptionsOpen()">
+                        </kendo-dropdownlist>
+                        <div *ngIf="dischargePort.invalid && (dischargePort.dirty || dischargePort.touched)"
+                            class="k-invalid-msg">
+                            {{ 'validation.requiredField' | translate: {'fieldName': literalLabels.locationToName
+                            |translate} }}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6" *ngIf="!isSeaOrAir">
+                        <label for="dischargePort" class="required">{{literalLabels.locationToName | translate}}</label>
+                        <kendo-autocomplete
+                            #dischargePort="ngModel"
+                            required
+                            name="dischargePort"
+                            [valueField]="'locationDescription'"
+                            [(ngModel)]="model.dischargePort"
+                            [data]="filteredPortSuggestions"
+                            class="form-control"
+                            [disabled]="isViewModeLocal"
+                            (filterChange)="portFilterChange($event)"
+                            [filterable]="true"
+                            (valueChange)="onDischargePortValueChange($event)">
+                        </kendo-autocomplete>
+                        <div *ngIf="dischargePort.invalid && (dischargePort.dirty || dischargePort.touched)" class="k-invalid-msg">
+                            {{ 'validation.requiredField' | translate: {'fieldName': literalLabels.locationToName | translate} }}
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6" *ngIf="isSeaOrAir">
+                        <label for="departureDates">{{literalLabels.departureDate | translate}}</label>
+                        <kendo-datepicker name="departureDates" class="form-control" [disabled]="isViewModeLocal"
+                            [(ngModel)]="model.departureDates" (ngModelChange)="getSchedules()">
+                        </kendo-datepicker>
+                    </div>
+                    <div class="form-group col-md-6" *ngIf="!isSeaOrAir">
+                        <label for="etaDates" class="required">{{'label.etaDates' | translate}}</label>
+                        <kendo-datepicker
+                            name="etaDates"
+                            class="form-control"
+                            required
+                            [disabled]="isViewModeLocal"
+                            [(ngModel)]="model.etaDate"
+                            (valueChange)="onChangeDateOrDateTime()">
+                        </kendo-datepicker>
+                        <div *ngIf="formErrors['etaDates']" class="k-invalid-msg">
+                            {{formErrors.etaDates}}
+                        </div>
+                    </div>
+                </div>
+                <!-- List of available Schedules -->
+                <!-- Just for SEA or AIR transport -->
+                <ng-container *ngIf="isSeaOrAir">
+                    <h5 class="title-grid mt-2">{{'label.selectASchedule' | translate}}
+                        <span class="k-i-loading k-icon loading" *ngIf="isScheduleGridLoading"></span>
+                    </h5>
+                    <hr class="colored" />
+                    <kendo-grid #grid="kendoGrid" [data]="schedules" [scrollable]="'vertical'" [selectable]="selectableScheduleSettings"
+                        kendoGridSelectBy [(selectedKeys)]="selectedSchedule">
+
+                        <kendo-grid-checkbox-column [width]="7"></kendo-grid-checkbox-column>
+
+                        <kendo-grid-column [width]="23" title="{{literalLabels.vesselFlight | translate}}">
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                                {{dataItem.vesselFlight}}
+                            </ng-template>
+                        </kendo-grid-column>
+
+                        <kendo-grid-column [width]="23" field="carrierName" title="{{literalLabels.carrier | translate}}">
+                        </kendo-grid-column>
+
+                        <kendo-grid-column *ngIf="stringHelper.caseIgnoredCompare(model.modeOfTransport, modeOfTransportType.Air)" [width]="17" field="mawb" title="{{'label.mawbNo' | translate}}">
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                                {{dataItem.mawb | mawbNumberFormat}}
+                            </ng-template>
+                        </kendo-grid-column>
+
+                        <kendo-grid-column [width]="15" field="etdDate" title="{{'label.etdDates' | translate}}">
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                                {{ dataItem.etdDate | date: DATE_FORMAT }}
+                            </ng-template>
+                        </kendo-grid-column>
+
+                        <kendo-grid-column [width]="15" field="etaDate" title="{{'label.etaDates' | translate}}">
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                                {{ dataItem.etaDate | date: DATE_FORMAT }}
+                            </ng-template>
+                        </kendo-grid-column>
+                    </kendo-grid>
+                    <div *ngIf="selectedSchedule.length === 0" class="k-invalid-msg">
+                        {{'validation.requiredThisField' | translate}}
+                    </div>
+                </ng-container>
+            </div>
+        </form>
+    </div>
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()"
+            #Cancel>{{(isViewModeLocal ? 'label.close' : 'label.cancel') | translate}}</button>
+        <button type="submit" class="btn prim-button dialog-button" *ngIf="isAddModeLocal" (click)="onAddClick()"
+            >{{'label.save' | translate}}</button>
+        <button type="submit" class="btn prim-button dialog-button" *ngIf="isEditModeLocal" (click)="onEditClick()"
+            >{{'label.save' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

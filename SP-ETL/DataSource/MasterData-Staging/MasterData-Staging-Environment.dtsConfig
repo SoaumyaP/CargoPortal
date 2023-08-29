@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DTSConfiguration>
+   <DTSConfigurationHeading>
+      <DTSConfigurationFileInfo GeneratedBy="GROOVETECH\cuongduong" GeneratedFromPackageName="Package" GeneratedFromPackageID="{DE3208D0-1A10-414C-9A58-537761FBD53C}" GeneratedDate="4/22/2020 1:57:48 PM" />
+   </DTSConfigurationHeading>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[Carriers].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\MasterData-Staging\Carriers.csv</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[Countries].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\MasterData-Staging\Countries.csv</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[Currencies].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\MasterData-Staging\Currencies.csv</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[ETL_Logging].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\MasterData-Staging\data-etl-logging.log</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[EventCodes].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\MasterData-Staging\EventCodes.csv</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[EventTypes].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\MasterData-Staging\EventTypes.csv</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[Locations].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\MasterData-Staging\Locations.csv</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[MasterData].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>Data Source=global-ltl-db.database.windows.net;Initial Catalog=MasterData-TestDB;User ID=ltl-admin;Password=Abc@1234;Provider=SQLNCLI11.1;Auto Translate=False;</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[OrganizationRoles].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\MasterData-Staging\OrganizationRoles.csv</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[Organizations].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\MasterData-Staging\Organizations.csv</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[SupplierRelationships].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\MasterData-Staging\SupplierRelationships.csv</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Connections[VendorOrganizations].Properties[ConnectionString]" ValueType="String">
+      <ConfiguredValue>C:\Users\cuongduong\source\repos\groove-sp\SP-ETL\DataSource\MasterData-Staging\VendorOrganizations.csv</ConfiguredValue>
+   </Configuration>
+   <Configuration ConfiguredType="Property" Path="\Package.Variables[User::var_Org_Sequence].Properties[Value]" ValueType="Int32">
+      <ConfiguredValue>500</ConfiguredValue>
+   </Configuration>
+</DTSConfiguration>

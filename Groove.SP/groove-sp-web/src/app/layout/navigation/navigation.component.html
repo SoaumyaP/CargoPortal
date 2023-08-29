@@ -1,0 +1,405 @@
+<nav id="nav-section" class="nav-section fixed-top" role="navigation">
+    <kendo-panelbar class="actionbar left-menu-height scroller" #kendoPanelBarInstance="kendoPanelbar" [expandMode]="expandMode">
+
+        <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Dashboard]" routerLinkActive="router-link-active" routerLink="/home" [attr.data-balloon]="(navbarExpand ? null : 'label.dashboard') | translate" data-balloon-pos="right"
+            (click)="onMenuItemClick(Menu.dashboard, $event)" [expanded]="checkExpandItem(Menu.dashboard)" [selected]="isSelect(Menu.dashboard)">
+            <ng-template kendoPanelBarItemTitle>
+                <span class="selected-effect"></span>
+                <span class="icon icon-dashboard">
+                </span>
+                <span class="menuitem__title">{{'label.dashboard' | translate}}</span>
+            </ng-template>
+        </kendo-panelbar-item>
+        <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Product]" [attr.data-balloon]="(navbarExpand ? null : 'label.products') | translate" data-balloon-pos="right"
+            routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.products, $event)" [expanded]="checkExpandItem(Menu.products)"
+            [selected]="isSelect(Menu.products)">
+            <ng-template kendoPanelBarItemTitle>
+                <span class="selected-effect"></span>
+                <span class="icon icon-products">
+                </span>
+                <span class="menuitem__title">{{'label.products' | translate}}</span>
+            </ng-template>
+        </kendo-panelbar-item>
+        <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Order]" [attr.data-balloon]="(navbarExpand ? null : 'label.orders') | translate" data-balloon-pos="right"
+            routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.orders, $event)" [expanded]="checkExpandItem(Menu.orders)" [selected]="isSelect(Menu.orders)">
+            <ng-template kendoPanelBarItemTitle>
+                <span class="selected-effect"></span>
+                <span class="icon icon-orders">
+                </span>
+                <span class="menuitem__title">{{'label.orders' | translate}}</span>
+            </ng-template>
+            <kendo-panelbar-item title="" class="kendo-panelbar-title">
+                <ng-template kendoPanelBarItemTitle >
+                    <div>
+                            {{'label.orders' | translate}}
+                    </div>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.PO_List]" routerLink="/list-purchase-orders" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.orders, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.pos' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.RoutingOrder_List]" routerLink="/routing-orders" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.orders, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.routingOrders' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.PO_Fulfillment_List]" routerLink="/po-fulfillments" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.orders, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.poFulfillments' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Order_PendingApprovalList]" routerLink="/buyer-approvals" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.orders, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.pendingApprovals' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+        </kendo-panelbar-item>
+        
+        <!-- Balance Of Goods -->
+        <kendo-panelbar-item title="" *hasPermission="[AppPermissions.BalanceOfGoods]" routerLink="/balance-of-goods" [attr.data-balloon]="(navbarExpand ? null : 'label.balanceOfGoods') | translate" data-balloon-pos="right"
+            routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.balanceOfGoods, $event)" [expanded]="checkExpandItem(Menu.balanceOfGoods)" [selected]="isSelect(Menu.invoices)">
+            <ng-template kendoPanelBarItemTitle>
+                <span class="selected-effect"></span>
+                <span class="icon icon-consignments">
+                </span>
+                <span class="menuitem__title">{{'label.balanceOfGoods' | translate}}</span>
+            </ng-template>
+        </kendo-panelbar-item>
+        
+        <kendo-panelbar-item title="" *hasPermission="[AppPermissions.CruiseOrder]" [attr.data-balloon]="(navbarExpand ? null : 'label.cruiseOrders') | translate" data-balloon-pos="right"
+            routerLink= "/cruise-orders" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.cruiseOrders, $event)" [expanded]="checkExpandItem(Menu.cruiseOrders)" [selected]="isSelect(Menu.cruiseOrders)">
+            <ng-template kendoPanelBarItemTitle>
+                <span class="selected-effect"></span>
+                <span class="icon icon-cruise-orders">
+                </span>
+                <span style="top: 21px" class="menuitem__title">{{'label.cruiseOrders' | translate}}</span>
+            </ng-template>
+        </kendo-panelbar-item>
+        <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Shipment]" [attr.data-balloon]="(navbarExpand ? null : 'label.shippingOrders') | translate" data-balloon-pos="right"
+            routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.shipments, $event)" [expanded]="checkExpandItem(Menu.shipments)" [selected]="isSelect(Menu.shipments)">
+            <ng-template kendoPanelBarItemTitle>
+                <span class="selected-effect"></span>
+                <span class="icon icon-shipments">
+                </span>
+                <span class="menuitem__title">{{'label.shippingOrders' | translate}}</span>
+            </ng-template>
+            <kendo-panelbar-item title="" class="kendo-panelbar-title">
+                <ng-template kendoPanelBarItemTitle >
+                    <div>
+                            {{'label.shippingOrders' | translate}}
+                    </div>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Shipment_List]" routerLink="/list-shipments" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.shipments, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.shipments' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Shipment_ShippedPO_List]" routerLink="/shipped-purchase-orders" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.shipments, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.shippedPO' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Shipment_Container_List]" routerLink="/containers" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.shipments, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.shippingContainers' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+            <!-- Consignment -->
+            <kendo-panelbar-item
+                title=""
+                *hasPermission="[AppPermissions.Consignment_List]"
+                routerLink="/consignments" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.shipments, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.consignments' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Shipment_ConsolidationList]" routerLink="/consolidations" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.shipments, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.consolidations' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.FreightScheduler_List]" routerLink="/freight-schedulers" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.shipments, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.freightSchedulers' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.MasterDialog_List]" routerLink="/master-dialogs" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.shipments, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.masterDialogs' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+        </kendo-panelbar-item>       
+
+        <!-- BillOfLading -->
+        <kendo-panelbar-item
+            title=""
+            *hasPermission="[AppPermissions.BillOfLading]"
+            [attr.data-balloon]="navbarExpand ? null :('label.billOfLadings' | translate)+'/'+('label.awb' | translate)" data-balloon-pos="right"
+            routerLinkActive="router-link-active"
+            (click)="onMenuItemClick(Menu.billOfLadings, $event)"
+            [expanded]="checkExpandItem(Menu.billOfLadings)"
+            [selected]="isSelect(Menu.billOfLadings)">
+
+            <ng-template kendoPanelBarItemTitle>
+                <span class="selected-effect"></span>
+                <span class="icon icon-bol">
+                </span>
+                <span class="menuitem__title">{{'label.billOfLadings' | translate}}/{{'label.awb' | translate}}</span>
+            </ng-template>
+
+            <kendo-panelbar-item title="" class="kendo-panelbar-title">
+                <ng-template kendoPanelBarItemTitle >
+                    <div>
+                        {{'label.billOfLadings' | translate}}/{{'label.awb' | translate}}
+                    </div>
+                </ng-template>
+            </kendo-panelbar-item>
+
+            <kendo-panelbar-item
+                title=""
+            *hasPermission="[AppPermissions.BillOfLading_ListOfHouseBL]"
+                routerLink="/bill-of-ladings" routerLinkActive="router-link-active"
+                (click)="onMenuItemClick(Menu.billOfLadings, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.houseBill' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+
+            <kendo-panelbar-item
+                title=""
+                *hasPermission="[AppPermissions.BillOfLading_ListOfMasterBL]"
+                routerLink="/master-bill-of-ladings" routerLinkActive="router-link-active"
+                (click)="onMenuItemClick(Menu.billOfLadings, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.masterBill' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+        </kendo-panelbar-item>
+
+        <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Invoice]" routerLink="/invoices" [attr.data-balloon]="(navbarExpand ? null : 'label.invoices') | translate" data-balloon-pos="right"
+            routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.invoices, $event)" [expanded]="checkExpandItem(Menu.invoices)" [selected]="isSelect(Menu.invoices)">
+            <ng-template kendoPanelBarItemTitle>
+                <span class="selected-effect"></span>
+                <span class="icon icon-invoice">
+                </span>
+                <span class="menuitem__title">{{'label.invoices' | translate}}</span>
+            </ng-template>
+        </kendo-panelbar-item>
+        <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Organization]" [attr.data-balloon]="(navbarExpand ? null : 'label.masterData') | translate" data-balloon-pos="right"
+            routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.organizations, $event)" [expanded]="checkExpandItem(Menu.organizations)" [selected]="isSelect(Menu.organizations)">
+            <ng-template kendoPanelBarItemTitle>
+                <span class="selected-effect"></span>
+                <span class="icon icon-organization">
+                </span>
+                <span class="menuitem__title">{{'label.masterData' | translate}}</span>
+            </ng-template>
+            <kendo-panelbar-item title="" class="kendo-panelbar-title">
+                <ng-template kendoPanelBarItemTitle >
+                    <div>
+                            {{'label.masterData' | translate}}
+                    </div>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Organization_List]" routerLink="/organizations" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.organizations, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.organizations' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Organization_Compliance_List]" routerLink="/compliances" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.organizations, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.compliances' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Organization_Carrier_List]" routerLink="/carriers" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.organizations, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.carriers' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Organization_Contract_List]" routerLink="/contracts" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.organizations, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.contracts' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Organization_Vessel_List]" routerLink="/vessels" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.organizations, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.vessels' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Organization_Location_List]" routerLink="/locations" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.organizations, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.locations' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Organization_WarehouseLocation_List]" routerLink="/warehouse-locations" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.organizations, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.warehouse' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Organization_ArticleMaster_List]" routerLink="/article-masters" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.organizations, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.articles' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Organization_SurveyList]" routerLink="/surveys" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.organizations, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.surveys' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.Organization_MasterEvent_List]" routerLink="/events" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.organizations, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.events' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+
+        </kendo-panelbar-item>
+        <kendo-panelbar-item title="" *hasPermission="[AppPermissions.User]" [attr.data-balloon]="(navbarExpand ? null : 'label.usersAndRoles') | translate" data-balloon-pos="right"
+            routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.usersAndRoles, $event)" [expanded]="checkExpandItem(Menu.usersAndRoles)" [selected]="isSelect(Menu.usersAndRoles)">
+            <ng-template kendoPanelBarItemTitle>
+                <span class="selected-effect"></span>
+                <span class="icon icon-users">
+                </span>
+                <span class="menuitem__title">{{'label.usersAndRoles' | translate}}</span>
+            </ng-template>
+            <kendo-panelbar-item title="" class="kendo-panelbar-title">
+                <ng-template kendoPanelBarItemTitle >
+                    <div>
+                            {{'label.usersAndRoles' | translate}}
+                    </div>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.User_RequestList]" routerLink="/user-requests" routerLinkActive="router-link-active"  (click)="onMenuItemClick(Menu.usersAndRoles, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item menu-title">{{'label.userRequests' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.User_UserList]" routerLink="/users" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.usersAndRoles, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.users' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+            <kendo-panelbar-item title="" *hasPermission="[AppPermissions.User_RoleList]" routerLink="/roles" routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.usersAndRoles, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.roles' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+        </kendo-panelbar-item>
+
+        <!-- Reports -->
+        <kendo-panelbar-item
+            title=""
+            *hasPermission="[AppPermissions.Reports]"
+            [attr.data-balloon]="(navbarExpand ? null : 'label.reports') | translate" data-balloon-pos="right"
+            routerLinkActive="router-link-active"
+            (click)="onMenuItemClick(Menu.reports, $event)"
+            [expanded]="checkExpandItem(Menu.reports)"
+            [selected]="isSelect(Menu.reports)">
+
+            <ng-template kendoPanelBarItemTitle>
+                <span class="selected-effect"></span>
+                <span class="icon icon-reports">
+                </span>
+                <span class="menuitem__title">{{'label.reports' | translate}}</span>
+            </ng-template>
+
+            <kendo-panelbar-item title="" class="kendo-panelbar-title">
+                <ng-template kendoPanelBarItemTitle >
+                    <div>
+                            {{'label.reports' | translate}}
+                    </div>
+                </ng-template>
+            </kendo-panelbar-item>
+
+            <kendo-panelbar-item
+                title=""
+                *hasPermission="[AppPermissions.Reports_List]"
+                routerLink= "/reports" routerLinkActive="router-link-active"
+                (click)="onMenuItemClick(Menu.reports, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.reports' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+
+            <kendo-panelbar-item
+                title=""
+                *hasPermission="[AppPermissions.Reports_TaskList]"
+                routerLink= "/scheduling" routerLinkActive="router-link-active"
+                (click)="onMenuItemClick(Menu.reports, $event, true)">
+                <ng-template kendoPanelBarItemTitle>
+                    <ul>
+                        <li class="user-item">{{'label.scheduling' | translate}}</li>
+                    </ul>
+                </ng-template>
+            </kendo-panelbar-item>
+        </kendo-panelbar-item>
+
+        <kendo-panelbar-item title="" *hasPermission="[AppPermissions.IntegrationLog]" routerLink= "/integration-logs" [attr.data-balloon]="(navbarExpand ? null : 'label.integrationLogs') | translate" data-balloon-pos="right"
+            routerLinkActive="router-link-active" (click)="onMenuItemClick(Menu.integrationLogs, $event)" [expanded]="checkExpandItem(Menu.integrationLogs)" [selected]="isSelect(Menu.integrationLogs)">
+            <ng-template kendoPanelBarItemTitle>
+                <span class="selected-effect"></span>
+                <span class="icon icon-integration-logs">
+                </span>
+                <span class="menuitem__title">{{'label.integrationLogs' | translate}}</span>
+            </ng-template>
+        </kendo-panelbar-item>
+    </kendo-panelbar>
+</nav>

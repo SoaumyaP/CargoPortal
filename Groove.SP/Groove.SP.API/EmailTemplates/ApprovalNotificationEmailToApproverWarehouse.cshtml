@@ -1,0 +1,28 @@
+﻿@model dynamic
+@{
+    Layout = "_EmailLayout.cshtml";
+}
+
+@if (string.IsNullOrEmpty(Model.Name))
+{
+    <p>Dear, Supplier has booked to HKDC @Model.WarehouseName@Model.Eta</p>
+}
+else
+{
+    <p>Dear @Model.Name, Supplier has booked to HKDC @Model.WarehouseName@Model.Eta</p>
+}
+
+<div style="height:3px"></div>
+<p>Please kindly click below link to approve the booking, HKDC will release SO to supplier.</p>
+<div style="height:3px"></div>
+<p><a href="@Model.DetailPage">@Model.BookingRefNumber</a></p>
+<div style="height:3px"></div>
+<p>Remarks: @Model.WarehouseName</p>
+<div style="height:3px"></div>
+<p>@Model.WarehouseAddress</p>
+<p>@Model.City, @Model.Country</p>
+<div style="height:3px"></div>
+<p>For any enquiry, please contact</p>
+<p>@Model.ContactName</p>
+<p>Direct: @Model.ContactNumber</p>
+<p>Email: @Model.ContactEmail</p>

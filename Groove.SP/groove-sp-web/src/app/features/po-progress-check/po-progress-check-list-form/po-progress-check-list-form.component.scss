@@ -1,0 +1,50 @@
+@import "../../../../styles/variables";
+
+.fieldset-container {
+    padding: 0 12px 2px 12px;
+    overflow-x: auto;
+}
+
+.custom-legend {
+    font-weight: normal;
+    color: $theme-color;
+    font-size: 13pt;
+    margin-bottom: 0px;
+}
+
+.apply-container {
+    min-width: 1450px;
+    .apply-btn-container {
+        flex: 0 0 300px;
+        .apply-btn {
+            height: 46px;
+        }
+    }
+
+    .dropdown-container {
+        flex: 0 0 914px;
+    }
+}
+
+::ng-deep {
+    .custom-po-grid {
+        min-width: 1450px;
+        .k-grid-table {
+            td {
+                padding: 8px 12px !important;
+                textarea, kendo-datepicker, .k-picker-wrap {
+                    height: 38px !important;
+                    input {
+                        height: 36px;
+                    }
+                }
+            }
+        }
+    }
+
+    .propose-date-container {
+        ::placeholder {
+            color: $color-grey-dark-3 !important;
+        }
+    }
+}

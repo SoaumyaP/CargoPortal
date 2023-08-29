@@ -1,0 +1,171 @@
+<fieldset class="border fieldset-container">
+    <legend class="w-auto custom-legend">{{'label.plannedSchedule' | translate}}</legend>
+    <div class="container-fluid mb-2">
+        <p class="cargo-closing-date float-right mb-2"
+            *ngIf="poff.stage >= poFulfillmentStageType.ForwarderBookingConfirmed && poff.modeOfTransport !== modeOfTransportType.Air">
+            <!-- Temporarily hide CFS Closing Date information.
+                <ng-container *ngIf="isCFSBooking">{{'label.cfsClosingDates' | translate}} <strong>{{poff.cfsClosingDate | date: DATE_FORMAT | default: defaultValue}}</strong> {{'label.at' | translate | lowercase}} <strong>{{poff.cfsWarehouseDescription | default: defaultValue}}</strong></ng-container> 
+            -->
+            <ng-container *ngIf="!isCFSBooking">{{'label.cyClosingDates' | translate}} <strong>{{poff.cyClosingDate | date: DATE_FORMAT | default: defaultValue}}</strong> {{'label.at' | translate | lowercase}} <strong>{{poff.cyEmptyPickupTerminalDescription | default: defaultValue}}</strong></ng-container>
+        </p>
+        <p class="clearfix"></p>
+        <kendo-grid #grid="kendoGrid" [data]="itineraryList" [scrollable]="'vertical'" [selectable]="false" class="custom-edit-grid">
+        
+            <kendo-grid-column field="modeOfTransport"
+                                title="{{'label.modeOfTransport' | translate}}"
+                                [headerClass]="'multiline-header'"
+                                [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_SHIPMENT_PLANNED_SCHEDULE, 'modeOfTransport')">
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex" *ngIf="isInheritFromShipment">
+                    {{labelFromEnum(modeOfTransportOptions, dataItem.modeOfTransport) | translate}}
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex" *ngIf="!isInheritFromShipment">
+                    <div *ngIf="!isEnabled">
+                        {{labelFromEnum(modeOfTransportOptions, dataItem.modeOfTransport) | translate}}
+                    </div>
+                    <kendo-dropdownlist *ngIf="isEnabled"
+                                        name="modeOfTransport_{{rowIndex}}"
+                                        required
+                                        [(ngModel)]="dataItem.modeOfTransport"
+                                        [data]="modeOfTransportOptions"
+                                        [valuePrimitive]="true"
+                                        [textField]="'label'"
+                                        [valueField]="'value'"
+                                        [disabled]="!isEnabled"
+                                        class="form-control">
+                        <ng-template kendoDropDownListValueTemplate let-dataItem>
+                            {{ dataItem?.label | translate }}
+                        </ng-template>
+                        <ng-template kendoDropDownListItemTemplate let-dataItem>
+                            {{ dataItem?.label | translate }}
+                        </ng-template>
+                    </kendo-dropdownlist>
+                    <div *ngIf="formErrors['modeOfTransport_'+rowIndex]" class="k-invalid-msg">
+                        {{ formErrors['modeOfTransport_'+rowIndex] }}
+                    </div>
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="carrierName"
+                                title="{{'label.carrier' | translate}}"
+                                [headerClass]="'multiline-header'"
+                                [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_SHIPMENT_PLANNED_SCHEDULE, 'carrierName')">
+                <ng-template *ngIf="isEnabled" kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                    <kendo-autocomplete required
+                                        name="carrier_{{rowIndex}}"
+                                        [disabled]="!isEnabled"
+                                        (valueChange)="carrierValueChange($event, rowIndex)"
+                                        (filterChange)="carrierFilterChange($event, rowIndex)"
+                                        [valueField]="'name'"
+                                        [(ngModel)]="dataItem.carrierName"
+                                        [data]="filteredCarrierOptions"
+                                        [filterable]="true"
+                                        [placeholder]="'Carrier Name'"
+                        class="form-control">
+                    </kendo-autocomplete>
+                    <div *ngIf="formErrors['carrier_'+rowIndex]" class="k-invalid-msg">
+                        {{ formErrors['carrier_' + rowIndex] }}
+                    </div>
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="vesselFlight"
+                                title="{{'label.vesselFlight' | translate}}"
+                                [headerClass]="'multiline-header'"
+                                [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_SHIPMENT_PLANNED_SCHEDULE, 'vesselFlight')">
+                <ng-template *ngIf="isEnabled" kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                    <input name="vesselFlight_{{rowIndex}}" [disabled]="!isEnabled"
+                        [(ngModel)]="dataItem.vesselFlight" class="form-control" />
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="loadingPort"
+                                title="{{'label.loadingPort' | translate}}"
+                                [headerClass]="'multiline-header'"
+                                [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_SHIPMENT_PLANNED_SCHEDULE, 'loadingPort')">
+                <ng-template *ngIf="isEnabled" kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                    <kendo-autocomplete required
+                                        name="loadingPort_{{rowIndex}}"
+                                        [disabled]="!isEnabled"
+                                        (valueChange)="loadingPortValueChange($event, rowIndex)"
+                                        (filterChange)="portFilterChange($event, rowIndex)"
+                                        [valueField]="'locationDescription'"
+                                        [(ngModel)]="dataItem.loadingPort"
+                                        [data]="filteredPortOptions"
+                                        [filterable]="true"
+                                        [placeholder]="'Loading Port'"
+                                        class="form-control">
+                    </kendo-autocomplete>
+                    <div *ngIf="formErrors['loadingPort_' + rowIndex]" class="k-invalid-msg">
+                        {{ formErrors['loadingPort_' + rowIndex] }}
+                    </div>
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="etdDate"
+                                title="{{'label.etdDates' | translate}}"
+                                [headerClass]="'multiline-header'"
+                                [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_SHIPMENT_PLANNED_SCHEDULE, 'etdDate')">
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                    <ng-container *ngIf="!isEnabled; else etdDateControl">
+                        {{ dataItem.etdDate | date: (dataItem.modeOfTransport.toLowerCase() === modeOfTransportType.Air.toLowerCase() ? DATE_HOUR_FORMAT_12 : DATE_FORMAT) }}
+                    </ng-container>
+                    <ng-template #etdDateControl>
+                        <kendo-datepicker name="etdDate_{{rowIndex}}" class="form-control" required
+                            [(ngModel)]="dataItem.etdDate" (valueChange)="onETDDateChange($event, rowIndex)"
+                            [readonly]="!isEnabled" [ngClass]="{'read-only': !isEnabled}">
+                        </kendo-datepicker>
+                        <div *ngIf="formErrors['etdDate_'+rowIndex]" class="k-invalid-msg">
+                            {{ formErrors['etdDate_' + rowIndex] }}
+                        </div>
+                    </ng-template>
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="dischargePort"
+                                title="{{'label.dischargePort' | translate}}"
+                                [headerClass]="'multiline-header'"
+                                [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_SHIPMENT_PLANNED_SCHEDULE, 'dischargePort')">
+                                    <ng-template *ngIf="isEnabled" kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                    <kendo-autocomplete required
+                                        name="dischargePort_{{rowIndex}}"
+                                        [disabled]="!isEnabled"
+                                        (valueChange)="dischargePortValueChange($event, rowIndex)"
+                                        (filterChange)="portFilterChange($event, rowIndex)"
+                                        [valueField]="'locationDescription'"
+                                        [(ngModel)]="dataItem.dischargePort"
+                                        [data]="filteredPortOptions"
+                                        [filterable]="true"
+                                        [placeholder]="'Discharge Port'"
+                                        class="form-control">
+                    </kendo-autocomplete>
+                    <div *ngIf="formErrors['dischargePort_'+rowIndex]" class="k-invalid-msg">
+                        {{ formErrors['dischargePort_'+rowIndex] }}
+                    </div>
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="etaDate"
+                                title="{{'label.etaDates' | translate}}"
+                                [headerClass]="'multiline-header'"
+                                [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_SHIPMENT_PLANNED_SCHEDULE, 'etaDate')">
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                    <ng-container *ngIf="!isEnabled; else etaDateControl">
+                        {{ dataItem.etaDate | date: (dataItem.modeOfTransport.toLowerCase() === modeOfTransportType.Air.toLowerCase() ? DATE_HOUR_FORMAT_12 : DATE_FORMAT) }}
+                    </ng-container>
+                    <ng-template #etaDateControl>
+                        <kendo-datepicker name="etaDate_{{rowIndex}}" class="form-control" required
+                            [(ngModel)]="dataItem.etaDate" (valueChange)="onETADateChange($event, rowIndex)"
+                            [readonly]="!isEnabled">
+                        </kendo-datepicker>
+                        <div *ngIf="formErrors['etaDate_'+rowIndex]" class="k-invalid-msg">
+                            {{ formErrors['etaDate_'+rowIndex] }}
+                        </div>
+                    </ng-template>
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-command-column *ngIf="isEnabled" title="{{'label.action' | translate}}" [headerStyle]="{'text-align': 'center'}"
+                class="action-column-grid col-action" width="75">
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                    <button attr.data-balloon="{{'tooltip.delete' | translate}}" data-balloon-pos="left" type="button"
+                        class="btn btn-default grid-remove-icon-button" (click)="onDeleteRow(dataItem)">
+                        <i class="ei ei-icon_minus-06"></i>
+                    </button>
+                </ng-template>
+            </kendo-grid-command-column>
+        </kendo-grid>
+    </div>
+</fieldset>

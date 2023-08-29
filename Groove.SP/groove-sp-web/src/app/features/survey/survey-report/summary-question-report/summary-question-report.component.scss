@@ -1,0 +1,18 @@
+.answer-grid-container {
+    position: relative;
+    .hiddenPagerWrap {
+        ::ng-deep .k-pager-wrap {
+            display: none;
+        }
+        ::ng-deep tr:last-child td {
+            border-bottom: 0;
+        }
+    }
+
+    .k-i-loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}

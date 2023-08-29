@@ -1,0 +1,249 @@
+<div class="content__header freight-schedule-detail-container">
+    <div class="container-fluid" *ngIf="isInitDataLoaded">
+        <div class="row header-group pb-0">
+            <div class="col-sm">
+                <button attr.data-balloon="{{'tooltip.backToList' | translate}}" data-balloon-pos="up" type="button"
+                    class="btn btn-default back-button" (click)="backList()">
+                    <i class="ei ei-arrow_left"></i>
+                </button>
+                <label class="form-header">{{'label.freightScheduleDetail' | translate}}</label>
+            </div>
+
+            <div class="col-sm-5 text-right pr-0">
+                <button attr.data-balloon="{{'label.delete' | translate}}" data-balloon-pos="up" type="button"
+                    *hasPermission="[AppPermissions.FreightScheduler_List_Edit]"
+                    [hidden]="model.isHasLinkedItineraries"
+                    class="btn suspend-icon-button"
+                    (click)="onClickDeleteFS()">
+                    <fa-icon [icon]="faMinus"></fa-icon>
+                </button>
+
+                <button
+                    *hasPermission="[AppPermissions.FreightScheduler_List_Edit]"
+                    [hidden]="model.isHasLinkedItineraries"
+                    attr.data-balloon="{{'label.edit' | translate}}" data-balloon-pos="up" type="button"
+                    class="btn edit-icon-button" (click)="onClickEditFS()">
+                    <fa-icon [icon]="faPencilAlt"></fa-icon>
+                </button>
+
+                <button
+                    *hasPermission="[AppPermissions.FreightScheduler_List_Edit]"
+                    [hidden]="!model.isHasLinkedItineraries"
+                    attr.data-balloon="{{'label.update' | translate}}" data-balloon-pos="up" type="button" 
+                    class="btn edit-icon-button" (click)="onClickUpdateFS()">
+                    <i class="k-icon k-i-calendar" style="font-size:20px"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="row text-muted mb-4" style="margin-left: 52px;">
+            {{'label.updatedOn' | translate}} <span class="font-weight-bold pl-1">{{ model?.updatedDate | date: DATE_FORMAT }}</span>
+            <span *ngIf="model?.updatedBy">
+                <span class="mx-2">
+                    <img src="/assets/images/dote-icon.png" />
+                </span>
+                {{'label.by' | translate}}: <span class="font-weight-bold pl-1">{{ model?.updatedBy }}</span>
+            </span>
+        </div>
+
+        <div class="row">
+            <div class="col-12 panel-group remove-padding-first-panel">
+                <label class="panel-header">{{'label.generalInformation' | translate}}</label>
+
+                <div class="row">
+                    <div class="col content-details">
+                        <div class="row">
+                            <div class="col-5 text-label">{{'label.modeOfTransport' | translate}}</div>
+                            <div class="col-7 value-label">{{model?.modeOfTransport | default: defaultValue}}</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-5 text-label">{{literalLabels.carrierCode | translate}}</div>
+                            <div class="col-7 value-label">{{model?.carrierCode | default: defaultValue}}</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-5 text-label">{{literalLabels.carrierName | translate}}</div>
+                            <div class="col-7 value-label">{{model?.carrierName | default: defaultValue}}</div>
+                        </div>
+
+                        <div class="row" *ngIf="stringHelper.caseIgnoredCompare(model?.modeOfTransport, modeOfTransportType.Air)">
+                            <div class="col-5 text-label">{{'label.mawbNo' | translate}}</div>
+                            <div class="col-7 value-label">{{model?.mawb | mawbNumberFormat | default: defaultValue}}</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-5 text-label">{{literalLabels.vesselFlight | translate}}</div>
+                            <div class="col-7 value-label">
+                                <ng-container [ngSwitch]="model?.modeOfTransport">
+                                    <ng-container *ngSwitchCase="modeOfTransportType.Sea">
+                                        {{stringHelper.isNullOrEmpty(model?.vesselName) && stringHelper.isNullOrEmpty(model?.voyage) ? defaultValue : (model?.vesselName + '/' + model?.voyage)}}
+                                    </ng-container>
+                                    <ng-container *ngSwitchCase="modeOfTransportType.Air">
+                                        {{model?.flightNumber | default: defaultValue}}
+                                    </ng-container>
+                                    <ng-container *ngSwitchDefault>
+                                        {{defaultValue}}
+                                    </ng-container>
+                                </ng-container>
+                            </div>
+                        </div>
+
+                        <ng-container *ngIf="!stringHelper.caseIgnoredCompare(model?.modeOfTransport, modeOfTransportType.Air); else allowUpdateFromExternalTemplate"></ng-container>
+
+                        <div class="row" *ngIf="!stringHelper.caseIgnoredCompare(model?.modeOfTransport, modeOfTransportType.Air)">
+                            <div class="col-5 text-label">{{'label.cyOpenDates' | translate}}</div>
+                            <div class="col-7 value-label">{{model?.cyOpenDate | date: DATE_FORMAT | default: defaultValue}}</div>
+                        </div>
+
+                        <div class="row" *ngIf="!stringHelper.caseIgnoredCompare(model?.modeOfTransport, modeOfTransportType.Air)">
+                            <div class="col-5 text-label">{{'label.cyClosingDates' | translate}}</div>
+                            <div class="col-7 value-label">{{model?.cyClosingDate | date: DATE_FORMAT | default: defaultValue}}</div>
+                        </div>
+                    </div>
+
+                    <div class="col content-details">
+                        <div class="row">
+                            <div class="col-5 text-label">{{literalLabels.locationFromName | translate}}</div>
+                            <div class="col-7 value-label">{{model?.locationFromName | default: defaultValue}}</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-5 text-label">{{literalLabels.locationToName | translate}}</div>
+                            <div class="col-7 value-label">{{model?.locationToName | default: defaultValue}}</div>
+                        </div>                        
+
+                        <div class="row">
+                            <div class="col-5 text-label">{{'label.etdDates' | translate}}</div>
+                            <div class="col-7 value-label">{{model?.etdDate | date: dateTimeFormat | default: defaultValue}}</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-5 text-label">{{'label.etaDates' | translate}}</div>
+                            <div class="col-7 value-label">{{model?.etaDate | date: dateTimeFormat | default: defaultValue}}</div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-5 text-label">{{'label.atdDates' | translate}}</div>
+                            <div class="col-7 value-label">{{model?.atdDate | date: dateTimeFormat | default: defaultValue}}</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-5 text-label">{{'label.ataDates' | translate}}</div>
+                            <div class="col-7 value-label">{{model?.ataDate | date: dateTimeFormat | default: defaultValue}}</div>
+                        </div>
+
+                        <ng-container *ngIf="stringHelper.caseIgnoredCompare(model?.modeOfTransport, modeOfTransportType.Air); else allowUpdateFromExternalTemplate"></ng-container>
+                    </div>
+
+                    <ng-template #allowUpdateFromExternalTemplate>
+                        <div class="row">
+                            <div class="col-5 text-label">{{'label.allowUpdateFromExternal' | translate}}</div>
+                            <div class="col-7 value-label switch-btn-container">
+                                <kendo-switch
+                                    name="isAllowExternalUpdate"
+                                    class="switch-btn-container mr-1"
+                                    [(ngModel)]="model.isAllowExternalUpdate"
+                                    [onLabel]="'\r'"
+                                    [offLabel]="'\r'"
+                                    [disabled]="true">
+                                </kendo-switch>
+                                {{(model?.isAllowExternalUpdate ? 'label.yes' : 'label.no') | translate}}
+                            </div>
+                        </div>
+                    </ng-template>
+                </div>
+            </div>
+            <div class="content-tabs position-relative padding-tab-strip">
+                <kendo-tabstrip [keepTabContent] = 'true'>
+                    <kendo-tabstrip-tab title="{{'label.shipment' | translate}}" [selected]="true">
+                        <ng-template kendoTabContent>
+                            <kendo-grid #grid="kendoGrid" [data]="shipmentGridData"
+                                [pageable]="true"
+                                [pageSize]="gridState.take"
+                                [skip]="gridState.skip"
+                                [sortable]="true"
+                                [sort]="gridState.sort"
+                                (pageChange)="gridPageChange($event)"
+                                (sortChange)="gridSortChange($event)"
+                                (dataStateChange)="gridStateChange($event)"
+                                class="custom-border-grid shipment-grid"
+                                [class.custom-edit-grid]="isEditing"
+                                [class.hiddenPagerWrap]="!shipmentGridData.data || shipmentGridData.data.length == 0">
+
+                                <kendo-grid-column [width]="12" field="shipmentNo" title="{{'label.shipmentNo' | translate}}" [sortable]="true">
+                                    <ng-template kendoGridCellTemplate let-dataItem>
+                                        <a class="k-link link-code" target="_blank" routerLink="/shipments/{{dataItem.id}}" [title]="dataItem.shipmentNo" routerLinkActive="active">
+                                            {{dataItem.shipmentNo}}
+                                        </a>
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column [width]="17" field="shipper" title="{{'label.shipper' | translate}}" [sortable]="true"></kendo-grid-column>
+
+                                <kendo-grid-column [width]="17" field="consignee" title="{{'label.consignee' | translate}}" [sortable]="true"></kendo-grid-column>
+
+                                <kendo-grid-column [width]="12" field="totalPackage" title="{{'label.totalPackage' | translate}}" [sortable]="true">
+                                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                                        {{dataItem.totalPackage | number:'0.2'}} {{dataItem.totalPackageUOM}}
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column [width]="12" field="totalVolume" title="{{'label.totalVolume' | translate}}" [sortable]="true">
+                                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                                        {{dataItem.totalVolume | number:'0.3'}} {{dataItem.totalVolumeUOM}}
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column [width]="12" field="cargoReadyDate" title="{{'label.bookingCargoReadyDates' | translate}}" [sortable]="true">
+                                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                                        {{dataItem.cargoReadyDate | date: DATE_FORMAT}}
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column [width]="18" field="latestMilestone" title="{{'label.latestMilestone' | translate}}" [sortable]="true"></kendo-grid-column>
+                                <!-- Custom kendo pager -->
+                                <ng-template kendoPagerTemplate>
+                                    <div class="k-pager-wrap k-pager-wrap__custom" *ngIf="shipmentGridData.data && shipmentGridData.data.length > 0">
+                                        <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+
+                                        <kendo-pager-input *ngIf="pagerType === 'input'"></kendo-pager-input>
+                                        <kendo-pager-numeric-buttons *ngIf="pagerType === 'numeric'" [buttonCount]="buttonCount"></kendo-pager-numeric-buttons>
+
+                                        <kendo-pager-next-buttons></kendo-pager-next-buttons>
+
+                                        <kendo-pager-info></kendo-pager-info>
+
+                                        <span class="k-pager-sizes k-label refresh-grid">
+                                            <div class="k-label">{{'label.showRows' | translate}}</div>
+                                            <kendo-dropdownlist [data]="pageSizes" [value]="gridState.take" (valueChange)="pageSizeChange($event)">
+                                            </kendo-dropdownlist>
+
+                                            <button attr.data-balloon="{{'tooltip.refresh' | translate}}" data-balloon-pos="up"
+                                                    type="button"
+                                                    class="k-pager-refresh k-link pull-right btn refresh-icon-button"
+                                                    (click)="fetchShipmentGridData().subscribe()">
+                                                <i class="ei ei-icon_refresh"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </ng-template>
+                            </kendo-grid>
+                            <div *ngIf="isShipmentGridLoading" class="k-i-loading"></div>
+                        </ng-template>
+                    </kendo-tabstrip-tab>
+                </kendo-tabstrip>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-freight-scheduler-form
+    *ngIf="isOpenFreightSchedulerPopup"
+    [carriersModel]="carriersModel"
+    [locationsModel]="locationsModel"
+    [model]="freightSchedulerModel"
+    [popupMode]="schedulerPopupMode"
+    (saveSuccess)="onSaveFreightSchedulerSuccess()"
+    (close)="onCloseFreightSchedulerPopup()">
+</app-freight-scheduler-form>

@@ -1,0 +1,12 @@
+﻿@model Groove.SP.Application.Users.ViewModels.AccountRegistrationRejectedEmailTemplateViewModel
+@{
+    Layout = "_EmailLayout.cshtml";
+}
+
+<p>Dear @Model.Name,</p>
+<p>We regret that we cannot open an account for you</p>
+<p>For more information, you are welcome to contact our customer service representatives by emailing us at @Model.SupportEmail.</p>
+<p>Nonetheless, we thank you for your interest in our service.</p>
+<br />
+<p>Regards,</p>
+<p>Shipment Portal Team.</p>

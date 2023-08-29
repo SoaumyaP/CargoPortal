@@ -1,0 +1,2121 @@
+<div class="content__header" class="compliance-form-container">
+    <div class="container-fluid">
+        <div class="header-group" *ngIf="isInitDataLoaded">
+            <div class="row">
+                <div class="col-sm-7">
+                    <button attr.data-balloon="{{'tooltip.backToList' | translate}}" data-balloon-pos="up" type="button"
+                        class="btn btn-default back-button" (click)="backList()">
+                        <i class="ei ei-arrow_left"></i>
+                    </button>
+                    <label class="form-header">{{isAddMode ? ('label.addNewCompliance' | translate) : model.name}}</label>
+                    <app-status-label [status]="model.stage" [statusName]="model.stageName | translate" [statusEnum]="buyerComplianceStage">
+                    </app-status-label>
+                </div>
+                <div class="col-sm-5 text-right" *ngIf="isViewMode">
+                    <button attr.data-balloon="{{'label.edit' | translate}}" data-balloon-pos="up" type="button" class="btn edit-icon-button"
+                        (click)="editCompliance()"
+                        [disabled]="model.stage === buyerComplianceStage.Activated">
+                            <fa-icon [icon]="faPencilAlt"></fa-icon>
+                    </button>
+                    <button attr.data-balloon="{{'label.inactive' | translate}}" data-balloon-pos="up" type="button" class="btn suspend-icon-button"
+                        *ngIf="model.stage === buyerComplianceStage.Activated"
+                        (click)="deactivateCompliance()">
+                        <fa-icon [icon]="faPowerOff"></fa-icon>
+                    </button>
+                    <button attr.data-balloon="{{'label.activate' | translate}}" data-balloon-pos="up" type="button" class="btn btn-default activate-icon-button"
+                        *ngIf="model.stage === buyerComplianceStage.Draft"
+                        (click)="activateCompliance()">
+                        <fa-icon [icon]="faPowerOff"></fa-icon>
+                    </button>
+                </div>
+            </div>
+            <div class="row text-muted create-title" *ngIf="!isAddMode">
+                <span>{{'label.createdOn' | translate}}</span>
+                <span class="font-weight-bold pl-1">{{ model?.createdDate | date: DATE_FORMAT }}</span>
+                <span class="mx-2">
+                    <img src="/assets/images/dote-icon.png" />
+                </span>
+                {{'label.owner' | translate}}: <span class="font-weight-bold pl-1">{{ model?.createdBy }}</span>
+            </div>
+        </div>
+
+        <div class="typing_loader" *ngIf="!isInitDataLoaded"></div>
+        <form class="content-tabs mt-3 row position-relative" #mainForm="ngForm" novalidate (ngSubmit)="onSubmit()" *ngIf="isInitDataLoaded">
+            <kendo-tabstrip (tabSelect)="onSelectTabChanged($event)" class="tab-container">
+
+                <!--tab 1-->
+                <kendo-tabstrip-tab [title]="'label.general' | translate" [selected]="true">
+                    <ng-template kendoTabContent>
+                        <div class="panel-group">
+                            <label class="panel-header">{{'label.generalSetting' | translate}}</label>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.customer' | translate}}</label>
+                                            <kendo-autocomplete #buyerAutoComplete
+                                                required
+                                                name="organizationIdControl"
+                                                (valueChange)="buyerValueChange($event)"
+                                                (filterChange)="buyerFilterChange($event)"
+                                                [valueField]="'code'"
+                                                [disabled]="isViewMode"
+                                                [loading]="buyerLoading"
+                                                [(ngModel)]="model.organizationCode"
+                                                [data]="buyerFilter"
+                                                [filterable]="true"
+                                                [placeholder]="'placeholder.egThing' | translate: {thing: ('label.organizationCode' | translate)}"
+                                                class="form-control">
+                                            </kendo-autocomplete>
+                                            <div *ngIf="formErrors['organizationIdControl']" class="k-invalid-msg">
+                                                {{ formErrors.organizationIdControl }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.complianceName' | translate}}</label>
+                                            <input #complianceNameElement name="complianceName" required type="text" class="form-control"
+                                                [disabled]="isViewMode" [(ngModel)]="model.name" />
+                                            <div *ngIf="formErrors['complianceName']" class="k-invalid-msg">
+                                                {{ formErrors.complianceName }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label class="form-label">{{'label.status' | translate}}</label>
+                                        <input #statusElement name="status" type="text" class="form-control"
+                                                [disabled]="true" value="{{model.statusName | translate}}" />
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.poTransmissionMethod' | translate}}</label>
+                                            <kendo-dropdownlist #poTransmissionMethodElement
+                                                                name="poTransmissionMethod"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.purchaseOrderTransmissionMethods"
+                                                                [data]="poTransmissionMethodOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.enforceCommercialInvoiceFormat' | translate}}</label>
+                                            <div class="radio-wrapper" #anchor>
+                                                <input id="enforceCommercialInvoiceFormat_yes"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="enforceCommercialInvoiceFormat"
+                                                        [value]="true"
+                                                        [(ngModel)]="model.enforceCommercialInvoiceFormat" />
+                                                <label class="k-radio-label" for="enforceCommercialInvoiceFormat_yes">{{'label.yes' | translate}}</label>
+                                                <input id="enforceCommercialInvoiceFormat_no"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="enforceCommercialInvoiceFormat"
+                                                        [value]="false"
+                                                        [disabled]="isViewMode"
+                                                        [(ngModel)]="model.enforceCommercialInvoiceFormat"/>
+                                                <label class="k-radio-label" for="enforceCommercialInvoiceFormat_no">{{'label.no' | translate}}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.enforceParkingListFormat' | translate}}</label>
+                                            <div class="radio-wrapper" #anchor>
+                                                <input id="enforceParkingListFormat_yes"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="enforceParkingListFormat"
+                                                        [value]="true"
+                                                        [(ngModel)]="model.enforceCommercialInvoiceFormat"/>
+                                                <label class="k-radio-label" for="enforceParkingListFormat_yes">{{'label.yes' | translate}}</label>
+                                                <input id="enforceParkingListFormat_no"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="enforceParkingListFormat"
+                                                        [value]="false"
+                                                        [disabled]="isViewMode"
+                                                        [(ngModel)]="model.enforceCommercialInvoiceFormat"/>
+                                                <label class="k-radio-label" for="enforceParkingListFormat_no">{{'label.no' | translate}}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.shortShipTolerancePercentage' | translate}}</label>
+                                            <kendo-numerictextbox
+                                                name="shortShipTolerancePercentage"
+                                                [min]="0"
+                                                [max]="1"
+                                                [step]="0.01"
+                                                [format]="'p'"
+                                                class="form-control"
+                                                [(ngModel)]="model.shortShipTolerancePercentage"
+                                                [autoCorrect]="true"
+                                                [disabled]="isViewMode">
+                                            </kendo-numerictextbox>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.overShipTolerancePercentage' | translate}}</label>
+                                            <kendo-numerictextbox
+                                                name="overShipTolerancePercentage"
+                                                [min]="0"
+                                                [format]="'p'"
+                                                [disabled]="isViewMode"
+                                                [max]="1"
+                                                class="form-control"
+                                                [step]="0.01"
+                                                [autoCorrect]="true"
+                                                [(ngModel)]="model.overshipTolerancePercentage">
+                                            </kendo-numerictextbox>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.poTransmissionNotes' | translate}}</label>
+                                            <textarea
+                                                #purchaseOrderTransmissionNotes
+                                                kendoTextArea
+                                                name="purchaseOrderTransmissionNotes"
+                                                [(ngModel)]="model.purchaseOrderTransmissionNotes"
+                                                class="form-control note-textarea"
+                                                [readOnly]="isViewMode"
+                                                maxlength="500">
+                                            </textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.poTransmissionFrequency' | translate}}</label>
+                                            <kendo-dropdownlist #poTransmissionFrequencyElement
+                                                                name="poTransmissionFrequency"
+                                                                [defaultItem]="defaultDropDownItem"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.purchaseOrderTransmissionFrequency"
+                                                                [data]="poTransmissionFrequencyOptions"
+                                                                class="form-control">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.poAssignedOriginAndDestinationAgent' | translate}}</label>
+                                            <div class="radio-wrapper" #anchor>
+                                                <input id="isAssignedAgent_yes"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="isAssignedAgent"
+                                                        [value]="true"
+                                                        [(ngModel)]="model.isAssignedAgent" />
+                                                <label class="k-radio-label" for="isAssignedAgent_yes">{{'label.yes' | translate}}</label>
+                                                <input id="isAssignedAgent_no"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="isAssignedAgent"
+                                                        [value]="false"
+                                                        [disabled]="isViewMode"
+                                                        [(ngModel)]="model.isAssignedAgent"/>
+                                                <label class="k-radio-label" for="isAssignedAgent_no">{{'label.no' | translate}}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Allow to book in -->
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.allowToBookIn' | translate}}</label>
+                                            <div class="radio-wrapper" #anchor>
+                                                <input id="allowToBookIn_blanket"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="allowToBookIn"
+                                                        [value]="poType.Blanket"
+                                                        [(ngModel)]="model.allowToBookIn" />
+                                                <label class="k-radio-label" for="allowToBookIn_blanket">{{'label.blanketPO' | translate}}</label>
+                                                <input id="allowToBookIn_allocated"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="allowToBookIn"
+                                                        [value]="poType.Allocated"
+                                                        [disabled]="isViewMode"
+                                                        [(ngModel)]="model.allowToBookIn"/>
+                                                <label class="k-radio-label" for="allowToBookIn_allocated">{{'label.allocatedPO' | translate}}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group row">
+                                <!-- Progress Check -->
+                                <div class="col-sm-6">
+                                    <label class="form-label">{{'label.progressCheck' | translate}}</label>
+                                    <div class="form-group row">
+                                        <div class="col-xl-3 col-lg-5  row ml-0 align-items-center">
+                                            <kendo-switch
+                                                name="isProgressCargoReadyDates"
+                                                class="switch-btn-container"
+                                                [(ngModel)]="model.isProgressCargoReadyDates"
+                                                [onLabel]="'\r'"
+                                                [offLabel]="'\r'"
+                                                (valueChange)="onChangeIsProgressCargoReadyDates($event)"
+                                                [disabled]="isViewMode">
+                                            </kendo-switch>
+                                            <span class="ml-2">{{'label.enable' | translate}}</span>
+                                        </div>
+
+                                        <div class="col-xl-9 col-lg-7  row align-items-center">
+                                             <span class="ml-4 mr-1">{{'label.notify' | translate}} </span>
+                                             <kendo-numerictextbox
+                                                 name="progressNotifyDay"
+                                                 [min]="0"
+                                                 [decimals]="0"
+                                                 [format]="'n0'"
+                                                 [disabled]="isViewMode || !model.isProgressCargoReadyDates"
+                                                 class="form-control notifyDay-container"
+                                                 [spinners]="false"
+                                                 [autoCorrect]="true"
+                                                 [(ngModel)]="model.progressNotifyDay">
+                                             </kendo-numerictextbox>
+                                             <span class="ml-1">{{'label.daysBeforeCargoReadyDate' | translate}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                 <!-- Allow missing PO setting-->
+                                 <div class="col-sm-6">
+                                    <label class="form-label">{{'label.allowToCreateBookingWithMissingPO' | translate}}</label>
+                                    <div class="form-group row">
+                                        <div class="col-xl-3 col-lg-5  row ml-0 align-items-center">
+                                            <kendo-switch
+                                                name="isAllowMissingPO"
+                                                class="switch-btn-container"
+                                                [(ngModel)]="model.isAllowMissingPO"
+                                                [onLabel]="'\r'"
+                                                [offLabel]="'\r'"
+                                                [disabled]="isViewMode">
+                                            </kendo-switch>
+                                            <span class="ml-2">{{'label.enable' | translate}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <div class="form-group row">
+                                        <div class="col-xl-3 col-lg-5 row ml-0 align-items-center">
+                                            <kendo-switch
+                                                name="isCompulsory"
+                                                class="switch-btn-container"
+                                                [(ngModel)]="model.isCompulsory"
+                                                [onLabel]="'\r'"
+                                                [offLabel]="'\r'"
+                                                [disabled]="isViewMode || !model.isProgressCargoReadyDates">
+                                            </kendo-switch>
+                                            <span class="ml-2">{{'label.compulsory' | translate}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                
+                                 <!-- Service Type-->
+                                 <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="form-label required">{{'label.serviceType' | translate}}</label>
+                                        <kendo-dropdownlist #serviceTypeElement
+                                                            name="serviceType"
+                                                            [disabled]="isViewMode"
+                                                            [valuePrimitive]="true"
+                                                            [textField]="'label'"
+                                                            [valueField]="'value'"
+                                                            [(ngModel)]="model.serviceType"
+                                                            [data]="serviceTypeOptions"
+                                                            (valueChange)="serviceTypeValueChanged($event)"
+                                                            class="form-control">
+                                            <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                {{ dataItem?.label | translate }}
+                                            </ng-template>
+                                            <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                {{ dataItem?.label | translate }}
+                                            </ng-template>
+                                        </kendo-dropdownlist>
+                                    </div>
+                                </div>
+
+                              
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <div class="form-group row">
+                                        <div class="col-lg-7 row ml-0 align-items-center">
+                                            <kendo-switch
+                                                name="isEmailNotificationToSupplier"
+                                                class="switch-btn-container"
+                                                [(ngModel)]="model.isEmailNotificationToSupplier"
+                                                [onLabel]="'\r'"
+                                                [offLabel]="'\r'"
+                                                [disabled]="isViewMode || !model.isProgressCargoReadyDates">
+                                            </kendo-switch>
+                                            <div>
+                                                <span class="ml-2">{{'label.emailNotificationToSupplier' | translate}} </span>
+
+                                                <span class="font-weight-bold">
+                                                    ({{'label.utc8' | translate}})
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-5 row ml-0 align-items-center">
+                                            <kendo-dropdownlist
+                                                name="emailNotificationTime"
+                                                [(ngModel)]="model.emailNotificationTime"
+                                                class="form-control"
+                                                [data]="emailNotificationTimeOptions"
+                                                [valuePrimitive]="true"
+                                                [disabled]="isViewMode || !model.isProgressCargoReadyDates"
+                                                >
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                  <!-- Integrate with WMS -->
+                                  <div class="col-sm-6" >
+                                    <div class="form-group">
+                                        <label class="form-label required">{{'label.integrateWithWMS' | translate}}</label>
+                                        <div class="radio-wrapper" #anchor>
+                                            <input id="integrateWithWMS_yes"
+                                                    type="radio"
+                                                    class="k-radio"
+                                                    name="integrateWithWMS"
+                                                    [value]="true"
+                                                    [(ngModel)]="model.integrateWithWMS" />
+                                            <label class="k-radio-label" for="integrateWithWMS_yes">{{'label.yes' | translate}}</label>
+                                            <input id="integrateWithWMS_no"
+                                                    type="radio"
+                                                    class="k-radio"
+                                                    name="integrateWithWMS"
+                                                    [value]="false"
+                                                    [disabled]="isViewMode"
+                                                    [(ngModel)]="model.integrateWithWMS"/>
+                                            <label class="k-radio-label" for="integrateWithWMS_no">{{'label.no' | translate}}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                
+                                </div>
+
+                                  <!-- Allow to show additional information in PO Listing -->
+                                  <div class="col-sm-6" >
+                                    <label class="form-label">{{'label.allowShowAdditionalInforPOListing' | translate}}</label>
+                                    <div class="form-group row">
+                                        <div class="col-xl-3 col-lg-5 row ml-0 align-items-center">
+                                            <kendo-switch
+                                                name="isAllowShowAdditionalInforPOListing"
+                                                class="switch-btn-container"
+                                                [(ngModel)]="model.isAllowShowAdditionalInforPOListing"
+                                                [onLabel]="'\r'"
+                                                [offLabel]="'\r'"
+                                                [disabled]="isViewMode">
+                                            </kendo-switch>
+                                            <span class="ml-2">{{'label.enable' | translate}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+                <!--end tab1-->
+
+                <!--tab 2-->
+                <kendo-tabstrip-tab [title]="'label.poManagement' | translate" >
+                    <ng-template kendoTabContent>
+                        <div class="panel-group">
+                            <label class="panel-header">{{'label.poVerificationSetting' | translate}}</label>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.expectedShipDateVerification' | translate}}</label>
+                                            <kendo-dropdownlist #expectedShipDateVerificationElement
+                                                                name="expectedShipDateVerification"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.purchaseOrderVerificationSetting.expectedShipDateVerification"
+                                                                [data]="expectedVerificationSettingOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.expectedDeliveryDateVerification' | translate}}</label>
+                                            <kendo-dropdownlist #expectedDeliveryDateVerificationElement
+                                                                name="expectedDeliveryDateVerification"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.purchaseOrderVerificationSetting.expectedDeliveryDateVerification"
+                                                                [data]="expectedVerificationSettingOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.shipperVerification' | translate}}</label>
+                                            <kendo-dropdownlist #shipperVerificationElement
+                                                                name="shipperVerification"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.purchaseOrderVerificationSetting.shipperVerification"
+                                                                [data]="defaultVerificationSettingOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.consigneeVerification' | translate}}</label>
+                                            <kendo-dropdownlist #consigneeVerificationElement
+                                                                name="consigneeVerification"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.purchaseOrderVerificationSetting.consigneeVerification"
+                                                                [data]="defaultVerificationSettingOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.shipFromLocationVerification' | translate}}</label>
+                                            <kendo-dropdownlist #shipFromLocationVerificationElement
+                                                                name="shipFromLocationVerification"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.purchaseOrderVerificationSetting.shipFromLocationVerification"
+                                                                [data]="verificationSettingOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.shipToLocationVerification' | translate}}</label>
+                                            <kendo-dropdownlist #shipToLocationVerificationElement
+                                                                name="shipToLocationVerification"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.purchaseOrderVerificationSetting.shipToLocationVerification"
+                                                                [data]="verificationSettingOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.paymentTermsVerification' | translate}}</label>
+                                            <kendo-dropdownlist #paymentTermsVerificationElement
+                                                                name="paymentTermsVerification"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.purchaseOrderVerificationSetting.paymentTermsVerification"
+                                                                [data]="verificationSettingOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.paymentCurrencyVerification' | translate}}</label>
+                                            <kendo-dropdownlist #paymentCurrencyVerificationElement
+                                                                name="paymentCurrencyVerification"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.purchaseOrderVerificationSetting.paymentCurrencyVerification"
+                                                                [data]="verificationSettingOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.modeOfTransportVerification' | translate}}</label>
+                                            <kendo-dropdownlist #modeOfTransportVerificationElement
+                                                                name="modeOfTransportVerification"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.purchaseOrderVerificationSetting.modeOfTransportVerification"
+                                                                [data]="verificationSettingOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.incotermVerification' | translate}}</label>
+                                            <kendo-dropdownlist #incotermVerificationElement
+                                                                name="incotermVerification"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.purchaseOrderVerificationSetting.incotermVerification"
+                                                                [data]="verificationSettingOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.movementTypeVerification' | translate}}</label>
+                                            <kendo-dropdownlist #movementTypeVerificationElement
+                                                                name="movementTypeVerification"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.purchaseOrderVerificationSetting.movementTypeVerification"
+                                                                [data]="verificationSettingOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.preferredCarrierVerification' | translate}}</label>
+                                            <kendo-dropdownlist #preferredCarrierVerificationElement
+                                                                name="preferredCarrierVerification"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.purchaseOrderVerificationSetting.preferredCarrierVerification"
+                                                                [data]="verificationSettingOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-group">
+                            <label class="panel-header">{{'label.productVerificationSetting' | translate}}</label>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.productCodeVerification' | translate}}</label>
+                                            <kendo-dropdownlist #productCodeVerificationElement
+                                                                name="productCodeVerification"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.productVerificationSetting.productCodeVerification"
+                                                                [data]="defaultVerificationSettingOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.commodityVerification' | translate}}</label>
+                                            <kendo-dropdownlist #commodityVerificationElement
+                                                                name="commodityVerification"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.productVerificationSetting.commodityVerification"
+                                                                [data]="verificationSettingOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.hsCodeVerification' | translate}}</label>
+                                            <kendo-dropdownlist #hsCodeVerificationElement
+                                                                name="hsCodeVerification"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.productVerificationSetting.hsCodeVerification"
+                                                                [data]="defaultVerificationSettingOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.countryOfOriginVerification' | translate}}</label>
+                                            <kendo-dropdownlist #countryOfOriginVerificationElement
+                                                                name="countryOfOriginVerification"
+                                                                [disabled]="isViewMode"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.productVerificationSetting.countryOfOriginVerification"
+                                                                [data]="defaultVerificationSettingOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.requireGrossWeightKGS' | translate}}?</label>
+                                            <div class="radio-wrapper" #anchor>
+                                                <input id="isRequireGrossWeight_yes"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="isRequireGrossWeight"
+                                                        [value]="true"
+                                                        [(ngModel)]="model.productVerificationSetting.isRequireGrossWeight" />
+                                                <label class="k-radio-label" for="isRequireGrossWeight_yes">{{'label.yes' | translate}}</label>
+                                                <input id="isRequireGrossWeight_no"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="isRequireGrossWeight"
+                                                        [value]="false"
+                                                        [disabled]="isViewMode"
+                                                        [(ngModel)]="model.productVerificationSetting.isRequireGrossWeight"/>
+                                                <label class="k-radio-label" for="isRequireGrossWeight_no">{{'label.no' | translate}}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.requireVolumeCBM' | translate}}?</label>
+                                            <div class="radio-wrapper" #anchor>
+                                                <input id="isRequireVolume_yes"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="isRequireVolume"
+                                                        [value]="true"
+                                                        [(ngModel)]="model.productVerificationSetting.isRequireVolume" />
+                                                <label class="k-radio-label" for="isRequireVolume_yes">{{'label.yes' | translate}}</label>
+                                                <input id="isRequireVolume_no"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="isRequireVolume"
+                                                        [value]="false"
+                                                        [disabled]="isViewMode"
+                                                        [(ngModel)]="model.productVerificationSetting.isRequireVolume"/>
+                                                <label class="k-radio-label" for="isRequireVolume_no">{{'label.no' | translate}}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-group">
+                            <label class="panel-header">{{'label.hsCodeSetting' | translate}}</label>
+                            <kendo-grid #grid="kendoGrid"
+                                [data]="hsCodeSettings"
+                                [scrollable]="'vertical'"
+                                [selectable]="false"
+                                class="custom-edit-grid"
+                                [rowClass]="hsCodeSettingsRowCallback">
+
+                            <kendo-grid-column field="bookingPort" title="{{'label.bookingPort' | translate}}" [width]="180">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                    <kendo-dropdownlist name="hsCodeSetting_bookingPort_{{rowIndex}}" required
+                                        [(ngModel)]="dataItem.bookingPort" [data]="bookingPortOptions | orderBy:'value'"
+                                        [valuePrimitive]="true" [textField]="'label'" [valueField]="'value'"
+                                        (valueChange)="onHSCodeBookingPortChange($event, rowIndex)"
+                                        (open)="onHSCodeBookingPortOpen(rowIndex)"
+                                        [disabled]="isViewMode">
+                                        <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                            {{ dataItem?.label | translate }}
+                                        </ng-template>
+                                        <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                            {{ dataItem?.label | translate }}
+                                        </ng-template>
+                                    </kendo-dropdownlist>
+                                    <div *ngIf="formErrors['hsCodeSetting_bookingPort_' + rowIndex]" class="k-invalid-msg">
+                                        {{formErrors['hsCodeSetting_bookingPort_' + rowIndex]}}
+                                    </div>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="country" title="{{'label.country' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                    <kendo-multiselect
+                                        #hsCodeCountrySettings
+                                        name="hsCodeSetting_country_{{rowIndex}}"
+                                        [data]="dataItem.countryOptions"
+                                        required
+                                        [textField]="'label'"
+                                        [valueField]="'value'"
+                                        [valuePrimitive]="true"
+                                        [(ngModel)]="dataItem.countryIds"
+                                        [autoClose]="false"
+                                        [disabled]="isViewMode"
+                                        [filterable]="true"
+                                        (filterChange)="onHSCodeSettingCountrySelectionFilterChange($event, rowIndex)"
+                                        class="form-control">
+                                        <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                            <input type="checkbox" class="k-checkbox" [checked]="isCountrySelected(dataItem?.value, rowIndex)">
+                                            <label class="k-checkbox-label">{{ dataItem?.label | translate }}</label>
+                                        </ng-template>
+                                        <ng-template kendoMultiSelectTagTemplate let-dataItem>
+                                            {{ dataItem?.label | translate }}
+                                        </ng-template>
+                                    </kendo-multiselect>
+                                    <div *ngIf="formErrors['hsCodeSetting_country_' + rowIndex]" class="k-invalid-msg">
+                                        {{formErrors['hsCodeSetting_country_' + rowIndex]}}
+                                    </div>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-command-column title="{{'label.action' | translate}}" [headerStyle]="{'text-align': 'center'}" class="action-column-grid col-action" width="75" *ngIf="!isViewMode">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                    <button attr.data-balloon="{{'tooltip.delete' | translate}}" data-balloon-pos="left" type="button" class="btn btn-default grid-remove-icon-button" (click)="removeHSCodeSettingRow(rowIndex)">
+                                        <i class="ei ei-icon_minus-06"></i>
+                                    </button>
+                                </ng-template>
+                            </kendo-grid-command-column>
+                        </kendo-grid>
+                        <div class="margin-add-icon-button">
+                            <button type="button" class="btn prim-button add-more-icon-button"
+                                    attr.data-balloon="{{'label.addMore' | translate}}" data-balloon-pos="up"
+                                    (click)="addBlankHSCodeSettingRow()" [disabled]="isViewMode || currentHSCodeBookingPorts.length === 2">
+                                <i class="ei ei-icon_plus"></i>
+                            </button>
+                        </div>
+                        </div>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+                <!--end tab2-->
+
+                 <!--tab3-->
+                <kendo-tabstrip-tab [title]="'label.cargoLoadability' | translate">
+                    <ng-template kendoTabContent>
+                        <div class="panel-group">
+                            <label class="panel-header">{{'label.bookingPeriod' | translate}}</label>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.cyEarlyBookingPeriod' | translate}}</label>
+                                            <kendo-numerictextbox
+                                                #cyEarlyBookingTimelessElement
+                                                name="cyEarlyBookingTimeless"
+                                                class="form-control"
+                                                [(ngModel)]="model.bookingTimeless.cyEarlyBookingTimeless"
+                                                [autoCorrect]="true"
+                                                [format]="'n0'"
+                                                [decimals]="0"
+                                                [disabled]="isViewMode"
+                                                (ngModelChange)="check_cyEarlyBookingTimeless_Validates()">
+                                            </kendo-numerictextbox>
+                                            <div *ngIf="formErrors['cyEarlyBookingTimeless']" class="k-invalid-msg">
+                                                {{ formErrors.cyEarlyBookingTimeless }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.cyLateBookingPeriod' | translate}}</label>
+                                            <kendo-numerictextbox
+                                                name="cyLateBookingTimeless"
+                                                [decimals]="0"
+                                                class="form-control"
+                                                [(ngModel)]="model.bookingTimeless.cyLateBookingTimeless"
+                                                [autoCorrect]="true"
+                                                [disabled]="isViewMode"
+                                                (ngModelChange)="check_cyEarlyBookingTimeless_Validates()"
+                                                [format]="'n0'">
+                                            </kendo-numerictextbox>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.cfsEarlyBookingPeriod' | translate}}</label>
+                                            <kendo-numerictextbox
+                                                #cfsEarlyBookingTimelessElement
+                                                name="cfsEarlyBookingTimeless"
+                                                class="form-control"
+                                                [(ngModel)]="model.bookingTimeless.cfsEarlyBookingTimeless"
+                                                [autoCorrect]="true"
+                                                [format]="'n0'"
+                                                [decimals]="0"
+                                                [disabled]="isViewMode"
+                                                (ngModelChange)="check_cfsEarlyBookingTimeless_Validates()">
+                                            </kendo-numerictextbox>
+                                            <div *ngIf="formErrors['cfsEarlyBookingTimeless']" class="k-invalid-msg">
+                                                {{ formErrors.cfsEarlyBookingTimeless }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.cfsLateBookingPeriod' | translate}}</label>
+                                            <kendo-numerictextbox
+                                                name="cfsLateBookingTimeless"
+                                                [decimals]="0"
+                                                class="form-control"
+                                                [(ngModel)]="model.bookingTimeless.cfsLateBookingTimeless"
+                                                [autoCorrect]="true"
+                                                [format]="'n0'"
+                                                [disabled]="isViewMode"
+                                                (ngModelChange)="check_cfsEarlyBookingTimeless_Validates()">
+                                            </kendo-numerictextbox>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.airEarlyBookingPeriod' | translate}}</label>
+                                            <kendo-numerictextbox
+                                                #airEarlyBookingTimelessElement
+                                                name="airEarlyBookingTimeless"
+                                                class="form-control"
+                                                [(ngModel)]="model.bookingTimeless.airEarlyBookingTimeless"
+                                                [autoCorrect]="true"
+                                                [format]="'n0'"
+                                                [decimals]="0"
+                                                [disabled]="isViewMode"
+                                                (ngModelChange)="check_airEarlyBookingTimeless_Validates()">
+                                            </kendo-numerictextbox>
+                                            <div *ngIf="formErrors['airEarlyBookingTimeless']" class="k-invalid-msg">
+                                                {{ formErrors.airEarlyBookingTimeless }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">{{'label.airLateBookingPeriod' | translate}}</label>
+                                            <kendo-numerictextbox
+                                                name="airLateBookingTimeless"
+                                                [decimals]="0"
+                                                class="form-control"
+                                                [(ngModel)]="model.bookingTimeless.airLateBookingTimeless"
+                                                [autoCorrect]="true"
+                                                [format]="'n0'"
+                                                [disabled]="isViewMode"
+                                                (ngModelChange)="check_airEarlyBookingTimeless_Validates()">
+                                            </kendo-numerictextbox>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.dateForComparison' | translate}}</label>
+                                            <kendo-dropdownlist
+                                                            name="dateForComparison"
+                                                            required
+                                                            [(ngModel)]="model.bookingTimeless.dateForComparison"
+                                                            [data]="dateForComparisonOptions"
+                                                            [valuePrimitive]="true"
+                                                            [textField]="'label'"
+                                                            [valueField]="'value'"
+                                                            [disabled]="isViewMode"
+                                                            class="form-control">
+                                            <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                {{ dataItem?.label | translate }}
+                                            </ng-template>
+                                            <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                {{ dataItem?.label | translate }}
+                                            </ng-template>
+                                        </kendo-dropdownlist>
+                                        </div>
+                                    </div>                                    
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-group">
+                            <label class="panel-header">{{'label.loadability' | translate}}</label>
+                            <kendo-grid #grid="kendoGrid"
+                                [data]="model.cargoLoadabilities"
+                                [scrollable]="'vertical'"
+                                [selectable]="false"
+                                class="custom-edit-grid">
+
+                                <kendo-grid-column field="name" title="{{'label.name' | translate}}">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                        <input name="name_{{rowIndex}}" type="text" class="form-control" required kendoTextBox
+                                            [disabled]="isViewMode || !dataItem.isAddLine"
+                                            [(ngModel)]="dataItem.name"
+                                            (ngModelChange)="checkGridNameValidates(rowIndex)"
+                                            (focusout)="checkGridNameValidates(rowIndex)" [ngClass]="{'ng-touched': !stringHelper.isNullOrEmpty(formErrors['gridValidationRules'][rowIndex].name.required)}"/>
+                                        <div *ngIf="dataItem.isAddLine && formErrors['gridValidationRules'][rowIndex].name.required" class="k-invalid-msg">
+                                            {{ formErrors['gridValidationRules'][rowIndex].name.required }}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="equipmentType" title="{{'label.equipmentType' | translate}}">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                        <div class="equipment-type-text" *ngIf="!dataItem.isAddLine">
+                                            {{labelFromEnum(allEquipmentTypeOptions, dataItem.equipmentType) | translate}}
+                                        </div>
+                                        <kendo-dropdownlist *ngIf="dataItem.isAddLine"
+                                                            name="equipmentType_{{rowIndex}}"
+                                                            required
+                                                            [(ngModel)]="dataItem.equipmentType"
+                                                            [data]="equipmentTypeOptions"
+                                                            [valuePrimitive]="true"
+                                                            [textField]="'label'"
+                                                            [valueField]="'value'"
+                                                            [disabled]="isViewMode"
+                                                            class="form-control"
+                                                            (focusout)="checkGridEquipmentTypeValidates(rowIndex)"
+                                                            [ngClass]="{'ng-touched': !stringHelper.isNullOrEmpty(formErrors['gridValidationRules'][rowIndex].equipmentType.required)}">
+                                            <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                {{ dataItem?.label | translate }}
+                                            </ng-template>
+                                            <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                {{ dataItem?.label | translate }}
+                                            </ng-template>
+                                        </kendo-dropdownlist>
+                                        <div *ngIf="dataItem.isAddLine && formErrors['gridValidationRules'][rowIndex].equipmentType.required" class="k-invalid-msg">
+                                            {{ formErrors['gridValidationRules'][rowIndex].equipmentType.required }}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="cyMinimumCBM" title="{{'label.cyMinimumCBM' | translate}}">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                        <kendo-numerictextbox name="cyMinimumCBM_{{rowIndex}}"
+                                                                required
+                                                                [decimals]="3"
+                                                                [format]="'n3'"
+                                                                [min]="0"
+                                                                [disabled]="isViewMode || !dataItem.isAddLine"
+                                                                [autoCorrect]="true"
+                                                                [(ngModel)]="dataItem.cyMinimumCBM"
+                                                                class="form-control"
+                                                                (ngModelChange)="checkGridCYMinimumCBMValidates(rowIndex)"
+                                                                [ngClass]="{'ng-touched': !stringHelper.isNullOrEmpty(formErrors['gridValidationRules'][rowIndex].cyMinimumCBM.required) || !stringHelper.isNullOrEmpty(formErrors['gridValidationRules'][rowIndex].cyMinimumCBM.lessThanMaxCBM)}">
+                                        </kendo-numerictextbox>
+                                        <div *ngIf="dataItem.isAddLine && formErrors['gridValidationRules'][rowIndex].cyMinimumCBM.required" class="k-invalid-msg">
+                                            {{ formErrors['gridValidationRules'][rowIndex].cyMinimumCBM.required }}
+                                        </div>
+                                        <div *ngIf="dataItem.isAddLine && formErrors['gridValidationRules'][rowIndex].cyMinimumCBM.lessThanMaxCBM" class="k-invalid-msg">
+                                            {{ formErrors['gridValidationRules'][rowIndex].cyMinimumCBM.lessThanMaxCBM }}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="cyMinimumCBM" title="{{'label.cyMaximumCBM' | translate}}">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                        <kendo-numerictextbox name="cyMaximumCBM_{{rowIndex}}"
+                                                                required
+                                                                [decimals]="3"
+                                                                [format]="'n3'"
+                                                                [min]="0"
+                                                                [disabled]="isViewMode || !dataItem.isAddLine"
+                                                                [(ngModel)]="dataItem.cyMaximumCBM"
+                                                                class="form-control"
+                                                                [autoCorrect]="true"
+                                                                (ngModelChange)="checkGridCyMaximumCBMValidates(rowIndex)"
+                                                                [ngClass]="{'ng-touched': !stringHelper.isNullOrEmpty(formErrors['gridValidationRules'][rowIndex].cyMaximumCBM.required)}">
+                                        </kendo-numerictextbox>
+                                        <div *ngIf="dataItem.isAddLine && formErrors['gridValidationRules'][rowIndex].cyMaximumCBM.required" class="k-invalid-msg">
+                                            {{ formErrors['gridValidationRules'][rowIndex].cyMaximumCBM.required }}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="cfsMinimumCBM" title="{{'label.cfsMinimumCBM' | translate}}">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                        <kendo-numerictextbox name="cfsMinimumCBM_{{rowIndex}}"
+                                                                required
+                                                                [decimals]="3"
+                                                                [format]="'n3'"
+                                                                [disabled]="isViewMode || !dataItem.isAddLine"
+                                                                [min]="0"
+                                                                [(ngModel)]="dataItem.cfsMinimumCBM"
+                                                                class="form-control"
+                                                                [autoCorrect]="true"
+                                                                (ngModelChange)="checkGridCFSMinimumCBMValidates(rowIndex)"
+                                                                [ngClass]="{'ng-touched': !stringHelper.isNullOrEmpty(formErrors['gridValidationRules'][rowIndex].cfsMinimumCBM.required) || !stringHelper.isNullOrEmpty(formErrors['gridValidationRules'][rowIndex].cfsMinimumCBM.lessThanMaxCBM)}">
+                                        </kendo-numerictextbox>
+                                        <div *ngIf="dataItem.isAddLine && formErrors['gridValidationRules'][rowIndex].cfsMinimumCBM.required" class="k-invalid-msg">
+                                            {{ formErrors['gridValidationRules'][rowIndex].cfsMinimumCBM.required }}
+                                        </div>
+                                        <div *ngIf="dataItem.isAddLine && formErrors['gridValidationRules'][rowIndex].cfsMinimumCBM.lessThanMaxCBM" class="k-invalid-msg">
+                                            {{ formErrors['gridValidationRules'][rowIndex].cfsMinimumCBM.lessThanMaxCBM }}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="cfsMaximumCBM" title="{{'label.cfsMaximumCBM' | translate}}">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                        <kendo-numerictextbox name="cfsMaximumCBM_{{rowIndex}}"
+                                                                required
+                                                                [decimals]="3"
+                                                                [format]="'n3'"
+                                                                [disabled]="isViewMode || !dataItem.isAddLine"
+                                                                [min]="0"
+                                                                [(ngModel)]="dataItem.cfsMaximumCBM"
+                                                                class="form-control"
+                                                                [autoCorrect]="true"
+                                                                (ngModelChange)="checkGridCFSMaximumCBMValidates(rowIndex)"
+                                                                [ngClass]="{'ng-touched': !stringHelper.isNullOrEmpty(formErrors['gridValidationRules'][rowIndex].cfsMaximumCBM.required)}">
+                                        </kendo-numerictextbox>
+                                        <div *ngIf="dataItem.isAddLine && formErrors['gridValidationRules'][rowIndex].cfsMaximumCBM.required" class="k-invalid-msg">
+                                            {{ formErrors['gridValidationRules'][rowIndex].cfsMaximumCBM.required }}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-command-column title="{{'label.action' | translate}}" [headerStyle]="{'text-align': 'center'}" class="action-column-grid col-action" width="75" *ngIf="!isViewMode">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                        <button attr.data-balloon="{{'tooltip.delete' | translate}}" data-balloon-pos="left" type="button" class="btn btn-default grid-remove-icon-button" (click)="removeLoadability(rowIndex)">
+                                            <i class="ei ei-icon_minus-06"></i>
+                                        </button>
+                                    </ng-template>
+                                </kendo-grid-command-column>
+                            </kendo-grid>
+                            <div class="margin-add-icon-button">
+                                <button type="button" class="btn prim-button add-more-icon-button"
+                                        attr.data-balloon="{{'label.addMore' | translate}}" data-balloon-pos="up"
+                                        (click)="addBlankLoadabilityRow()" id="addMoreBtn" [disabled]="isViewMode">
+                                    <i class="ei ei-icon_plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+                <!--end tab 3-->
+
+                <!-- tab 4 -->
+                <kendo-tabstrip-tab [title]="'label.shippingCompliance' | translate">
+                    <ng-template kendoTabContent>
+                        <div class="panel-group">
+                            <label class="panel-header">{{'label.shippingCompliance' | translate}}</label>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.allowPartialShipment' | translate}}</label>
+                                            <div class="radio-wrapper" #anchor>
+                                                <input id="allowPartialShipment_yes"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="allowPartialShipment_yes"
+                                                        [disabled]="isViewMode"
+                                                        [value]="true"
+                                                        [(ngModel)]="model.shippingCompliance.allowPartialShipment" />
+                                                <label class="k-radio-label" for="allowPartialShipment_yes">{{'label.yes' | translate}}</label>
+                                                <input id="allowPartialShipment_no"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="allowPartialShipment_no"
+                                                        [disabled]="isViewMode"
+                                                        [value]="false"
+                                                        [(ngModel)]="model.shippingCompliance.allowPartialShipment"/>
+                                                <label class="k-radio-label" for="allowPartialShipment_no">{{'label.no' | translate}}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.allowMixedCarton' | translate}}</label>
+                                            <div class="radio-wrapper" #anchor>
+                                                <input id="allowMixedCarton_yes"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="allowMixedCarton_yes"
+                                                        [disabled]="isViewMode"
+                                                        [value]="true"
+                                                        [(ngModel)]="model.shippingCompliance.allowMixedCarton" />
+                                                <label class="k-radio-label" for="allowMixedCarton_yes">{{'label.yes' | translate}}</label>
+                                                <input id="allowMixedCarton_no"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="allowMixedCarton_no"
+                                                        [disabled]="isViewMode"
+                                                        [value]="false"
+                                                        [(ngModel)]="model.shippingCompliance.allowMixedCarton"/>
+                                                <label class="k-radio-label" for="allowMixedCarton_no">{{'label.no' | translate}}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.allowMultiplePOPerFulfillment' | translate}}</label>
+                                            <div class="radio-wrapper" #anchor>
+                                                <input id="allowMultiplePOPerFulfillment_yes"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="allowMultiplePOPerFulfillment_yes"
+                                                        [disabled]="isViewMode"
+                                                        [value]="true"
+                                                        [(ngModel)]="model.shippingCompliance.allowMultiplePOPerFulfillment" />
+                                                <label class="k-radio-label" for="allowMultiplePOPerFulfillment_yes">{{'label.yes' | translate}}</label>
+                                                <input id="allowMultiplePOPerFulfillment_no"
+                                                        type="radio"
+                                                        class="k-radio"
+                                                        name="allowMultiplePOPerFulfillment_no"
+                                                        [disabled]="isViewMode"
+                                                        [value]="false"
+                                                        [(ngModel)]="model.shippingCompliance.allowMultiplePOPerFulfillment"/>
+                                                <label class="k-radio-label" for="allowMultiplePOPerFulfillment_no">{{'label.no' | translate}}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.mixedPackOptions' | translate}}</label>
+                                            <kendo-dropdownlist #allowMixedPackElement
+                                                                name="allowMixedPack"
+                                                                [disabled]="isViewMode || !model.enforceCommercialInvoiceFormat"
+                                                                [valuePrimitive]="true"
+                                                                [textField]="'label'"
+                                                                [valueField]="'value'"
+                                                                [(ngModel)]="model.shippingCompliance.allowMixedPack"
+                                                                [data]="allowMixedPackOptions"
+                                                                class="form-control"
+                                                                [defaultItem]="defaultDropDownItem">
+                                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-dropdownlist>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-group">
+                            <label class="panel-header">{{'label.complianceSelections' | translate}}</label>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.modeOfTransportSelections' | translate}}</label>
+                                            <kendo-multiselect
+                                                name="modeOfTransportSelections"
+                                                [data]="modeOfTransportOptions"
+                                                [textField]="'label'"
+                                                [valueField]="'value'"
+                                                [valuePrimitive]="true"
+                                                [(ngModel)]="model.complianceSelection.modeOfTransportIds"
+                                                [autoClose]="false"
+                                                [disabled]="isViewMode"
+                                                class="form-control">
+                                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                                    <input type="checkbox" class="k-checkbox"
+                                                    [checked]="isAllowPartialShipmentSelected(dataItem.value)">
+                                                    <label class="k-checkbox-label">{{ dataItem?.label | translate }}</label>
+                                                </ng-template>
+                                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-multiselect>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.commoditySelections' | translate}}</label>
+                                            <kendo-multiselect
+                                                #commoditySelections
+                                                name="commoditySelections"
+                                                [data]="commodityOptions"
+                                                [textField]="'label'"
+                                                [valueField]="'value'"
+                                                [valuePrimitive]="true"
+                                                [(ngModel)]="model.complianceSelection.commodityIds"
+                                                [autoClose]="false"
+                                                [disabled]="isViewMode"
+                                                class="form-control"
+                                                [filterable]="true"
+                                                (filterChange)="onCommoditySelectionFilterChange($event)">
+                                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                                    <input type="checkbox" class="k-checkbox"
+                                                    [checked]="isCommoditySelected(dataItem.value)">
+                                                    <label class="k-checkbox-label">{{ dataItem?.label | translate }}</label>
+                                                </ng-template>
+                                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-multiselect>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.shipFromLocationSelections' | translate}}</label>
+                                            <kendo-multiselect
+                                                #shipFromLocationSelections
+                                                name="shipFromLocationSelections"
+                                                [data]="allLocationOptions"
+                                                [textField]="'label'"
+                                                [valueField]="'description'"
+                                                [valuePrimitive]="true"
+                                                [(ngModel)]="model.complianceSelection.shipFromLocationIds"
+                                                [autoClose]="false"
+                                                [disabled]="isViewMode"
+                                                class="form-control"
+                                                [filterable]="true"
+                                                (filterChange)="onShipFromLocationSelectionFilterChange($event)">
+                                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                                    <input type="checkbox" class="k-checkbox"
+                                                    [checked]="isShipFromLocationSelected(dataItem.description)">
+                                                    <label class="k-checkbox-label">{{ dataItem?.label | translate }}</label>
+                                                </ng-template>
+                                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-multiselect>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.shipToLocationSelections' | translate}}</label>
+                                            <kendo-multiselect
+                                                #shipToLocationSelections
+                                                name="shipToLocationSelections"
+                                                [data]="allLocationOptions"
+                                                [textField]="'label'"
+                                                [valueField]="'description'"
+                                                [valuePrimitive]="true"
+                                                [(ngModel)]="model.complianceSelection.shipToLocationIds"
+                                                [autoClose]="false"
+                                                [disabled]="isViewMode"
+                                                class="form-control"
+                                                [filterable]="true"
+                                                (filterChange)="onShipToLocationSelectionFilterChange($event)">
+                                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                                    <input type="checkbox" class="k-checkbox"
+                                                    [checked]="isShipToLocationSelected(dataItem.description)">
+                                                    <label class="k-checkbox-label">{{ dataItem?.label | translate }}</label>
+                                                </ng-template>
+                                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-multiselect>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.movementTypeSelections' | translate}}</label>
+                                            <kendo-multiselect
+                                                name="movementTypeSelections"
+                                                [data]="movementTypeOptions"
+                                                [textField]="'label'"
+                                                [valueField]="'value'"
+                                                [valuePrimitive]="true"
+                                                [(ngModel)]="model.complianceSelection.movementTypeIds"
+                                                [autoClose]="false"
+                                                [disabled]="isViewMode"
+                                                class="form-control">
+                                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                                    <input type="checkbox" class="k-checkbox"
+                                                    [checked]="isMovementTypeSelected(dataItem.value)">
+                                                    <label class="k-checkbox-label">{{ dataItem?.label }}</label>
+                                                </ng-template>
+                                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                                                    {{ dataItem?.label }}
+                                                </ng-template>
+                                            </kendo-multiselect>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.incotermSelections' | translate}}</label>
+                                            <kendo-multiselect
+                                                #incotermSelections
+                                                name="incotermSelections"
+                                                [data]="incotermTypeOptions"
+                                                [textField]="'label'"
+                                                [valueField]="'value'"
+                                                [valuePrimitive]="true"
+                                                [(ngModel)]="model.complianceSelection.incotermTypeIds"
+                                                [autoClose]="false"
+                                                [disabled]="isViewMode"
+                                                class="form-control"
+                                                [filterable]="true"
+                                                (filterChange)="onIncotermSelectionFilterChange($event)">
+                                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                                    <input type="checkbox" class="k-checkbox"
+                                                    [checked]="isIncotermSelected(dataItem.value)">
+                                                    <label class="k-checkbox-label">{{ dataItem?.label }}</label>
+                                                </ng-template>
+                                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                                                    {{ dataItem?.label }}
+                                                </ng-template>
+                                            </kendo-multiselect>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.carrierSelections' | translate}}</label>
+                                            <kendo-multiselect
+                                                #carrierSelections
+                                                name="carrierSelections"
+                                                [data]="allCarrierOptions"
+                                                [textField]="'label'"
+                                                [valueField]="'description'"
+                                                [valuePrimitive]="true"
+                                                [(ngModel)]="model.complianceSelection.carrierIds"
+                                                [autoClose]="false"
+                                                [disabled]="isViewMode"
+                                                class="form-control"
+                                                [filterable]="true"
+                                                (filterChange)="onCarrierSelectionFilterChange($event)">
+                                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                                    <input type="checkbox" class="k-checkbox"
+                                                    [checked]="isCarrierSelected(dataItem.description)">
+                                                    <label class="k-checkbox-label">{{ dataItem?.label | translate }}</label>
+                                                </ng-template>
+                                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-multiselect>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">{{'label.carrierSelectionNotes' | translate}}</label>
+                                            <textarea
+                                                kendoTextArea
+                                                name="carrierSelectionNotes"
+                                                [(ngModel)]="model.complianceSelection.carrierSelectionNotes"
+                                                class="form-control note-textarea"
+                                                [readOnly]="isViewMode"
+                                                maxlength="500">
+                                            </textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+                <!-- end tab4 -->
+
+                <!-- tab 5 -->
+                <kendo-tabstrip-tab [title]="'label.agentAssignment' | translate">
+                    <ng-template kendoTabContent>
+                        <div class="pb-0 panel-group agent-assignment-container">
+                            <div class="form-group mb-3">
+                                <label class="form-label mr-3">{{'label.agentAssignmentMethod' | translate}}</label>
+                                    <input id="bySystem"
+                                            type="radio"
+                                            class="k-radio"
+                                            name="agentAssignmentMethod"
+                                            [value]="agentAssignmentMethodType.bySystem"
+                                            [(ngModel)]="model.agentAssignmentMethod" />
+                                    <label class="k-radio-label mr-3" for="bySystem">{{'label.bySystem' | translate}}</label>
+                                    <input id="byPO"
+                                            type="radio"
+                                            class="k-radio"
+                                            name="agentAssignmentMethod"
+                                            [value]="agentAssignmentMethodType.byPO"
+                                            [disabled]="isViewMode"
+                                            [(ngModel)]="model.agentAssignmentMethod"/>
+                                    <label class="k-radio-label" for="byPO">{{'label.byPO' | translate}}</label>
+                            </div>
+                        </div>
+
+                        <!-- See Agents -->
+                        <div class="pt-0 panel-group agent-assignment-container">
+                            <label class="panel-header">{{'label.seaAgents' | translate}}</label>
+                            <kendo-grid #grid="kendoGrid"
+                                [data]="model.agentAssignments"
+                                [scrollable]="'vertical'"
+                                [selectable]="false"
+                                class="custom-edit-grid">
+
+                                <kendo-grid-column field="assignment" title="{{'label.assignment' | translate}}" width="120px">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                        <span *ngIf="rowIndex == 0 || rowIndex == 1">{{'label.default' | translate}}</span>
+                                        <span *ngIf="rowIndex > 1">{{rowIndex - 1}}</span>
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="autoCreateShipment" title="{{'label.autoCreateShipment' | translate}}">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                        <kendo-dropdownlist name="autoCreateShipment_{{rowIndex}}" required [hidden]="dataItem.agentType === agentType.Destination"
+                                            [(ngModel)]="dataItem.autoCreateShipment" [data]="autoCreateShipmentOption"
+                                            [valuePrimitive]="true" [textField]="'label'" [valueField]="'value'"
+                                            (focusout)="checkAgentAutoCreateShipmentValidates(rowIndex)"
+                                            (valueChange)="checkAgentAutoCreateShipmentValidates(rowIndex)"
+                                            [disabled]="isViewMode">
+                                            <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                {{ dataItem?.label | translate }}
+                                            </ng-template>
+                                            <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                {{ dataItem?.label | translate }}
+                                            </ng-template>
+                                        </kendo-dropdownlist>
+                                        <div *ngIf="formErrors['agentValidationRules'][rowIndex].autoCreateShipment?.required" class="k-invalid-msg">
+                                            {{ formErrors['agentValidationRules'][rowIndex].autoCreateShipment?.required }}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="agentType" title="{{'label.agentType' | translate}}">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                        <span *ngIf="rowIndex === 0"> {{ 'label.origin' | translate }}</span>
+                                        <span *ngIf="rowIndex === 1"> {{ 'label.destination' | translate }}</span>
+                                        <kendo-dropdownlist *ngIf="rowIndex >= 2"  name="agentType_{{rowIndex}}" required
+                                            [(ngModel)]="dataItem.agentType" [data]="agentTypeOption"
+                                            [valuePrimitive]="true" [textField]="'label'" [valueField]="'value'"
+                                            (valueChange)="onAgentTypeChange($event, rowIndex)"
+                                            (focusout)="checkAgentAgentTypeValidates(rowIndex)"
+                                            [disabled]="isViewMode">
+                                            <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                {{ dataItem?.label | translate }}
+                                            </ng-template>
+                                            <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                {{ dataItem?.label | translate }}
+                                            </ng-template>
+                                        </kendo-dropdownlist>
+                                        <div *ngIf="formErrors['agentValidationRules'][rowIndex].agentType?.required" class="k-invalid-msg">
+                                            {{ formErrors['agentValidationRules'][rowIndex].agentType?.required }}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="country" title="{{'label.country' | translate}}">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                        <span *ngIf="rowIndex < 2">{{'label.any' | translate}}</span>
+                                        <kendo-dropdownlist *ngIf="rowIndex >= 2" name="country_{{rowIndex}}" required
+                                            [(ngModel)]="dataItem.countryId" [data]="countryList"
+                                            [valuePrimitive]="true" [textField]="'label'" [valueField]="'value'"
+                                            [disabled]="isViewMode"
+                                            (valueChange)="onCountryChange($event, rowIndex)"
+                                            (focusout)="checkAgentCountryValidates(rowIndex)">
+                                        </kendo-dropdownlist>
+                                        <div *ngIf="formErrors['agentValidationRules'][rowIndex].countryId?.required" class="k-invalid-msg">
+                                            {{ formErrors['agentValidationRules'][rowIndex].countryId?.required }}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="port" title="{{'label.port' | translate}}">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                        <span *ngIf="rowIndex < 2">{{'label.any' | translate}}</span>
+                                        <kendo-multiselect *ngIf="rowIndex >= 2"
+                                                name="port_{{rowIndex}}"
+                                                [data]="dataItem.portLocations"
+                                                [textField]="'label'"
+                                                [valueField]="'description'"
+                                                [valuePrimitive]="true"
+                                                [(ngModel)]="dataItem.portSelectionIds"
+                                                [autoClose]="false"
+                                                [disabled]="isViewMode || dataItem.countryId === null"
+                                                class="form-control"
+                                                [filterable]="true"
+                                                (filterChange)="onPortSelectionFilterChange($event, rowIndex)"
+                                                [placeholder]="'label.any' | translate"
+                                                #agentPorts>
+                                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                                    <input type="checkbox" class="k-checkbox"
+                                                    [checked]="isPortAgentSelected(dataItem.description, rowIndex)">
+                                                    <label class="k-checkbox-label">{{ dataItem?.label | translate }}</label>
+                                                </ng-template>
+                                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                                                    {{ dataItem?.label | translate }}
+                                                </ng-template>
+                                            </kendo-multiselect>
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="agentOrganizationId" title="{{'label.organization' | translate}}">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                        <kendo-autocomplete
+                                                required
+                                                name="organizationAgent_{{rowIndex}}"
+                                                (valueChange)="agentOrgValueChange($event, rowIndex)"
+                                                (filterChange)="agentOrgFilterChange($event)"
+                                                [valueField]="'name'"
+                                                [disabled]="isViewMode"
+                                                [(ngModel)]="dataItem.agentOrganizationName"
+                                                [data]="agentOrgFilter"
+                                                [filterable]="true"
+                                                [placeholder]="'placeholder.egThing' | translate: {thing: ('label.agentOrganization' | translate)}"
+                                                (focusout)="checkAgentOrgValidates(rowIndex)"
+                                                class="form-control">
+                                        </kendo-autocomplete>
+                                        <div *ngIf="!formErrors['agentValidationRules'][rowIndex].agentOrganizationId?.notExists && formErrors['agentValidationRules'][rowIndex].agentOrganizationId?.required" class="k-invalid-msg">
+                                            {{ formErrors['agentValidationRules'][rowIndex].agentOrganizationId.required }}
+                                        </div>
+                                        <div *ngIf="formErrors['agentValidationRules'][rowIndex].agentOrganizationId?.notExists" class="k-invalid-msg">
+                                            {{ formErrors['agentValidationRules'][rowIndex].agentOrganizationId?.notExists }}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-command-column title="{{'label.action' | translate}}" [headerStyle]="{'text-align': 'center'}" class="action-column-grid col-action" width="75" *ngIf="!isViewMode">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                        <button attr.data-balloon="{{'tooltip.delete' | translate}}" data-balloon-pos="left" type="button" class="btn btn-default grid-remove-icon-button" *ngIf="rowIndex >= 2" (click)="removeAssignment(rowIndex)">
+                                            <i class="ei ei-icon_minus-06"></i>
+                                        </button>
+                                    </ng-template>
+                                </kendo-grid-command-column>
+                            </kendo-grid>
+                            <div class="margin-add-icon-button">
+                                <button type="button" class="btn prim-button add-more-icon-button"
+                                        attr.data-balloon="{{'label.addMore' | translate}}" data-balloon-pos="up"
+                                        (click)="addBlankAssignmentRow()"[disabled]="isViewMode">
+                                    <i class="ei ei-icon_plus"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Air Agents -->
+                        <app-agent-assignment
+                            [agentAssignments]="model.airAgentAssignments"
+                            [formErrors]="formErrors"
+                            [isViewMode]="isViewMode"
+                            [countryList]="countryList"
+                            [mainAllLocationOptions]="mainAllLocationOptions"
+                            [agentOrgList]="agentOrgList"
+                            [cargoLoadabilities]="model.cargoLoadabilities"
+                            >
+                        </app-agent-assignment>
+
+                    </ng-template>
+                </kendo-tabstrip-tab>
+                <!-- end tab5 -->
+
+                <!-- tab 6 -->
+                <kendo-tabstrip-tab [title]="'label.bookingValidationPolicy' | translate">
+                    <ng-template kendoTabContent>
+                        <div class="panel-group">
+                            <label class="panel-header float-left">{{'label.policySetting' | translate}}</label>
+                            <div class="col-sm text-right top-bar-container">
+                                <button type="button" class="btn header-button btn-color-orange" (click)="showBookingLogs()" [hidden]="hiddenBtnBookingLogs">
+                                    {{'label.bookingValidationLogs' | translate}}
+                                </button>
+
+                                <button type="button" class="btn header-button" (click)="addPolicy()" [disabled]="isViewMode">
+                                    <div class="icon-circle">
+                                        <fa-icon [icon]="faPlus"></fa-icon>
+                                    </div>
+                                    <span class="icon-circle-label">{{'label.addPolicy' | translate}}</span>
+                                </button>
+                            </div>
+                            <kendo-grid [data]="model.bookingPolicies"
+                                [scrollable]="'vertical'"
+                                [pageable]="true"
+                                [skip]="policyState.skip"
+                                [pageSize]="policyState.take"
+                                [rowClass]="rowCallback"
+                                (dataStateChange)="policyStateChange($event)"
+                                id="booking-policy-table">
+
+                                <kendo-grid-column title="{{'label.order' | translate}}" width="65" *ngIf="isViewMode" [headerClass]="'multiline-header'">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                        <div class="order-text">
+                                            <span>{{dataItem.order}}</span>
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column title="{{'label.order' | translate}}" width="65" class="order-drag-container" *ngIf="!isViewMode" [headerClass]="'multiline-header'">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                        <div class="order-text hover-drag">
+                                            <span>{{dataItem.order}}</span>
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column field="name" title="{{'label.name' | translate}}" class="organization-email" [headerClass]="'multiline-header'">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                        <a routerLinkActive="active" (click)="viewPolicy(dataItem.order)">{{dataItem.name}}</a>
+                                    </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column field="modeOfTransportIds" title="{{'label.modeOfTransport' | translate}}" [headerClass]="'multiline-header'">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                        <div *ngIf="dataItem.modeOfTransportIds.length > 0">
+                                            <ng-container *ngFor="let item of dataItem.modeOfTransportIds; let last = last">
+                                                {{labelFromEnum(modeOfTransportOptions, item) | translate}}{{!last ? "; " : ""}}
+                                            </ng-container>
+                                        </div>
+                                        <div *ngIf="dataItem.modeOfTransportIds.length == 0">
+                                            {{'label.any' | translate}}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column field="fulfillmentAccuracyIds" title="{{'label.fulfillmentAccuracy' | translate}}" [headerClass]="'multiline-header'">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                        <div *ngIf="dataItem.fulfillmentAccuracyIds.length > 0">
+                                            <ng-container *ngFor="let item of dataItem.fulfillmentAccuracyIds; let last = last">
+                                                {{labelFromEnum(fulfillmentAccuracyOptions, item) | translate}}{{!last ? "; " : ""}}
+                                            </ng-container>
+                                        </div>
+                                        <div *ngIf="dataItem.fulfillmentAccuracyIds.length == 0">
+                                            {{'label.any' | translate}}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column field="cargoLoadabilityIds" title="{{'label.loadability' | translate}}" [headerClass]="'multiline-header'">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                        <div *ngIf="dataItem.cargoLoadabilityIds.length > 0">
+                                            <ng-container *ngFor="let item of dataItem.cargoLoadabilityIds; let last = last">
+                                                {{labelFromEnum(cargoLoadabilityOptions, item) | translate}}{{!last ? "; " : ""}}
+                                            </ng-container>
+                                        </div>
+                                        <div *ngIf="dataItem.cargoLoadabilityIds.length == 0">
+                                            {{'label.any' | translate}}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column field="bookingTimelessIds" title="{{'label.bookingPeriod' | translate}}" [headerClass]="'multiline-header'">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                        <div *ngIf="dataItem.bookingTimelessIds.length > 0">
+                                            <ng-container *ngFor="let item of dataItem.bookingTimelessIds; let last = last">
+                                                {{labelFromEnum(bookingTimelessOptions, item) | translate}}{{!last ? "; " : ""}}
+                                            </ng-container>
+                                        </div>
+                                        <div *ngIf="dataItem.bookingTimelessIds.length == 0">
+                                            {{'label.any' | translate}}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column field="action" title="{{'label.validationResult' | translate}}" [headerClass]="'multiline-header'">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                        {{labelFromEnum(validationResultOptions, dataItem.action) | translate}}
+                                    </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column width="30" *ngIf="!isViewMode">
+                                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                        <div kendoTooltip #tooltip="kendoTooltip" [tooltipTemplate]="actionMenuTooltip" filter="button"
+                                            showOn="click" position="left" offset="-20" showAfter="200">
+                                            <button #first type="button" class="btn">
+                                                <fa-icon [icon]="faEllipsisV"></fa-icon>
+                                            </button>
+                                        </div>
+
+                                        <ng-template #actionMenuTooltip let-anchor>
+                                            <div class="row action-button" (click)="editPolicy(dataItem.order); tooltip.toggle(first)">
+                                                <button type="button" class="btn">
+                                                    <fa-icon [icon]="faPencilAlt" class="action-grid-icon"></fa-icon>
+                                                    <span class="action-grid-label">{{'label.edit' | translate}}</span>
+                                                </button>
+                                            </div>
+                                            <div class="row action-button" (click)="deletePolicy(dataItem.order); tooltip.toggle(first)">
+                                                <button type="button" class="btn">
+                                                    <fa-icon [icon]="faTrashAlt" class="action-grid-icon"></fa-icon>
+                                                    <span class="action-grid-label">{{'tooltip.delete' | translate}}</span>
+                                                </button>
+                                            </div>
+                                        </ng-template>
+                                    </ng-template>
+                                </kendo-grid-column>
+                            </kendo-grid>
+
+                            <div class="form-group default-booking-container">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label class="form-label default-booking">{{'label.defaultBookingValidationAction' | translate}}</label>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <kendo-dropdownlist name="defaultBookingValidationAction"
+                                                                    [disabled]="isViewMode"
+                                                                    [valuePrimitive]="true"
+                                                                    [textField]="'label'"
+                                                                    [valueField]="'value'"
+                                                                    [(ngModel)]="model.bookingPolicyAction"
+                                                                    [data]="validationResultOptions"
+                                                                    (valueChange)="onBookingPolicyActionChanged($event)"
+                                                                    class="form-control">
+                                                    <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                        {{ dataItem?.label | translate }}
+                                                    </ng-template>
+                                                    <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                        {{ dataItem?.label | translate }}
+                                                    </ng-template>
+                                                </kendo-dropdownlist>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="row">
+                                            <div class="col-sm-6" *ngIf="model.bookingPolicyAction === validationResult.PendingForApproval || model.bookingPolicyAction === validationResult.WarehouseApproval">
+                                                <kendo-dropdownlist
+                                                    name="approverSetting"
+                                                    [(ngModel)]="model.bookingApproverSetting"
+                                                    [data]="approverSettingOptions"
+                                                    [valuePrimitive]="true"
+                                                    [textField]="'label'"
+                                                    [valueField]="'value'"
+                                                    class="form-control"
+                                                    [disabled]="isViewMode">
+                                                    <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                        {{ dataItem?.label | translate }}
+                                                    </ng-template>
+                                                    <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                        {{ dataItem?.label | translate }}
+                                                    </ng-template>
+                                                </kendo-dropdownlist>
+                                            </div>
+                                            <div class="col-sm-6"
+                                                *ngIf="(model.bookingPolicyAction === validationResult.PendingForApproval || model.bookingPolicyAction === validationResult.WarehouseApproval) && model.bookingApproverSetting === approverSetting.SpecifiedApprover">
+                                                <input
+                                                    name="bookingApproverUser"
+                                                    required
+                                                    type="text"
+                                                    class="form-control"
+                                                    [(ngModel)]="model.bookingApproverUser"
+                                                    [disabled]="isViewMode"
+                                                    [pattern]="patternEmail"
+                                                    maxlength="128"
+                                                    placeholder="Enter email."/>
+                                                <div *ngIf="formErrors['bookingApproverUser']" class="k-invalid-msg">
+                                                    {{ formErrors.bookingApproverUser }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group default-booking-container">
+                                <div class="row">
+                                    <div class="col-sm-9" *ngIf="model.bookingPolicyAction === validationResult.WarehouseApproval">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <label class="form-label default-booking required">{{'label.emailDomainToBypassApproval' | translate}}</label>
+                                                <ng-template #infoTooltipTemplate let-anchor>
+                                                    <span class="tooltip-info">{{ anchor.nativeElement.getAttribute('data-tooltip') }}</span>
+                                                </ng-template>
+                                                <span class="icon-top">
+                                                    <span kendoTooltip [tooltipTemplate]="infoTooltipTemplate" filter="fa-icon" position="top" class="icon-info ml-2">
+                                                        <fa-icon attr.data-tooltip="{{'placeholder.egThing' | translate: {thing: 'cargofe.com, gmail.com'}" [icon]="faInfoCircle" [styles]="{'color': '#0A89D6'}"></fa-icon>
+                                                    </span>
+                                                </span>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <input name="bypassEmailDomain" type="text" class="form-control"
+                                                    [(ngModel)]="model.bypassEmailDomain" [disabled]="isViewMode"
+                                                    [pattern]="patternEmailDomain"
+                                                    maxlength="128" placeholder="Enter email domain"/>
+                                                <div *ngIf="formErrors['bypassEmailDomain']" class="k-invalid-msg">
+                                                    {{ formErrors.bypassEmailDomain }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-group">
+                            <label class="panel-header">{{'label.approvalSetting' | translate}}</label>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label class="form-label required">{{'label.approvalAlertFrequency' | translate}}</label>
+                                        <kendo-dropdownlist approvalAlertFrequencyElement name="approvalAlertFrequency"
+                                            [defaultItem]="defaultDropDownItem" [disabled]="isViewMode" [valuePrimitive]="true"
+                                            [textField]="'label'" [valueField]="'value'" [(ngModel)]="model.approvalAlertFrequency"
+                                            [data]="approvalAlertFrequencyOptions" class="form-control">
+                                            <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                {{ dataItem?.label | translate }}
+                                            </ng-template>
+                                            <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                {{ dataItem?.label | translate }}
+                                            </ng-template>
+                                        </kendo-dropdownlist>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="form-label required">{{'label.approvalDuration' | translate}}</label>
+                                        <kendo-dropdownlist approvalDurationElement name="approvalDuration" [defaultItem]="defaultDropDownItem"
+                                            [disabled]="isViewMode" [valuePrimitive]="true" [textField]="'label'" [valueField]="'value'"
+                                            [(ngModel)]="model.approvalDuration" [data]="approvalDurationOptions" class="form-control">
+                                            <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                                {{ dataItem?.label | translate }}
+                                            </ng-template>
+                                            <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                                {{ dataItem?.label | translate }}
+                                            </ng-template>
+                                        </kendo-dropdownlist>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <app-policy-form [formMode]="policyFormMode" [model]="policyModel" [policyFormOpened]="policyFormOpened" [serviceType]="this.model?.serviceType" (close)="policyFormClosedHandler()" (add)="policyAddHandler($event)" (edit)="policyEditHandler($event)"></app-policy-form>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+                <!-- end tab6-->
+
+                <!-- tab 7 -->
+                <kendo-tabstrip-tab [title]="'label.emailSetting' | translate" *ngIf="model.serviceType === BuyerComplianceServiceType.WareHouse">
+                    <ng-template kendoTabContent>
+                        <div class="panel-group">
+                            <app-email-setting [model]="model.emailSettings" [readOnly]="isViewMode" [tabPrefix]="tabPrefix.emailSetting" [validationRules]="validationRules" [formErrors]="formErrors"></app-email-setting>
+                        </div>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+                <!-- end tab7-->
+            </kendo-tabstrip>
+            <div class="col-12 action-bar">
+                <button type="button" class="btn second-button" *ngIf="!isViewMode" (click)="cancelBuyerCompliance()">{{'label.cancel' | translate}}</button>
+                <button type="submit" class="btn prim-button" *ngIf="!isViewMode">{{'label.save' | translate}}</button>
+            </div>
+        </form>
+    </div>
+</div>

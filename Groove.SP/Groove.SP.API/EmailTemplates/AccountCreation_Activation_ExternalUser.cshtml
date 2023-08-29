@@ -1,0 +1,11 @@
+﻿@model Groove.SP.Application.Users.ViewModels.AccountCreationEmailTemplateViewModel
+@{
+    Layout = "_EmailLayout.cshtml";
+}
+
+<p>Dear,</p>
+<p>You have been created an account in Shipment Portal system. Please click on <a href="@Model.ActivationLink">here</a> to activate your account before performing your shipment with Shipment Portal website.</p>
+<p>Please note that the link will expire in @Model.ActivationExpireIn days. After expired, you can retry activating your account by <a href="@Model.ForgotPasswordLink">Forgot your password</a> function.</p>
+<br />
+<p>Regards,</p>
+<p>Shipment Portal Team.</p>
