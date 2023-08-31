@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-	<MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
+	<MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>
 	<LangVersion>10.0</LangVersion>
 	<UserSecretsId>2769328b-00f4-46d8-8bdf-7492722fb4f2</UserSecretsId>
   </PropertyGroup>
