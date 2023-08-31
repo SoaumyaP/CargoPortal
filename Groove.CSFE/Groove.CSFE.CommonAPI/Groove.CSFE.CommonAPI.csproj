@@ -8,6 +8,15 @@
 	<UserSecretsId>2769328b-00f4-46d8-8bdf-7492722fb4f2</UserSecretsId>
   </PropertyGroup>
 
+	<ItemGroup>
+		<Content Include="EmailTemplates\ResendConnectionEmail.cshtml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="EmailTemplates\_EmailLayout.cshtml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
