@@ -107,13 +107,14 @@
   </ItemGroup>
 
   <ItemGroup>
+	  <ProjectReference Include="..\Groove.SP.Infrastructure\Groove.SP.Infrastructure.csproj" />
+    <ProjectReference Include="..\Groove.SP.Persistence\Groove.SP.Persistence.csproj" />
     <ProjectReference Include="..\Groove.SP.Infrastructure.CSFE\Groove.SP.Infrastructure.CSFE.csproj" />
     <ProjectReference Include="..\Groove.SP.Infrastructure.DinkToPdf\Groove.SP.Infrastructure.DinkToPdf.csproj" />
     <ProjectReference Include="..\Groove.SP.Infrastructure.MicrosoftGraphAPI\Groove.SP.Infrastructure.MicrosoftGraphAPI.csproj" />
     <ProjectReference Include="..\Groove.SP.Infrastructure.RazorLight\Groove.SP.Infrastructure.RazorLight.csproj" />
     <ProjectReference Include="..\Groove.SP.Infrastructure.SignalR\Groove.SP.Infrastructure.SignalR.csproj" />
-    <ProjectReference Include="..\Groove.SP.Infrastructure\Groove.SP.Infrastructure.csproj" />
-    <ProjectReference Include="..\Groove.SP.Persistence\Groove.SP.Persistence.csproj" />
+    
   </ItemGroup>
 
   <ItemGroup>
