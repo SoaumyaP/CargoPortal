@@ -53,14 +53,12 @@
     <Content Include="libwkhtmltox\32\libwkhtmltox.so">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-	  <Content Include="libwkhtmltox\64\libwkhtmltox.dll" ><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  <Content Include="libwkhtmltox\64\libwkhtmltox.dll" >
 	  </Content>
 	  
     <Content Include="libwkhtmltox\64\libwkhtmltox.dylib" >
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
     <Content Include="libwkhtmltox\64\libwkhtmltox.so" >
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
   </ItemGroup>
 
