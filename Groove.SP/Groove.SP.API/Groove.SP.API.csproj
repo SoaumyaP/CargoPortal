@@ -24,6 +24,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="EmailTemplates\AccountCreation_Activation_ExternalUser.cshtml" />
+    <Content Remove="EmailTemplates\AccountCreation_Inform_ExternalUser.cshtml" />
+    <Content Remove="EmailTemplates\Pdf\ShippingOrderForm.cshtml" />
+    <Content Remove="EmailTemplates\Pdf\WarehouseSOForm.cshtml" />
+    <Content Remove="EmailTemplates\_EmailLayout.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="libwkhtmltox\32\libwkhtmltox.dll" />
     <None Remove="libwkhtmltox\32\libwkhtmltox.dylib" />
     <None Remove="libwkhtmltox\32\libwkhtmltox.so" />
@@ -45,9 +53,33 @@
     <Content Include="libwkhtmltox\32\libwkhtmltox.so">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="libwkhtmltox\64\libwkhtmltox.dll" />
-    <Content Include="libwkhtmltox\64\libwkhtmltox.dylib" />
-    <Content Include="libwkhtmltox\64\libwkhtmltox.so" />
+	  <Content Include="libwkhtmltox\64\libwkhtmltox.dll" ><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  
+    <Content Include="libwkhtmltox\64\libwkhtmltox.dylib" >
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+    <Content Include="libwkhtmltox\64\libwkhtmltox.so" >
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="EmailTemplates\AccountCreation_Activation_ExternalUser.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\AccountCreation_Inform_ExternalUser.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\Pdf\ShippingOrderForm.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\Pdf\WarehouseSOForm.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\_EmailLayout.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -87,114 +119,99 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="EmailTemplates\AccountCreation_Activation_ExternalUser.cshtml">
+    <EmbeddedResource Include="EmailTemplates\AccountRegistrationApproved_ExternalUser.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\AccountCreation_Inform_ExternalUser.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\AccountRegistrationApproved_InternalUser.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\AccountRegistrationApproved_ExternalUser.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\AccountRegistrationRejected_ExternalUser.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\AccountRegistrationApproved_InternalUser.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\AccountRegistrationRejected_InternalUser.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\AccountRegistrationRejected_ExternalUser.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\AccountRegistrationWaitForApprove_Admin.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\AccountRegistrationRejected_InternalUser.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\AccountRegistrationWaitForApprove_User.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\AccountRegistrationWaitForApprove_Admin.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\AccountRejectedResubmitForApprove.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\AccountRegistrationWaitForApprove_User.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\ApprovalNotificationEmailToApproverWarehouse.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\AccountRejectedResubmitForApprove.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\ApprovalNotificationEmailToApprover.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\ApprovalNotificationEmailToApproverWarehouse.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\BookingConfirmedNotificationToSuplier.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\ApprovalNotificationEmailToApprover.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\Booking_Amended.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\BookingConfirmedNotificationToSuplier.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\ConsigneeOrganization.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\Booking_Amended.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\Booking_BookedNotificationToOriginAgent.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\ConsigneeOrganization.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\Booking_Cancelled.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\Booking_BookedNotificationToOriginAgent.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\Booking_NewShippingDocumentsNotificationToOriginAgent.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\Booking_Cancelled.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\Consignment_NewAssigned.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\Booking_NewShippingDocumentsNotificationToOriginAgent.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\EmailShareFiles.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\Consignment_NewAssigned.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\EmailUserRoleChanged.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\EmailShareFiles.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\PODelegationAccessRemovedNotification.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\EmailUserRoleChanged.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\PODelegationNotifyUser.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\Pdf\ShippingOrderForm.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\POFulfillment_Booked.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\Pdf\WarehouseSOForm.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\POFulfillment_Rejected.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\PODelegationAccessRemovedNotification.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\ProgressCheck.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\PODelegationNotifyUser.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\Shipment_Cancelled.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\POFulfillment_Booked.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\User_ExcelImportResult.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\POFulfillment_Rejected.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\WarehouseBooking_Approved.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\ProgressCheck.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\WarehouseBooking_Confirmed.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\Shipment_Cancelled.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\WarehouseBooking_Import_DuplicatedFileNaming.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\User_ExcelImportResult.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\WarehouseBooking_Import_IncorrectFileNaming.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\WarehouseBooking_Approved.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\WarehouseBooking_Import_Failed.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\WarehouseBooking_Confirmed.cshtml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmailTemplates\WarehouseBooking_Import_Success.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\WarehouseBooking_Import_DuplicatedFileNaming.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\WarehouseBooking_Import_IncorrectFileNaming.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\WarehouseBooking_Import_Failed.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\WarehouseBooking_Import_Success.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="EmailTemplates\_EmailLayout.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
