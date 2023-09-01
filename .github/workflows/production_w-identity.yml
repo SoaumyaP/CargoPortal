@@ -7,6 +7,10 @@ on:
   push:
     branches:
       - Production
+    paths:
+      - 'Groove.CSFE/Groove.CSFE.IdentityServer/**'
+      - 'Groove.CSFE/Groove.CSFE.Application/**'
+      - 'Groove.CSFE/Groove.CSFE.Core/**'
   workflow_dispatch:
 
 jobs:
@@ -19,14 +23,14 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1'
+          dotnet-version: '6.0'
           include-prerelease: true
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build Groove.CSFE/Groove.CSFE.IdentityServer/ --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish Groove.CSFE/Groove.CSFE.IdentityServer/ -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
