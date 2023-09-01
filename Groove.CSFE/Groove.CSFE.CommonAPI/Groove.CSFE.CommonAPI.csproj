@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-	<MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>
+	<MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
 	<LangVersion>10.0</LangVersion>
 	<UserSecretsId>2769328b-00f4-46d8-8bdf-7492722fb4f2</UserSecretsId>
   </PropertyGroup>
@@ -42,6 +42,15 @@
 
   <ItemGroup>
     <Folder Include="Properties\ServiceDependencies\g-cs-api - Web Deploy\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="EmailTemplates\ResendConnectionEmail.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="EmailTemplates\_EmailLayout.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
