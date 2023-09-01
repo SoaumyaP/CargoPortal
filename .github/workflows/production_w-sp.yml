@@ -10,7 +10,6 @@ on:
     paths:
       - 'Groove.SP/**'
       - '!Groove.SP/groove-sp-web/**'
-      - '!Groove.SP/ericmok.tests/**'
       - '!Groove.SP/Groove.SP.Infrastructure.ReportTool/**'
   workflow_dispatch:
 
