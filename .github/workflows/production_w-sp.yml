@@ -1,17 +1,16 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP.Net Core app to Azure Web App - w-common
+name: Build and deploy ASP.Net Core app to Azure Web App - w-sp
 
 on:
   push:
     branches:
       - Production
     paths:
-      - 'Groove.CSFE/Groove.CSFE.CommonApi/**'
-      - 'Groove.CSFE/Groove.CSFE.Core/**'
-      - 'Groove.CSFE/Groove.CSFE.Persistence/**'
-      - 'Groove.CSFE/Groove.CSFE.Application/**'
+      - 'Groove.SP/**'
+      - '!Groove.SP/groove-sp-web/**'
+      - '!Groove.SP/Groove.SP.Infrastructure.ReportTool/**'
   workflow_dispatch:
 
 jobs:
@@ -28,18 +27,16 @@ jobs:
           include-prerelease: true
 
       - name: Build with dotnet
-        run: dotnet build Groove.CSFE/Groove.CSFE.CommonAPI/ --configuration Release
+        run: dotnet build Groove.SP/Groove.SP.API/ --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish Groove.CSFE/Groove.CSFE.CommonAPI/ -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish Groove.SP/Groove.SP.API/ -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
-
-  
 
   deploy:
     runs-on: windows-latest
@@ -58,9 +55,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'w-common'
+          app-name: 'w-sp'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_40ED59B1649643C6890E5CC7830B6DDE }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6406A8A2E7C3458FA733597D9C26D6BD }}
           package: .
-  
-  
