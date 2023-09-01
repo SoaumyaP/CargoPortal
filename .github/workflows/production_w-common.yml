@@ -8,7 +8,10 @@ on:
     branches:
       - Production
     paths:
-      - 'Groove.CSFE/**'
+      - 'Groove.CSFE/Groove.CSFE.CommonApi/**'
+      - 'Groove.CSFE/Groove.CSFE.Core/**'
+      - 'Groove.CSFE/Groove.CSFE.Persistence/**'
+      - 'Groove.CSFE/Groove.CSFE.Application/**'
   workflow_dispatch:
 
 jobs:
