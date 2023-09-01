@@ -22,7 +22,7 @@
     <PackageReference Include="Hangfire.Core" Version="1.8.5" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.8.5" />
     <PackageReference Include="MediatR" Version="12.1.1" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.40.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.55.0" />
     <PackageReference Include="Renci.SshNet.Async" Version="1.4.0" />
   </ItemGroup>
 
