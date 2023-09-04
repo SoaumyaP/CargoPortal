@@ -37,7 +37,7 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Build with dotnet
-        run: dotnet build Groove.SP/Groove.SP.API/ --configuration Release -v d /maxcpucount:4
+        run: dotnet build Groove.SP/Groove.SP.API/ --configuration Release -v d
 
       - name: dotnet publish
         run: dotnet publish Groove.SP/Groove.SP.API/ -c Release -o ${{env.DOTNET_ROOT}}/myapp
