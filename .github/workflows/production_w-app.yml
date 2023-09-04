@@ -8,7 +8,7 @@ on:
     branches:
       - Production
     paths:
-      - "Groove.SP/grrove-sp-web"
+      - 'Groove.SP/grrove-sp-web'
   workflow_dispatch:
 
 jobs:
