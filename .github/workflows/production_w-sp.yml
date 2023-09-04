@@ -15,7 +15,9 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-2019
+    env:
+      MSBUILDDISABLENODEREUSE: 1  # Set the environment variable
 
     steps:
       - uses: actions/checkout@v3
@@ -23,9 +25,8 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '6.0'
-          include-prerelease: true
-
+          dotnet-version: '6.0.x'
+          
       - name: Set up dependency caching for faster builds
         uses: actions/cache@v3
         with:
@@ -35,7 +36,7 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Build with dotnet
-        run: dotnet build Groove.SP/Groove.SP.API/ --configuration Release -v diag
+        run: dotnet build Groove.SP/Groove.SP.API/ --configuration Release -v d
 
       - name: dotnet publish
         run: dotnet publish Groove.SP/Groove.SP.API/ -c Release -o ${{env.DOTNET_ROOT}}/myapp
@@ -47,7 +48,7 @@ jobs:
           path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: windows-2019
     needs: build
     environment:
       name: 'Production'
