@@ -15,7 +15,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: windows-latest
     env:
       MSBUILDDISABLENODEREUSE: 1  # Set the environment variable
 
@@ -48,7 +48,7 @@ jobs:
           path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
-    runs-on: windows-2019
+    runs-on: windows-latest
     needs: build
     environment:
       name: 'Production'
