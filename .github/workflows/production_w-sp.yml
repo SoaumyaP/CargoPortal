@@ -7,6 +7,7 @@ on:
       - 'Groove.SP/**'
       - '!Groove.SP/groove-sp-web/**'
       - '!Groove.SP/Groove.SP.Infrastructure.ReportTool/**'
+  workflow_dispatch:
 env:
   AZURE_WEBAPP_NAME: w-sp
   AZURE_WEBAPP_PACKAGE_PATH: .\published
