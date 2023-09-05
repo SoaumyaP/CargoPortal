@@ -15,9 +15,9 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
-    env:
-      MSBUILDDISABLENODEREUSE: 1  # Set the environment variable
+    runs-on: ubuntu-latest
+   # env:
+      #MSBUILDDISABLENODEREUSE: 1  # Set the environment variable
 
     steps:
       - uses: actions/checkout@v3
@@ -36,7 +36,7 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Build with dotnet
-        run: dotnet build Groove.SP/Groove.SP.API/ -a x64 --configuration Release -v d
+        run: dotnet build Groove.SP/Groove.SP.API/ --configuration Release -v d
 
       - name: dotnet publish
         run: dotnet publish Groove.SP/Groove.SP.API/ -c Release -o ${{env.DOTNET_ROOT}}/myapp
