@@ -1,0 +1,26 @@
+.actionbar.k-panelbar > .k-item .k-link
+{
+    cursor: pointer;
+}
+
+.navbar-expand .actionbar.k-panelbar .k-group li {
+    cursor: pointer;
+}
+
+.k-popup .k-item {
+    cursor: unset;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+a {
+    &:focus {
+        box-shadow: none !important;
+    }
+}
+
+.k-treeview .k-checkbox-label, .k-grid .k-checkbox-label {
+    cursor: pointer;
+}

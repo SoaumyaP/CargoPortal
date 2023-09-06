@@ -1,0 +1,14 @@
+@import '../../../../../styles/variables';
+
+.amount-remaining {
+    color: $theme-color;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.download-attachment-icon{
+    color: $theme-color-brighter;
+    &:hover{
+        cursor: pointer;
+    }
+}

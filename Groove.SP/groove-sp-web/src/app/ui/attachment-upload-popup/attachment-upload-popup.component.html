@@ -1,0 +1,81 @@
+<kendo-dialog [title]="'label.uploadFile' | translate" *ngIf="formOpened" (close)="onFormClosed()" class="upload-attachment-dialog custom-header-dialog" [width]="610" [height]="isSelectingFile ? 530 : 370">
+    <form #mainForm="ngForm">
+        <div [ngClass]="!isSelectingFile ? 'import-container' : 'import-upload-image'">
+            <div [hidden]="!isSelectingFile" (dragover)="isDropEnteredFile=true;" (dragleave)="isDropEnteredFile=false;">
+                <kendo-upload [restrictions]="importRestrictions"
+                                [withCredentials]="false"
+                                [multiple]="false"
+                                (select)="selectEventHandler($event)"
+                                (success)="uploadSuccess($event)"
+                                (error)="uploadError($event)"
+                                [saveUrl]="uploadSaveUrl"
+                                (upload)="uploadEventHandler($event)">
+                </kendo-upload>
+                <div class="choose-file">
+                    <label class="file-msg drop-file-msg" [hidden]="isDropEnteredFile">{{'label.dropFileHereToUpload' | translate}}</label>
+                    <label class="file-msg choose-file-msg" [hidden]="isDropEnteredFile">{{'label.or' | translate | lowercase}} <a class="browse-file" (click)="onSelectFile()">{{'label.browse' | translate | lowercase}}</a> {{'label.toChooseAFile' | translate | lowercase}}
+                        <p class="k-invalid-msg">
+                            {{ 'validation.requiredThisField' | translate}}
+                        </p>
+                    </label>
+                </div>
+            </div>
+
+            <div [hidden]="isSelectingFile" class="d-flex justify-content-center">
+                <div class="row import-file-container">
+                    <span class="k-icon icon-{{getFileName(model.fileName)}}"></span>
+                    <span class="import-process-container">
+                        <label class="mb-0" [ngClass]="isSelectedFile && isNotAllow ? 'selected-file-name-error' : 'selected-file-name'" [title]="model.fileName">{{ (model.fileName.length > 27)? (model.fileName | slice:0:27) + '...' : (model.fileName) }}</label>
+                        <span [hidden]="!isNotAllow"><br/><label class="k-invalid-msg">{{'validation.fileTypeInvalid' | translate}}</label></span>
+                    </span>
+                    <span class="k-icon icon-remove-item" (click)="initPopup()" [hidden]="!isSelectedFile || formMode === AttachmentFormModeType.edit"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row mb-3">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-label required">{{'label.documentType' | translate}}</label>
+                            <kendo-dropdownlist name="attachmentType"
+                                            [valuePrimitive]="true"
+                                            [textField]="'label'"
+                                            [valueField]="'value'"
+                                            [(ngModel)]="model.attachmentType"
+                                            [data]="documentTypeOptions"
+                                            class="form-control"
+                                            required
+                                            [defaultItem]="defaultDropDownItem"
+                                            (valueChange)="updateWarningMessageStatus()">
+                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                            </kendo-dropdownlist>
+                            <div *ngIf="formErrors['attachmentType']" class="k-invalid-msg">
+                                {{formErrors.attachmentType}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-label">{{'label.referenceNo' | translate}}</label>
+                            <input name="referenceNo" type="text" class="form-control" [(ngModel)]="model.referenceNo" (ngModelChange)="referenceNoChange()"/>
+                        </div>
+                    </div>
+                    <div *ngIf="reUploadWarningVisible" class="my-0 py-0 col-12 alert alert-transparent alert-warning">
+                        <fa-icon [icon]="faInfoCircle"></fa-icon>
+                            {{reUploadWarningMessage}}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()" #Cancel>{{'label.cancel' | translate}}</button>
+        <button type="button" class="btn prim-button dialog-button" (click)="onAdd()" >{{(formMode === AttachmentFormModeType.add ? 'label.add' : 'label.save') | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

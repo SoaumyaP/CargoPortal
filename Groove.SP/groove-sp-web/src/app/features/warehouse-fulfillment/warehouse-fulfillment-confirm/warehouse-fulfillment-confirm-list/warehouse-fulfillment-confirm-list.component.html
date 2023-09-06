@@ -1,0 +1,140 @@
+
+    <fieldset class="border fieldset-container">
+        <legend class="w-auto custom-legend">{{'label.bookinglist' | translate}}</legend>
+        <div class="container-fluid">
+            <form [formGroup]="applyForm">
+                <div class="mt-3 mb-3 row apply-container">
+                    <div class="col row justify-content-end">
+                        <div class="col d-flex align-items-center justify-content-end">{{'label.selectValueToApplyAll'| translate}}</div>
+                        <div class="pr-2">
+                            <button 
+                                class="btn header-button btn-color-green apply-btn"
+                                style="height: 46px"  
+                                type="button"
+                                (click)="applyWarehouseBookingConfirm()">
+                                <fa-icon [icon]="faArrowCircleDown"></fa-icon>  {{'label.apply' | translate}}
+                            </button>
+                        </div>
+
+                        <div class=" pl-1 pr-1 confirm-hub-date-container">
+                            <kendo-datepicker
+                                class="form-control" 
+                                style="width: 237px" 
+                                formControlName="confirmedHubArrivalDate"
+                                placeholder="{{'label.confirmedHubArrivalDates' | translate}}">
+                            </kendo-datepicker>
+                        </div>
+
+                        <div class=" pl-1 pr-1">
+                            <kendo-dropdownlist 
+                                class="form-control"
+                                style="width: 133px;"
+                                [data]="timeApplyDropDown" 
+                                [valuePrimitive]="true"
+                                [textField]="'label'" 
+                                [valueField]="'value'"
+                                formControlName="time">
+
+                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                            </kendo-dropdownlist>
+                        </div>
+
+                        <div class=" pl-1 pr-1">
+                            <input  
+                                class="form-control loading-bay" 
+                                type="text" 
+                                style="width: 298px; margin-right: -34px;" 
+                                formControlName="loadingBay"
+                                placeholder="{{'label.loadingBay' | translate}}"
+                                >
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <form #confirmForm="ngForm">
+                <div class="row mt-4 mb-3">
+                    <kendo-grid 
+                        #grid="kendoGrid" 
+                        [data]="gridView"
+                        [sortable]="false"
+                        [sort]="gridSort"
+                        (sortChange)="gridSortChange($event)"
+                        class="custom-border-grid custom-po-grid">
+        
+                    <kendo-grid-column field="bookingNumber" title="{{'label.fulfillmentNo' | translate}}"   width="155"></kendo-grid-column>
+                    <kendo-grid-column field="shipmentNumber" title="{{'label.shipmentNo' | translate}}"   width="155"></kendo-grid-column>
+                    <kendo-grid-column field="expectedDeliveryDate" title="{{'label.expectedHubArrivalDates' | translate}}" width="210"   format="{0:{{DATE_FORMAT}}}" ></kendo-grid-column>
+                    <kendo-grid-column field="warehouseLocation" title="{{'label.warehouseLocation' | translate}}"  ></kendo-grid-column>
+        
+                    <kendo-grid-column headerClass="custom-required" width="235" field="confirmedHubArrivalDate" title="{{'label.confirmedHubArrivalDates' | translate}}"   >
+                        <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                            <kendo-datepicker
+                                name="confirmedHubArrivalDate_{{rowIndex}}"
+                                [(ngModel)]="dataItem.confirmedHubArrivalDate"
+                                required
+                                class="form-control">
+                            </kendo-datepicker>
+            
+                            <div *ngIf="isInvalidControl('confirmedHubArrivalDate_' + rowIndex)" class="k-invalid-msg">
+                                {{ 'validation.requiredField' | translate: {'fieldName': 'label.confirmedHubArrivalDates' | translate} }}
+                            </div>
+                        </ng-template>
+                    </kendo-grid-column>
+        
+                    <kendo-grid-column headerClass="custom-required" field="time" title="{{'label.time' | translate}}"    width="140" class="required">
+                        <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                            <kendo-dropdownlist 
+                                class="form-control"
+                                [data]="timeDropDown" 
+                                [valuePrimitive]="true"
+                                [textField]="'label'" 
+                                [valueField]="'value'"
+                                name="time_{{rowIndex}}"
+                                required
+                                [(ngModel)]="dataItem.time">
+                
+                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                            </kendo-dropdownlist>
+
+                            <div *ngIf="isInvalidControl('time_' + rowIndex)" class="k-invalid-msg">
+                                {{ 'validation.requiredField' | translate: {'fieldName': 'label.time' | translate} }}
+                            </div>
+                        </ng-template>
+                    </kendo-grid-column>
+        
+                    <kendo-grid-column field="loadingBay" title="{{'label.loadingBay' | translate}}"    width="300" >
+                        <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                            <input
+                                class="form-control"
+                                type="text" 
+                                name="loadingBay_{{rowIndex}}"
+                                [(ngModel)]="dataItem.loadingBay"/>
+                        </ng-template>
+                    </kendo-grid-column>
+            
+                </kendo-grid>
+                </div>
+            </form>
+        </div>
+    </fieldset>
+
+    <div class="col-12 action-bar">
+        <button type="button" class="btn second-button" (click)="onCancelWarehouseBookingConfirm()">{{'label.cancel' | translate}}</button>
+        <button type="button" class="btn prim-button"
+            
+            (click)="onSaveWarehouseBookingConfirm()">{{'label.save' | translate}}
+            <ng-template *appSpinner="isSavingWarehouseBookingsConfirm"></ng-template>
+        </button>
+     </div>
+

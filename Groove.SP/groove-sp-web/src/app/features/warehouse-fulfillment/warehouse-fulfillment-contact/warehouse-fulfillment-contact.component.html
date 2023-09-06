@@ -1,0 +1,172 @@
+<div class="bulk-fulfillment-contact-container">
+    <kendo-grid #grid="kendoGrid" [rowClass]="rowCallback" [data]="contactList" [scrollable]="'vertical'" [selectable]="false" class="custom-edit-grid">
+    
+        <!-- Organization role -->
+        <kendo-grid-column field="organizationRole" title="{{'label.organizationRole' | translate}}">
+            <ng-template *ngIf="!isViewMode" kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex"
+                class="organization-code-dropdown">
+                <span *ngIf="!canUpdateOrgRole(rowIndex); else organizationRoleDropdown">
+                    {{dataItem.organizationRole}}
+                </span>
+                <ng-template #organizationRoleDropdown>
+                    <kendo-dropdownlist name="{{tabPrefix}}organizationRole_{{rowIndex}}" required
+                        (valueChange)="roleValueChange($event, rowIndex)"
+                        [(ngModel)]="dataItem.organizationRole" [data]="dataItem.organizationRoleOptions"
+                        (open)="onRoleOptionsOpen(rowIndex)"
+                        [valuePrimitive]="true" [textField]="'name'" [valueField]="'name'">
+                    </kendo-dropdownlist>
+                    
+                </ng-template>
+                <div *ngIf="formErrors[tabPrefix + 'organizationRole_' + rowIndex]" class="k-invalid-msg">
+                    {{ formErrors[tabPrefix + 'organizationRole_' + rowIndex] }}
+                </div>
+            </ng-template>
+        </kendo-grid-column>
+    
+        <!-- Company column -->
+        <kendo-grid-column field="companyName" title="{{'label.company' | translate}}">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                <span *ngIf="!canUpdateCompanyName(rowIndex) || isViewMode; else companyNameControl">
+                    {{dataItem.companyName | default: defaultValue}}
+                </span>
+                <ng-template #companyNameControl>
+                    <ng-container *ngIf="!isAllowInputContact(rowIndex)">
+                        <kendo-autocomplete [required]="!saveAsDraft  || dataItem.isManualInput === true"
+                            name="{{tabPrefix}}companyName_{{rowIndex}}"
+                            (valueChange)="contactValueChange($event, rowIndex)"
+                            (filterChange)="contactFilterChange($event, rowIndex)" [valueField]="'name'"
+                            [(ngModel)]="dataItem.companyName" [data]="getContactOptions(rowIndex)" [filterable]="true"
+                            [placeholder]="'label.egOrganizationName' | translate">
+                        </kendo-autocomplete>
+                    </ng-container>
+                    <input kendoTextBox
+                        *ngIf="isAllowInputContact(rowIndex)"
+                        name="{{tabPrefix}}companyName_{{rowIndex}}"
+                        [required]="dataItem.organizationRole === organizationNameRole.BillingParty && (!saveAsDraft  || dataItem.isManualInput === true)"
+                        type="text"
+                        class="form-control"
+                        [(ngModel)]="dataItem.companyName"
+                        [disabled]="isViewMode"
+                    />
+                    <div *ngIf="formErrors[tabPrefix + 'companyName_' + rowIndex]" class="k-invalid-msg">
+                        {{ formErrors[tabPrefix + 'companyName_' + rowIndex] }}
+                    </div>
+                </ng-template>
+            </ng-template>
+        </kendo-grid-column>
+    
+        <!-- Address -->
+        <kendo-grid-column field="address" title="{{'label.address' | translate}}" [class]="{'multiple-lines-text': true}">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                <span *ngIf="!canUpdateAddress(rowIndex) || isViewMode; else addressControl" title="{{dataItem.address}}">{{dataItem.address | default: defaultValue}}</span>
+                <ng-template #addressControl>
+                    <div [ngClass]="formErrors[tabPrefix + 'address_' + rowIndex + '_custom'] ? 'force-invalid' : ''">
+                        <textarea kendoTextArea style="overflow-x:auto; height: 62px !important;"
+                            name="{{tabPrefix}}address_{{rowIndex}}"
+                            type="text"
+                            [required]="dataItem.organizationRole !== organizationNameRole.BillingParty && (!saveAsDraft || dataItem.isManualInput === true)"
+                            class="form-control"
+                            [(ngModel)]="dataItem.address"
+                            [disabled]="isViewMode"
+                            (ngModelChange)="addressValueKeyUp$.next(rowIndex)"
+                            (valueChange)="addressValueChange($event, rowIndex)">
+                        </textarea>
+                    </div>
+        
+                    <div *ngIf="formErrors[tabPrefix + 'address_' + rowIndex]" class="k-invalid-msg">
+                        {{ formErrors[tabPrefix + 'address_' + rowIndex] }}
+                    </div>
+                    <div *ngIf="formErrors[tabPrefix + 'address_' + rowIndex + '_custom']" class="k-invalid-msg">
+                        {{ formErrors[tabPrefix + 'address_' + rowIndex + '_custom'] }}
+                    </div>
+                </ng-template>
+            </ng-template>
+        </kendo-grid-column>
+    
+        <!-- Contact name -->
+        <kendo-grid-column field="contactName" title="{{'label.contactName' | translate}}">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                <span *ngIf="!canUpdateContactName(rowIndex) || isViewMode; else contactNameControl" title="{{dataItem.contactName}}">{{dataItem.contactName | default: defaultValue}}</span>
+                <ng-template #contactNameControl>
+                    <div [ngClass]="formErrors[tabPrefix + 'contactName_' + rowIndex + '_custom'] ? 'force-invalid' : ''">
+                        <input kendoTextBox
+                            name="{{tabPrefix}}contactName_{{rowIndex}}"
+                            type="text"
+                            class="form-control"
+                            [(ngModel)]="dataItem.contactName"
+                            [disabled]="isViewMode"
+                            (ngModelChange)="contactNameValueKeyUp$.next(rowIndex)"
+                            [required]="dataItem.organizationRole !== organizationNameRole.BillingParty && dataItem.organizationRole !== organizationNameRole.Pickup && (!saveAsDraft || dataItem.isManualInput === true)"
+                        />
+                    </div>
+                    <div *ngIf="formErrors[tabPrefix + 'contactName_' + rowIndex]" class="k-invalid-msg">
+                        {{ formErrors[tabPrefix + 'contactName_' + rowIndex] }}
+                    </div>
+                    <div *ngIf="formErrors[tabPrefix + 'contactName_' + rowIndex + '_custom']" class="k-invalid-msg">
+                        {{ formErrors[tabPrefix + 'contactName_' + rowIndex + '_custom'] }}
+                    </div>
+                </ng-template>
+            </ng-template>
+        </kendo-grid-column>
+    
+        <!-- Contact number -->
+        <kendo-grid-column field="contactNumber" title="{{'label.contactNumber' | translate}}">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                <span *ngIf="!canUpdateContactNumber(rowIndex) || isViewMode; else contactNumberControl" title="{{dataItem.contactNumber}}">{{dataItem.contactNumber | default: defaultValue}}</span>
+                <ng-template #contactNumberControl>
+                    <input kendoTextBox
+                        name="{{tabPrefix}}contactNumber_{{rowIndex}}"
+                        type="text"
+                        class="form-control"
+                        [(ngModel)]="dataItem.contactNumber"
+                        [disabled]="isViewMode"
+                    />
+                </ng-template>
+            </ng-template>
+        </kendo-grid-column>
+    
+        <!-- Contact email -->
+        <kendo-grid-column field="contactEmail" title="{{'label.contactEmail' | translate}}" class="organization-email">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                <a *ngIf="!canUpdateContactEmail(rowIndex) || isViewMode; else contactEmailControl" title="{{dataItem.contactEmail}}">{{dataItem.contactEmail | default: defaultValue}}</a>
+                <ng-template #contactEmailControl>
+                    <div [ngClass]="formErrors[tabPrefix + 'contactEmail_' + rowIndex + '_custom'] ? 'force-invalid' : ''">
+                        <input kendoTextBox
+                            name="{{tabPrefix}}contactEmail_{{rowIndex}}"
+                            type="text"
+                            class="form-control"
+                            maxlength = '100'
+                            [(ngModel)]="dataItem.contactEmail"
+                            [disabled]="isViewMode"
+                            [required]="dataItem.organizationRole !== organizationNameRole.BillingParty && dataItem.organizationRole !== organizationNameRole.Pickup && (!saveAsDraft || dataItem.isManualInput === true)"
+                            (ngModelChange)="validateMultiEmailAddresses($event, tabPrefix + 'contactEmail_' + rowIndex)"
+                        />
+                    </div>
+                    <div *ngIf="formErrors[tabPrefix + 'contactEmail_' + rowIndex]" class="k-invalid-msg">
+                        {{ formErrors[tabPrefix + 'contactEmail_' + rowIndex] }}
+                    </div>
+                    <div *ngIf="formErrors[tabPrefix + 'contactEmail_' + rowIndex + '_custom']" class="k-invalid-msg">
+                        {{ formErrors[tabPrefix + 'contactEmail_' + rowIndex + '_custom']  }}
+                    </div>
+                </ng-template>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-command-column *ngIf="!isViewMode" title="{{'label.action' | translate}}" [headerStyle]="{'text-align': 'center'}"
+            class="action-column-grid col-action" width="75">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                <button *ngIf="isShowDeleteBtn(rowIndex)" attr.data-balloon="{{'tooltip.delete' | translate}}"
+                    data-balloon-pos="left" type="button" class="btn ml-0 btn-default grid-remove-icon-button"
+                    (click)="onDeleteContact(rowIndex)">
+                    <i class="ei ei-icon_minus-06"></i>
+                </button>
+            </ng-template>
+        </kendo-grid-command-column>
+    </kendo-grid>
+    <div class="margin-add-icon-button" *ngIf="!isViewMode">
+        <button type="button" class="btn prim-button add-more-icon-button"
+            attr.data-balloon="{{'label.addMore' | translate}}" data-balloon-pos="up" (click)="addBlankContact()"
+            id="addMoreBtn">
+            <i class="ei ei-icon_plus"></i>
+        </button>
+    </div>
+</div>

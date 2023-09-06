@@ -1,0 +1,43 @@
+<div class="content__header">
+    <div class="container-fluid">
+        <div class="row header-group">
+            <label class="list-header">{{'label.listOfCruiseOrders' | translate}}</label>
+            <span class="k-i-loading k-icon loading" *ngIf="service.gridLoading"></span>
+        </div>
+        <div class="row">
+            <kendo-grid #grid="kendoGrid" [data]="view | async" [filterable]="true" [filter]="service.state.filter"
+                [pageable]="true" [pageSize]="service.state.take" [skip]="service.state.skip" [sortable]="true"
+                [sort]="service.state.sort" (dataStateChange)="gridStateChange($event)"
+                (pageChange)="service.pageChange($event)" (sortChange)="service.sortChange($event)"
+                class="custom-border-grid">
+
+                <kendo-grid-column *ngFor="let column of columns" [sortable]="true" [field]="column.field"
+                    [title]="column.title | translate" [class]="column.class" [width]="column.width"
+                    [format]="column.format" [filter]="column.filter">
+
+                    <!-- poNumber -->
+                    <ng-template kendoGridCellTemplate let-dataItem *ngIf="column.field === 'poNumber'">
+                        <a class="k-link" routerLink="/cruise-orders/view/{{dataItem.id}}" [title]="dataItem.poNumber"
+                            routerLinkActive="active">{{dataItem.poNumber}}</a>
+                    </ng-template>
+
+                     <!-- po status -->
+                    <ng-template kendoGridCellTemplate let-dataItem *ngIf="column.field === 'poStatus'">
+                        <span [className]="dataItem.poStatus.toLowerCase() === 'active' ? 'active-status' : 'inactive-status'">
+                            {{dataItem.poStatus | translate}}
+                        </span>
+                    </ng-template>
+                    <ng-template kendoGridFilterCellTemplate let-filter *ngIf="column.field === 'poStatus'">
+                        <app-drop-down-list-filter [filter]="filter" fieldName="poStatus"
+                            [data]="service.cruiseOrderStatus" textField="text" valueField="value">
+                        </app-drop-down-list-filter>
+                    </ng-template>
+                </kendo-grid-column>
+                <ng-template kendoPagerTemplate>
+                    <app-custom-grid-pager [service]="service" (pageSizeChanged)="gridPageSizeChange($event)">
+                    </app-custom-grid-pager>
+                </ng-template>
+            </kendo-grid>
+        </div>
+    </div>
+</div>

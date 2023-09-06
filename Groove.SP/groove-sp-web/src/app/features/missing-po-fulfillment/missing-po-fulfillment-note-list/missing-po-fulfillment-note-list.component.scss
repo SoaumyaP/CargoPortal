@@ -1,0 +1,8 @@
+.custom-edit-grid {
+    ::ng-deep .k-grid-header .k-header {
+        .k-link {
+            cursor: inherit !important;
+            pointer-events: none;
+        }
+    }
+}

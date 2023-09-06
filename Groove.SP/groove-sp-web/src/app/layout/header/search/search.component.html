@@ -1,0 +1,18 @@
+<form (ngSubmit)="onValueSubmit()" #quickTrackForm="ngForm" class="app-search-container">
+    <div class="column search-wrapper" tabindex="-1" role="presentation">
+    </div>
+    <div class="column search-wrapper" tabindex="-1" role="presentation">
+        <div class="quicktrack-no k-textbox k-space-right">
+            <input  id="quickTrackNumber"
+                    name="quickTrackNumber"
+                    type="text"
+                    [(ngModel)]="quickTrackNumber"
+                    placeholder="{{'label.quickTrackValue' | translate}}"
+                    autocomplete="off">
+            <a class="k-icon" (click)="onValueSubmit()" *ngIf="!isSearching">
+                <span class="bg-search_icon"></span>
+            </a>
+            <span class="k-i-loading k-icon loading" *ngIf="isSearching"></span>
+        </div>
+    </div>
+</form>

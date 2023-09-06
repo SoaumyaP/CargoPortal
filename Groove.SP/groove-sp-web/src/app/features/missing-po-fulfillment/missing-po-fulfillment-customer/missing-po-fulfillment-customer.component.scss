@@ -1,0 +1,37 @@
+@import '../../../../styles/variables';
+
+.icon-top {
+    position: relative;
+}
+
+.icon-top .icon-info {
+    position: absolute;
+    top: -15px;
+    right: -20px;
+}
+
+::ng-deep {
+    .action-header{
+        text-align: center !important;
+    }
+}
+
+::ng-deep button {
+    .extended-content {
+        display: none;
+    }
+    .collapsed-content {
+        display: inherit;
+    }
+    
+    &[aria-expanded="true"] {
+        .extended-content {
+
+            display: inherit;
+        }
+        .collapsed-content {
+
+            display: none;
+        }
+    }
+}

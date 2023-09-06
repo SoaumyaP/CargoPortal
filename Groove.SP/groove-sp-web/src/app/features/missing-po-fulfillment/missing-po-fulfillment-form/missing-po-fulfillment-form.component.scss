@@ -1,0 +1,285 @@
+@import '../../../../styles/variables';
+
+.panel-group {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+.note-textarea {
+    height: 90px !important;
+    padding: 10px !important;
+}
+
+.equipment-type-text {
+    margin-top: 6px;
+}
+
+//------------milestone-----------------//
+.milestone-item .icon::before{
+    width: 60px;
+    height: 70px;
+    display: block;
+}
+
+.milestone-item .icon {
+    display: inline-block;
+}
+
+.milestone-item {
+    padding-left: 19px;
+    padding-right: 19px;
+}
+
+.milestone-content {
+    display: flex;
+    justify-content: center;
+    background: url('/assets/images/milestone/sea.png') repeat-x 0 30px;
+}
+
+.milestone-content .milestone-item {
+    text-align: center;
+    position: relative;
+    width: calc(100% / 5);
+}
+
+.milestone-title {
+    font-size: 14px;
+    font-weight: normal;
+    color: #666666;
+    margin-top: 5px;
+}
+
+.milestone-datetime {
+    font-size: 14px;
+    color: #666666;
+    margin-top: 10px;
+}
+
+.active .milestone-title {
+    color: #333333;
+    font-weight: bold;
+}
+
+//n-drafting
+.n-draft::before {
+    content: '';
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -10px;
+}
+.active .n-draft::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -360px;
+}
+.current .n-draft::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -810px;
+}
+
+//n-forwarderBookingRequest
+.n-forwarderBookingRequest::before {
+    content: '';
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -150px;
+}
+.active .n-forwarderBookingRequest::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -540px;
+}
+.current .n-forwarderBookingRequest::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -990px;
+}
+
+//n-forwarderBookingConfirmed
+.n-forwarderBookingConfirmed::before {
+    content: '';
+    background: url('/assets/images/milestone/po_stages_sprites.png') no-repeat -10px -220px;
+}
+.active .n-forwarderBookingConfirmed::before {
+    background: url('/assets/images/milestone/po_stages_sprites.png') no-repeat -10px -700px;
+}
+.current .n-forwarderBookingConfirmed::before {
+    background: url('/assets/images/milestone/po_stages_sprites.png') no-repeat -10px -1240px;
+}
+
+//n-shipmentDispatch
+.n-shipmentDispatch::before {
+    content: '';
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -220px;
+}
+.active .n-shipmentDispatch::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -630px;
+}
+.current .n-shipmentDispatch::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -1170px;
+}
+
+//n-closed
+.n-closed::before {
+    content: '';
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -290px;
+}
+.active .n-closed::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -720px;
+}
+.current .n-closed::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -1080px;
+}
+
+.po-fulfillment-container ::ng-deep .panel-group {
+    margin: 0px !important;
+    margin-bottom: 10px !important;
+}
+
+.edit-icon-button {
+    margin: 0px 5px;
+}
+
+.button-container {
+    padding-left: 0px;
+    padding-right: 11px;
+}
+
+.pending_arrow_box, .rejected_arrow_box {
+    left: 363px;
+    top: 7px;
+    font-weight: bold;
+}
+
+.po-fulfillment-container {
+    position: relative;
+    .cancel-po-dialog {
+        textarea::placeholder {
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .cancel-reason {
+            height: auto !important;
+        }
+    }
+}
+
+// booking validation tooltips
+::ng-deep .k-tooltip {
+    padding: 0;
+}
+.booking-validation-tooltip{
+    display: block;
+    overflow: hidden;
+    background-color: $color-orange-light;
+    padding: 0;
+    margin: 0;
+    border-radius: 3px;
+    color: $color-orange-primary;
+    font-size: 14px;
+}
+
+
+.booking-banner {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);;
+    border-radius: 5px;
+    width: fit-content;
+    padding: 12px;
+    &.warning {
+        color: $color-orange-primary;
+        background-color: $color-orange-light;
+    }
+}
+
+.submit-btn:disabled {
+    background-color: $theme-color !important;
+    border-color: unset !important;
+    color: white !important;
+    opacity: 0.5;
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: .65;
+}
+
+.arrow_box {
+    border-radius: 2px;
+    font-size: 14px;
+    padding: 3px;
+    padding-left: 9px;
+    padding-right: 6px;
+    font-family: "Noto Sans";
+    font-weight: bold;
+}
+
+.pending-container {
+    @extend .arrow_box;
+    background-color: #F9E7BF;
+    color: #FBAC02;
+}
+
+.pending-caret-left {
+    color: #F9E7BF;
+}
+
+.rejected-container {
+    @extend .arrow_box;
+    background-color: #FCA397;
+    color: red;
+}   
+
+.rejected-caret-left {
+    color: #FCA397;
+}
+
+.status-label{
+    margin-top: -10px;
+}
+
+.title-grid > h5 {
+    font-weight: bold;
+    height: 40px;
+    line-height: 3;
+}
+
+.sticky-navigation {
+    border-color:1px solid #009FFF;
+    width: 100% !important;
+    background-color: $theme-background-color;
+    border-bottom: $theme-color-darker 1px solid;
+    z-index: 2;
+}
+
+.button-group {
+    .k-button {
+        padding: 0.375rem 1.75rem;
+        box-sizing: border-box;
+        border-width: 0px;
+        border-style: solid;
+        line-height: 1.5rem;
+
+        color: $color-grey-dark-3;
+        background-color: $theme-background-color;
+        background-image: none;
+        border: $color-white-dark-2 1px solid;
+        border-radius: 5px 5px 0 0;
+        font-weight: bold;
+        height: 35px;
+
+        &:active, &:focus {
+            box-shadow: none;
+        }
+
+        &:hover {
+            color: $theme-color;
+        }
+
+        &.current {
+            border-color: $theme-color-darker;
+            color: $color-white-primary;
+            background-color: $theme-color;
+        }
+    }
+}
+
+.header-group {
+    background-color: $theme-background-color;
+    width: 100%;
+    z-index: 2;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}

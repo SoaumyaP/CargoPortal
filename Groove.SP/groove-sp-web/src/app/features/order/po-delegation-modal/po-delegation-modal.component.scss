@@ -1,0 +1,72 @@
+@import '../../../../styles/variables';
+
+.form-control {
+    border: 1px solid $color-white-dark-2;
+}
+
+.modal {
+    margin-top: 75px;
+}
+
+.modal-content {
+  width: 540px;
+  height: auto;
+  border-radius: 10px;
+}
+
+.modal-body {
+    width: 540px;
+    height: auto;
+    padding: 40px;
+}
+
+.dialog-header {
+    width: 100%;
+    font-weight: bold;
+    font-size: 24px;
+    color: #333333;
+    margin: 15px 0;
+}
+
+
+.button-bar {
+    margin: auto;
+    text-align: center;
+    padding-top: 20px;
+}
+
+.img-delegation {
+    background: url('/assets/images/po-delegation-modal/delegation-icon.png');
+    padding: 65px;
+    background-size:cover;
+    margin-top: -105px;
+}
+
+.delegate-po {
+    padding-left: 30px;
+    background: url(/assets/images/po-delegation-modal/home-icon.png) no-repeat;
+    background-repeat: no-repeat;
+    background-position: 10px 50%;
+    background-size: 24px;
+    background-color: transparent;
+}
+
+.notify-user {
+    padding-left: 30px;
+    background: url(/assets/images/share-file-dialog/email-icon@2x.png) no-repeat;
+    background-repeat: no-repeat;
+    background-position: 10px 50%;
+    background-size: 24px;
+    background-color: transparent;
+}
+
+.close-popup {
+    background: url('/assets/images/import-popup/icon-close-popup.png');
+    padding: 9px;
+    background-size:cover;
+    cursor: pointer;
+    right: 20px;
+    top: 20px;
+    position: absolute;
+    z-index: 1;
+}

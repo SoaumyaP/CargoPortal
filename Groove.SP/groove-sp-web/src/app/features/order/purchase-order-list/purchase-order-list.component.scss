@@ -1,0 +1,40 @@
+@import "../../../../styles/variables";
+
+.download-button {
+}
+
+.export-button {
+    background-color: $color-orange-primary;
+    border-color: $color-orange-primary;
+}
+
+.import-button {
+    background-color: $color-green-primary;
+    border-color: $color-green-primary;
+}
+.booking-multipos-button {
+    background-color: $color-green-primary;
+    border-color: $color-green-primary;
+}
+
+.booking-button {
+    background-color: $theme-color;
+    border-color: $theme-color;
+}
+
+::ng-deep {
+    .cargo-ready-date-cell {
+        overflow: visible !important;
+    }
+
+    .k-tooltip {
+        padding: 4px 8px !important;
+        border-radius: 4px;
+    }
+
+    .po-Stage-multiSelect {
+        .k-clear-value {
+            margin-top: -7px;
+        }
+    }
+}

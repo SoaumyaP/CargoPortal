@@ -1,0 +1,215 @@
+<form #mainForm="ngForm">
+    <fieldset class="border fieldset-container">
+        <legend class="w-auto custom-legend">{{'label.poListing' | translate}}</legend>
+        <div class="container-fluid">
+            <div class="mt-3 mb-3 row apply-container">
+                <div class="col d-flex align-items-center justify-content-end">{{'label.selectValueToApplyAll'| translate}}</div>
+
+                <div class="col row dropdown-container">
+                    <div class="pl-1 pr-1">
+                        <kendo-dropdownlist
+                            class="form-control"
+                            [data]="productionStartedDropdown"
+                            [valuePrimitive]="true"
+                            [textField]="'label'"
+                            [valueField]="'value'"
+                            name="selectedPrincipal"
+                            style="width: 203px;"
+                            [(ngModel)]="productionStarted">
+                        <ng-template kendoDropDownListValueTemplate let-dataItem>
+                            {{ dataItem?.label | translate }}
+                        </ng-template>
+                        <ng-template kendoDropDownListItemTemplate let-dataItem>
+                            {{ dataItem?.label | translate }}
+                        </ng-template>
+                     </kendo-dropdownlist>
+                    </div>
+                     <div class=" pl-1 pr-1 propose-date-container">
+                        <kendo-datepicker
+                            [min]="minDate"
+                            class="form-control"
+                            name="proposeDate"
+                            class="form-control"
+                            placeholder="{{'label.proposeDates' | translate}}"
+                            style="width: 161px;"
+                            [(ngModel)]="proposeDate">
+                        </kendo-datepicker>
+                            <div *ngIf="getFormControl('proposeDate')?.errors?.minError && getFormControl('proposeDate')?.touched" class="k-invalid-msg">
+                                {{ 'validation.invalid' | translate: {'fieldName': 'label.proposeDates' | translate} }}
+                            </div>
+                     </div>
+                     <div class=" pl-1 pr-1">
+                        <kendo-dropdownlist
+                            class="form-control"
+                            style="width: 160px;"
+                            [data]="qcRequiredTypeDropdown"
+                            [valuePrimitive]="true"
+                            [textField]="'label'"
+                            [valueField]="'value'"
+                            name="qcRequired"
+                            [(ngModel)]="qcRequired">
+                            <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                {{ dataItem?.label | translate }}
+                            </ng-template>
+                            <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                {{ dataItem?.label | translate }}
+                            </ng-template>
+                        </kendo-dropdownlist>
+                     </div>
+                     <div class=" pl-1 pr-1">
+                        <kendo-dropdownlist
+                            class="form-control"
+                            style="width: 146px;"
+                            [data]="shortShipTypeDropdown"
+                            [valuePrimitive]="true"
+                            [textField]="'label'"
+                            [valueField]="'value'"
+                            name="shortShip"
+                            [(ngModel)]="shortShip">
+                            <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                {{ dataItem?.label | translate }}
+                            </ng-template>
+                            <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                {{ dataItem?.label | translate }}
+                            </ng-template>
+                        </kendo-dropdownlist>
+                    </div>
+                    <div class=" pl-1 pr-1">
+                        <kendo-dropdownlist
+                            class="form-control"
+                            style="width: 174px"
+                            [data]="splitShipmentTypeDropdown"
+                            [valuePrimitive]="true"
+                            [textField]="'label'"
+                            [valueField]="'value'"
+                            name="splitShipment"
+                            [(ngModel)]="splitShipment">
+                        <ng-template kendoDropDownListValueTemplate let-dataItem>
+                            {{ dataItem?.label | translate }}
+                        </ng-template>
+                        <ng-template kendoDropDownListItemTemplate let-dataItem>
+                            {{ dataItem?.label | translate }}
+                        </ng-template>
+                    </kendo-dropdownlist>
+                    </div>
+                </div>
+
+                <div class="col apply-btn-container">
+                    <button
+                        class="btn header-button btn-color-green apply-btn"
+                        type="button"
+                        [disabled]="getFormControl('proposeDate')?.errors?.minError && getFormControl('proposeDate')?.touched"
+                        (click)="applyProgressCheck()">
+                        <fa-icon [icon]="faArrowCircleDown"></fa-icon>  {{'label.apply' | translate}}
+                    </button>
+                </div>
+            </div>
+
+            <div class="row mt-4 mb-3">
+                <kendo-grid
+                    #grid="kendoGrid"
+                    [data]="gridView"
+                    [sortable]="true"
+                    [sort]="gridSort"
+                    [style.maxHeight]="'calc(100vh - ' + heightToReduceOfPOGrid + ')'"
+                    [rowHeight]="55"
+                    [skip]="skip"
+                    [pageSize]="pageSize"
+                    [scrollable]="'virtual'"
+                    (sortChange)="gridSortChange($event)"
+                    (pageChange)="pageChange($event)"
+                    class="custom-border-grid custom-po-grid">
+                <kendo-grid-column field="poNumber" title="{{'label.poNo' | translate}}"  [sortable]="true"></kendo-grid-column>
+                <kendo-grid-column field="cargoReadyDate" title="{{'label.cargoReadyDates' | translate}}" [sortable]="true"  width="173">
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                        {{dataItem.cargoReadyDate | date: DATE_FORMAT}}
+                    </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column field="productionStarted" title="{{'label.productionStarted' | translate}}"  [sortable]="true" width="210">
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                        <div class="d-flex justify-content-between pl-2 pr-2" #anchor>
+                            <input id="productionStarted-yes-{{rowIndex}}"
+                                    type="radio"
+                                    class="k-radio"
+                                    name="productionStarted_{{rowIndex}}"
+                                    [value]="true"
+                                    [(ngModel)]="dataItem.productionStarted" />
+                            <label class="k-radio-label" for="productionStarted-yes-{{rowIndex}}">{{'label.yes' | translate}}</label>
+                            <input id="productionStarted-no-{{rowIndex}}"
+                                    type="radio"
+                                    class="k-radio"
+                                    name="productionStarted_{{rowIndex}}"
+                                    [value]="false"
+                                    [(ngModel)]="dataItem.productionStarted"/>
+                            <label class="k-radio-label mr-0" for="productionStarted-no-{{rowIndex}}">{{'label.no' | translate}}</label>
+                        </div>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column  field="proposeDate" title="{{'label.proposeDates' | translate}}" [sortable]="true" width="170">
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                        <kendo-datepicker
+                            #proposeDateElement
+                            [min]="minDate"
+                            class="form-control"
+                            name="proposeDate_{{rowIndex}}"
+                            class="form-control"
+                            (valueChange)="onChangeProposeDate()"
+                            [(ngModel)]="dataItem.proposeDate">
+                        </kendo-datepicker>
+
+                        <div *ngIf="isInvalidProposeDate('proposeDate_' + rowIndex)" class="k-invalid-msg">
+                            {{ 'validation.invalid' | translate: {'fieldName': 'label.proposeDates' | translate} }}
+                        </div>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column field="qcRequired" title="{{'label.qcRequired' | translate}}"  [sortable]="true" width="167">
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                        <input
+                            id="qcRequired-no-{{rowIndex}}"
+                            type="checkbox" class="k-checkbox"
+                            name="qcRequired_{{rowIndex}}"
+                            [(ngModel)]="dataItem.qcRequired">
+                        <label class="k-checkbox-label" (click)="dataItem.qcRequired = !dataItem.qcRequired">{{ 'label.yes'| translate }}</label>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column field="shortShip" title="{{'label.shortShip' | translate}}"  [sortable]="true" width="155" >
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                        <input
+                            id="shortShip-no-{{rowIndex}}"
+                            type="checkbox" class="k-checkbox"
+                            name="shortShip_{{rowIndex}}"
+                            [(ngModel)]="dataItem.shortShip">
+                        <label class="k-checkbox-label" (click)="dataItem.shortShip = !dataItem.shortShip">{{ 'label.yes'| translate }}</label>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column field="splitShipment" title="{{'label.splitShipment' | translate}}"  [sortable]="true" width="180">
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                        <input
+                            id="splitShipment-no-{{rowIndex}}"
+                            type="checkbox" class="k-checkbox"
+                            name="splitShipment_{{rowIndex}}"
+                            [(ngModel)]="dataItem.splitShipment">
+                        <label class="k-checkbox-label" (click)="dataItem.splitShipment = !dataItem.splitShipment">{{ 'label.yes'| translate }}</label>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column field="remark" title="{{'label.remark' | translate}}"  [sortable]="true" width="300">
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                        <textarea
+                            id="remark-no-{{rowIndex}}"
+                            type="text"
+                            class="form-control"
+                            name="remark_{{rowIndex}}"
+                            [(ngModel)]="dataItem.remark">
+                        </textarea>
+                    </ng-template>
+                </kendo-grid-column>
+            </kendo-grid>
+            </div>
+        </div>
+    </fieldset>
+</form>

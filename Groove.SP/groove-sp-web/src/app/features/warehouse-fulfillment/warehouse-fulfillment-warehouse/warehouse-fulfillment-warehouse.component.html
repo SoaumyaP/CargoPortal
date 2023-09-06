@@ -1,0 +1,74 @@
+<div class="row">
+    <div class="col content-details">
+        <div class="row">
+            <div class="col-4 text-label">{{'label.shipmentNo' | translate}}</div>
+            <div class="col-8 value-label">{{ model?.soNo }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-4 text-label">{{'label.confirmedHubArrivalDates' | translate}}</div>
+            <div class="col-8 value-label">{{ model?.confirmedHubArrivalDate | date: DATE_FORMAT}} ({{model.time}})</div>
+        </div>
+   
+        <div class="row">
+            <div class="col-4 text-label">{{'label.loadingBay' | translate}}</div>
+            <div class="col-8 value-label">{{model?.loadingBay | default: defaultValue}}</div>
+        </div>
+        
+        <div class="row">
+            <div class="col text-label warehouse-section">{{'label.warehouseLocation' | translate}}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-4 text-label">{{'label.warehouse' | translate}}</div>
+            <div class="col-8 value-label">{{model?.locationName}} ({{model?.locationCode}})</div>
+        </div>
+
+        <div class="row">
+            <div class="col-4 text-label">{{'label.address' | translate}}</div>
+            <div class="col-8 value-label">
+                {{model?.addressLine1}} 
+                <br *ngIf="model?.addressLine1">{{model?.addressLine2}}
+                <br *ngIf="model?.addressLine2">{{model?.addressLine3}} 
+                <br *ngIf="model?.addressLine3">{{model?.addressLine4}} 
+                <br *ngIf="model?.addressLine4">{{model?.city}}<ng-container *ngIf="model?.city && model?.country">, </ng-container>{{model?.country}}
+            </div>
+        </div>
+    </div>
+
+    <div class="col content-details">
+        <div class="row" style="height: 36px;">
+            <div class="col-4 text-label"></div>
+            <div class="col-8 value-label"></div>
+        </div>
+
+        <div class="row">
+            <div class="col-4 text-label">{{'label.confirmedBy' | translate}}</div>
+            <div class="col-8 value-label">{{model?.confirmBy }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-4 text-label">{{'label.confirmedAt' | translate}}</div>
+            <div class="col-8 value-label">{{model?.confirmedAt | convertUTCDateToLocalDate | date : "MM/dd/yyyy hh:mm' 'a"}}</div>
+            
+        </div>
+
+        <div class="row" style="height: 43px;">
+        </div>
+
+        <div class="row">
+            <div class="col-4 text-label">{{'label.contactName' | translate}}</div>
+            <div class="col-8 value-label">{{model?.contactPerson | default: defaultValue}}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-4 text-label">{{'label.contactNumber' | translate}}</div>
+            <div class="col-8 value-label">{{model?.contactPhone | default: defaultValue}}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-4 text-label">{{'label.contactEmail' | translate}}</div>
+            <div class="col-8 value-label">{{model?.contactEmail | default: defaultValue}}</div>
+        </div>
+    </div>
+</div>

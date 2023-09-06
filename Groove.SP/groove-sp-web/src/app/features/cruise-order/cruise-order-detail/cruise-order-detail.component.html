@@ -1,0 +1,118 @@
+<div class="content__header">
+    <div class="typing_loader" *ngIf="!isInitDataLoaded"></div>
+    <div class="container-fluid" *ngIf="isInitDataLoaded">
+        <div class="header-group">
+            <div class="row">
+                <div class="col-sm">
+                        <button attr.data-balloon="{{'tooltip.backToList' | translate}}" data-balloon-pos="up" type="button" class="btn btn-default back-button"
+                            (click)="backList()">
+                            <i class="ei ei-arrow_left"></i>
+                        </button>
+                        <label class="form-header">{{ model.poNumber }}</label>
+                        <app-status-label [status]="model.poStatus" [statusName]="model.statusName | translate" [statusEnum]="cruiseOrderStatus"></app-status-label>
+                </div>
+            </div>
+           <div class="row text-muted create-title">
+                <span>{{'label.poDates' | translate}}</span>
+                <span class="font-weight-bold pl-1">
+                    {{ model.poDate | date: DATE_FORMAT  | default : defaultValue }}
+                </span>
+           </div>
+        </div>
+
+        <div class="panel-group remove-padding-first-panel">
+            <label class="panel-header">{{'label.orderDetail' | translate}}</label>
+            <div class="row">
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.poNumber' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('poNumber') }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.customer' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('customer') }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.consignee' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('consignee') }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.budgetAccount' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('budgetAccount') }}</div>
+                    </div>
+                </div>
+
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.cruiseOrder.poId' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('poId') }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.cruiseOrder.supplier' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('supplier') }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.priority' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('poPriority') }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form class="content-tabs row position-relative"  #mainForm="ngForm" novalidate>
+            <kendo-tabstrip class="tab-container" [keepTabContent]='true'>
+                <kendo-tabstrip-tab [title]="'label.line' | translate" [selected]="true">
+                    <ng-template kendoTabContent>
+                        <app-cruise-order-item
+                            [tabPrefix] = "'lineTab#'"
+                            [formErrors]="formErrors"
+                            [isEditMode]="this.isEditMode"
+                            [formData]="this.model"
+                        ></app-cruise-order-item>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+
+                <kendo-tabstrip-tab [title]="'label.supplementary' | translate">
+                    <ng-template kendoTabContent>
+                        <app-cruise-order-supplementary [cruiseOrderModel]="model"></app-cruise-order-supplementary>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+
+                <kendo-tabstrip-tab [title]="'label.contact' | translate">
+                    <ng-template kendoTabContent>
+                        <kendo-grid #grid="kendoGrid" [data]="model.contacts" [scrollable]="'vertical'">
+                            <kendo-grid-column field="organizationRole" title="{{'label.organizationRole' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="companyName" title="{{'label.company' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="address" title="{{'label.address' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                    <div [innerHTML]="dataItem.address | linebreak"></div>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="contactName" title="{{'label.contactName' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="contactNumber" title="{{'label.contactNumber' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="contactEmail" title="{{'label.contactEmail' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                    <a breakLine title="{{dataItem.contactEmail}}">{{dataItem.contactEmail}}</a>
+                                </ng-template>
+                            </kendo-grid-column>
+                        </kendo-grid>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+            </kendo-tabstrip>
+        </form>
+    </div>
+</div>

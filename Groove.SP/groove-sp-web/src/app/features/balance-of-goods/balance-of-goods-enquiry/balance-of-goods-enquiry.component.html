@@ -1,0 +1,107 @@
+<ng-container #container></ng-container>
+<div class="content__header">
+    <div class="container-fluid">
+        <div class="row header-group">
+            <label class="list-header">{{'label.balanceOfGoods' | translate}}</label>
+            <span class="k-i-loading k-icon loading" *ngIf="gridLoading"></span>
+        </div>
+
+        <div class="row">
+            <kendo-grid #grid="kendoGrid"
+                [data]="view | async"
+                [filterable]="true"
+                [filter]="state.filter"
+                [pageable]="true"
+                [pageSize]="state.take"
+                [skip]="state.skip"
+                [sortable]="true"
+                [sort]="state.sort"
+                (dataStateChange)="gridStateChange($event)"
+                (pageChange)="pageChange($event)"
+                (filterChange)="filterChange($event)"
+                (sortChange)="sortChange($event)"
+                class="custom-border-grid">
+
+                <kendo-grid-column *ngIf="isInternal || showPrinciple"
+                    field="principleCode" title="{{'label.principalCode' | translate}}"
+                    [filterable]="true" [sortable]="true" width="30">
+                </kendo-grid-column>
+
+                <kendo-grid-column *ngIf="isInternal || showPrinciple"
+                    field="principleName" title="{{'label.principalName' | translate}}"
+                    [filterable]="true" [sortable]="true" width="30">
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                    field="articleCode" title="{{'label.articleCode' | translate}}"
+                    [filterable]="true" [sortable]="true" width="30">
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                        <a class="k-link" (click)="openArticleTransactions(dataItem)">{{dataItem.articleCode}}</a>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                    field="articleName" title="{{'label.articleName' | translate}}"
+                    [filterable]="true" [sortable]="true" width="30">
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                    field="warehouseCode" title="{{'label.warehouseCode' | translate}}"
+                    [filterable]="true" [sortable]="true" width="30">
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                        <a class="k-link" (click)="openWarehouseTransactions(dataItem)">{{dataItem.warehouseCode}}</a>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                    field="warehouseName" title="{{'label.warehouseName' | translate}}"
+                    [filterable]="true" [sortable]="true" width="30">
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                    field="locationName" title="{{'label.locationName' | translate}}"
+                    [filterable]="true" [sortable]="true" width="30">
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                    field="availableQuantity" title="{{'label.availableQuantity' | translate}}"
+                    [filterable]="true" [sortable]="true" width="30"
+                    filter="numeric"
+                    >
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                    field="receivedQuantity" title="{{'label.receivedQuantity' | translate}}"
+                    [filterable]="true" [sortable]="true" width="30"
+                    filter="numeric"
+                    >
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                    field="shippedQuantity" title="{{'label.shippedQuantity' | translate}}"
+                    [filterable]="true" [sortable]="true" width="30"
+                    filter="numeric"
+                    >
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                    field="adjustQuantity" title="{{'label.adjustQuantity' | translate}}"
+                    [filterable]="true" [sortable]="true" width="30"
+                    filter="numeric"
+                    >
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                    field="damageQuantity" title="{{'label.damageQuantity' | translate}}"
+                    [filterable]="true" [sortable]="true" width="30"
+                    filter="numeric"
+                    >
+                </kendo-grid-column>
+
+                <ng-template kendoPagerTemplate>
+                    <app-custom-grid-pager [service]="service" (pageSizeChanged)="gridPageSizeChange($event)"></app-custom-grid-pager>
+                </ng-template>
+            </kendo-grid>
+        </div>
+    </div>
+</div>

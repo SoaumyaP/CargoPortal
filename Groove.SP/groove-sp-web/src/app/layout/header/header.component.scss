@@ -1,0 +1,13 @@
+.language-selection {
+    position: absolute;
+    float: right;
+    right: 110px;
+
+    ::ng-deep.k-dropdown-wrap {
+        padding-top: 3px;
+        border-color: transparent;
+        height: 38px;
+        background-color: transparent;
+        width: 56px;
+    }
+}

@@ -1,0 +1,177 @@
+.k-dialog .k-content {
+    padding: 25px;
+    font-size: 14px;
+}
+
+.k-window {
+    border-radius: 4px;
+}
+
+.k-dialog-titlebar {
+    border-radius: 7px 7px 0 0;
+    background-color: $theme-color;
+}
+
+.k-animation-container {
+    z-index: 10002;
+}
+.k-window-title {
+    font-size: 16px;
+    line-height: normal;
+}
+
+.k-dialog-buttongroup {
+    padding: 10px;
+    display: block;
+    text-align: center;
+}
+
+.k-dialog .k-dialog-buttongroup .k-button {
+    padding: 0;
+    height: 35px;
+    background-color: $theme-color;
+    color: black;
+}
+.k-dialog-buttongroup .k-button {
+    border-width: 1px;
+}
+
+.k-dialog-buttongroup .k-button + .k-button {
+    margin-right: 3px;
+}
+
+.k-dialog-button-layout-stretched .k-button {
+    flex: none;
+}
+
+.k-dialog-buttongroup .k-primary:not(:hover):not(.k-state-hover):not(:active):not(.k-state-eactive) {
+    color: #656565;
+}
+
+.k-grid th.col-status,
+.k-grid td.col-status,
+.k-grid th.col-action,
+.k-grid td.col-action {
+    text-align: center;
+    overflow: visible;
+}
+
+.k-dialog-buttongroup .k-button {
+    @extend .second-button;
+    top: 0px;
+    margin-right: 10px;
+    width: 140px !important;
+    &:hover {
+        background-image: none !important;
+    }
+}
+
+.k-button.k-primary {
+    @extend .prim-button;
+    top: 0px;
+    width: 140px !important;
+}
+
+.k-dialog-button-layout-stretched .k-button.k-primary:focus, .k-dialog-button-layout-stretched .k-button.k-primary.k-state-focused {
+    box-shadow: none;
+}
+
+.k-button.k-primary:hover, .k-button.k-primary.k-state-hover, .k-action-buttons .k-primary:hover, .k-action-buttons .k-primary.k-state-hvoer, .k-slider .k-draghandle:hover {
+    border-width: 0px;
+}
+
+.k-button.k-state-selected, .k-button.k-primary:active, .k-button.k-primary.k-state-active, .k-button.k-primary.k-state-selected, .k-button-group .k-button:active, .k-button-group .k-button.k-state-active, .k-button-group .k-button.k-state-selected, .k-button-group>input[type="radio"]:checked+.k-button, .k-button-group>input[type="checkbox"]:checked+.k-button, .k-action-buttons .k-primary:active, .k-action-buttons .k-primary.k-state-active, .k-slider .k-draghandle:active, .k-slider .k-draghandle.k-pressed {
+    border-width: 0px;
+}
+
+.k-dialog-wrapper .k-dialog {
+    border-radius: 10px;
+    top: 30px;
+}
+
+.k-i-x {
+    font-size: 16pt;
+}
+
+.k-button.k-flat:focus::after, .k-toolbar>.k-button:not(.k-overflow-anchor):focus::after, .k-toolbar>.k-button-group>.k-button:focus::after, .k-calendar .k-calendar-header .k-button:focus::after, .k-button.k-flat.k-state-focused::after, .k-toolbar>.k-state-focused.k-button:not(.k-overflow-anchor)::after, .k-toolbar>.k-button-group>.k-state-focused.k-button::after, .k-calendar .k-calendar-header .k-state-focused.k-button::after, .k-button.k-bare:focus::after, .k-calendar.k-calendar-range.k-calendar-infinite>.k-button:focus::after, .k-button.k-bare.k-state-focused::after, .k-calendar.k-calendar-range.k-calendar-infinite>.k-button.k-state-focused::after {
+    box-shadow: none;
+}
+
+.k-button::before, .k-toolbar .k-picker-wrap::before, .k-toolbar .k-dropdown-wrap::before {
+    background: none;
+}
+
+.dialog-button {
+    border-radius: 23px;
+    top: 25px;
+    width: 193px;
+    height: 46px;
+    font-size: 16px;
+    margin: 0px 5px;
+    font-weight: bold;
+}
+
+.dialog-header-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: $theme-color;
+    margin-top: 34px;
+    margin-left: 290px;
+}
+
+.dialog-close-icon {
+    background: url('/assets/images/import-popup/icon-close-popup.png');
+    padding: 9px;
+    background-size:cover;
+    cursor: pointer;
+    right: 20px;
+    top: 20px;
+    position: absolute;
+    z-index: 1;
+}
+
+::ng-deep .k-dialog {
+    .k-content {
+        padding: 16px !important;
+    }
+}
+
+.custom-header-dialog {
+    .dialog-button {
+        width: 43%;
+    }
+
+    .k-dialog-titlebar {
+        height: 57px;
+        background-color: white;
+    
+        .k-dialog-actions {
+            background: url(/assets/images/import-popup/icon-close-popup.png);
+            width: 18px;
+            height: 18px;
+        }
+    
+        .k-dialog-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: $theme-color;
+            text-align: center;
+            display: inline-block !important;
+        }
+    
+        .k-dialog-close {
+            opacity: 0;
+        }
+    }
+}
+
+.validation-type {
+    color: red;
+    top: 81px;
+    position: absolute;
+    left: 204px;
+}
+
+.error-message-container{
+    height: 20px;
+}

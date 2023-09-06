@@ -1,0 +1,63 @@
+@import '../../../../styles/variables';
+
+.organization-code-group{
+    background-color: theme-background-color-disable;
+    padding: 10px 20px;
+    margin: 20px 0;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #E1E1E1;
+}
+
+.organization-code-profile{
+    font-weight: bold;
+    color: black;
+    text-align: center;
+}
+
+.organization-role-group
+{
+    background-color: theme-background-color-disable;
+    border-style: dashed;
+    border-color: $color-white-dark-2;
+    border-width: thin;
+    padding: 20px 20px;
+}
+
+.address-textarea {
+    height: 131px !important;
+    padding: 10px !important;
+}
+
+.add-new-button {
+    width: 110px;
+}
+
+.title-grid {
+    margin-top: 0px;
+}
+
+.form-header-owner {
+    margin-left: 0px !important;
+}
+
+::ng-deep kendo-upload-action-buttons{
+    display: none !important;
+}
+
+.company-logo-img {
+    margin: 5px 10px 0px 0px;
+    border: 1px solid gray;
+    height: 60px;
+    width: auto;
+}
+.eye-icon,
+.eye-slash-icon {
+    color: $theme-color;
+    cursor: pointer;
+}
+.trash-icon {
+    color: #ff0000;
+    cursor: pointer;
+    margin-left: 4px;
+}

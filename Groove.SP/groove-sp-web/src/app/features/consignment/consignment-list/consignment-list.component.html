@@ -1,0 +1,66 @@
+<div class="content__header">
+    <div class="container-fluid">
+        <div class="row header-group">
+            <label class="list-header">{{'label.listOfConsignments' | translate}}</label>
+            <span class="k-i-loading k-icon loading" *ngIf="service.gridLoading"></span>
+        </div>
+        <div class="row" >
+            <kendo-grid #grid="kendoGrid"
+                [data]="view | async"
+                [filterable]="true"
+                [filter]="service.state.filter"
+                [pageable]="true"
+                [pageSize]="service.state.take"
+                [skip]="service.state.skip"
+                [sortable]="true"
+                [sort]="service.state.sort"
+                (dataStateChange)="gridStateChange($event)"
+                (pageChange)="service.pageChange($event)"
+                (sortChange)="service.sortChange($event)"
+                class="custom-border-grid">
+
+                <kendo-grid-column field="id" title="{{'label.consignmentId' | translate}}" [filterable]="true" [sortable]="true" class="link-code" [width]="150">
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                        <a class="k-link" [title]="dataItem.id" routerLinkActive="active" routerLink="/consignments/view/{{dataItem.id}}">{{dataItem.id}}</a>
+                    </ng-template>
+                    <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+                        <kendo-grid-numeric-filter-cell
+                            [column]="column"
+                            format="'{0:n}'"
+                            [min]="0"
+                            [step]="1"
+                            [spinners]="false"
+                            [filter]="filter">
+                        </kendo-grid-numeric-filter-cell>
+                    </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column field="consignmentDate" title="{{'label.consignmentDates' | translate}}" filter="date" format="{0:{{DATE_FORMAT}}}" [filterable]="true" [sortable]="true">
+                </kendo-grid-column>
+                <kendo-grid-column field="shipmentNo" title="{{'label.shipmentNo' | translate}}" [filterable]="true" [sortable]="true" class="link-code">
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                        <a class="k-link" [title]="dataItem.shipmentNo" routerLinkActive="active" routerLink="/shipments/{{dataItem.shipmentId}}">{{dataItem.shipmentNo}}</a>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column field="executionAgentName" title="{{'label.executionAgent' | translate}}" [filterable]="true" [sortable]="true">
+                </kendo-grid-column>
+
+                <kendo-grid-column field="shipFrom" title="{{'label.shipFrom' | translate}}" [filterable]="true" [sortable]="true">
+                </kendo-grid-column>
+
+                <kendo-grid-column field="shipTo" title="{{'label.shipTo' | translate}}" [filterable]="true" [sortable]="true">
+                </kendo-grid-column>
+
+                <kendo-grid-column field="status" title="{{'label.status' | translate}}" [sortable]="true" [width]="100">
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                        <span [className]="dataItem.status.toLowerCase().trim() === 'active' ? 'active-status' : 'inactive-status'">{{dataItem.status}}</span>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <ng-template kendoPagerTemplate>
+                    <app-custom-grid-pager [service]="service" (pageSizeChanged)="gridPageSizeChange($event)"></app-custom-grid-pager>
+                </ng-template>
+            </kendo-grid>
+        </div>
+    </div>
+</div>

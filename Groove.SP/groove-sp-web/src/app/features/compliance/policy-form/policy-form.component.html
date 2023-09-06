@@ -1,0 +1,400 @@
+<kendo-dialog title="{{'label.addNewPolicy'| translate}}" *ngIf="policyFormOpened" (close)="onFormClosed()"  novalidate (ngSubmit)="onSubmit()" [width]="824" [height]="710" class="policy-dialog custom-header-dialog">
+    <form #mainForm="ngForm">
+        <div class="container">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-label required">{{'label.name' | translate}}</label>
+                            <input name="name" required type="text" class="form-control"
+                                [(ngModel)]="model.name" [disabled]="viewFormMode"/>
+                            <div *ngIf="formErrors['name']" class="k-invalid-msg">
+                                {{ formErrors.name }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-label">{{'label.logisticsServiceType' | translate}}</label>
+                            <kendo-multiselect
+                                #policyLogisticsServiceType
+                                name="policyLogisticsServiceType"
+                                [data]="logicticsServiceTypeOptions"
+                                [textField]="'label'"
+                                [valueField]="'value'"
+                                [valuePrimitive]="true"
+                                [(ngModel)]="model.logisticsServiceSelectionIds"
+                                [autoClose]="false"
+                                class="form-control"
+                                [disabled]="viewFormMode"
+                                [filterable]="true"
+                                (filterChange)="onLogisticsServiceTypeFilterChange($event)"
+                                [placeholder]="'label.any' | translate">
+                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                    <input type="checkbox" class="k-checkbox"
+                                    [checked]="isLogisticsServiceTypeSelected(dataItem.value)">
+                                    <label class="k-checkbox-label">{{ dataItem?.label | translate }}</label>
+                                </ng-template>
+                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                            </kendo-multiselect>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-label">{{'label.modeOfTransport' | translate}}</label>
+                            <kendo-multiselect
+                                name="modeOfTransport"
+                                [data]="modeOfTransportOptions"
+                                [textField]="'label'"
+                                [valueField]="'value'"
+                                [valuePrimitive]="true"
+                                [(ngModel)]="model.modeOfTransportIds"
+                                [autoClose]="false"
+                                class="form-control"
+                                [disabled]="viewFormMode"
+                                [placeholder]="'label.any' | translate">
+                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                    <input type="checkbox" class="k-checkbox"
+                                    [checked]="isModeOfTransportSelected(dataItem.value)">
+                                    <label class="k-checkbox-label">{{ dataItem?.label | translate }}</label>
+                                </ng-template>
+                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                              {{ dataItem?.label | translate }}
+                                </ng-template>
+                            </kendo-multiselect>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-label">{{'label.movementType' | translate}}</label>
+                            <kendo-multiselect
+                                name="movementType"
+                                [data]="movementTypeOptions"
+                                [textField]="'label'"
+                                [valueField]="'value'"
+                                [valuePrimitive]="true"
+                                [(ngModel)]="model.movementTypeIds"
+                                [autoClose]="false"
+                                class="form-control"
+                                [disabled]="viewFormMode"
+                                [placeholder]="'label.any' | translate">
+                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                    <input type="checkbox" class="k-checkbox"
+                                    [checked]="isMovementTypeSelected(dataItem.value)">
+                                    <label class="k-checkbox-label">{{ dataItem?.label }}</label>
+                                </ng-template>
+                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                                    {{ dataItem?.label }}
+                                </ng-template>
+                            </kendo-multiselect>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-label">{{'label.incoterm' | translate}}</label>
+                            <kendo-multiselect
+                                #incoterm
+                                name="incoterm"
+                                [data]="incotermTypeOptions"
+                                [textField]="'label'"
+                                [valueField]="'value'"
+                                [valuePrimitive]="true"
+                                [(ngModel)]="model.incotermTypeIds"
+                                [autoClose]="false"
+                                class="form-control"
+                                [disabled]="viewFormMode"
+                                [filterable]="true"
+                                (filterChange)="onIncotermFilterChange($event)"
+                                [placeholder]="'label.any' | translate">
+                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                    <input type="checkbox" class="k-checkbox"
+                                    [checked]="isIncotermSelected(dataItem.value)">
+                                    <label class="k-checkbox-label">{{ dataItem?.label }}</label>
+                                </ng-template>
+                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                                    {{ dataItem?.label }}
+                                </ng-template>
+                            </kendo-multiselect>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-label">{{'label.carrier' | translate}}</label>
+                            <kendo-multiselect
+                                #carrier
+                                name="carrier"
+                                [data]="allCarrierOptions"
+                                [textField]="'label'"
+                                [valueField]="'description'"
+                                [valuePrimitive]="true"
+                                [(ngModel)]="model.carrierIds"
+                                [autoClose]="false"
+                                class="form-control"
+                                [disabled]="viewFormMode"
+                                [filterable]="true"
+                                (filterChange)="onCarrierFilterChange($event)"
+                                [placeholder]="'label.any' | translate">
+                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                    <input type="checkbox" class="k-checkbox"
+                                    [checked]="isCarrierSelected(dataItem.description)">
+                                    <label class="k-checkbox-label">{{ dataItem?.label | translate }}</label>
+                                </ng-template>
+                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                            </kendo-multiselect>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-label">{{'label.shipFrom' | translate}}</label>
+                            <kendo-multiselect
+                                #shipFrom
+                                name="shipFrom"
+                                [data]="allLocationOptions"
+                                [textField]="'label'"
+                                [valueField]="'description'"
+                                [valuePrimitive]="true"
+                                [(ngModel)]="model.shipFromIds"
+                                [autoClose]="false"
+                                class="form-control"
+                                [disabled]="viewFormMode"
+                                [filterable]="true"
+                                (filterChange)="onShipFromFilterChange($event)"
+                                [placeholder]="'label.any' | translate">
+                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                    <input type="checkbox" class="k-checkbox"
+                                    [checked]="isShipFromSelected(dataItem.description)">
+                                    <label class="k-checkbox-label">{{ dataItem?.label | translate }}</label>
+                                </ng-template>
+                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                            </kendo-multiselect>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-label">{{'label.shipTo' | translate}}</label>
+                            <kendo-multiselect
+                                #shipTo
+                                name="shipTo"
+                                [data]="allLocationOptions"
+                                [textField]="'label'"
+                                [valueField]="'description'"
+                                [valuePrimitive]="true"
+                                [(ngModel)]="model.shipToIds"
+                                [autoClose]="false"
+                                class="form-control"
+                                [disabled]="viewFormMode"
+                                [filterable]="true"
+                                (filterChange)="onShipToFilterChange($event)"
+                                [placeholder]="'label.any' | translate">
+                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                    <input type="checkbox" class="k-checkbox"
+                                    [checked]="isShipToSelected(dataItem.description)">
+                                    <label class="k-checkbox-label">{{ dataItem?.label | translate }}</label>
+                                </ng-template>
+                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                            </kendo-multiselect>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-label">{{'label.fulfillmentAccuracy' | translate}}</label>
+                            <kendo-multiselect
+                                name="fulfillmentAccuracy"
+                                [data]="fulfillmentAccuracyOptions"
+                                [textField]="'label'"
+                                [valueField]="'value'"
+                                [valuePrimitive]="true"
+                                [(ngModel)]="model.fulfillmentAccuracyIds"
+                                [autoClose]="false"
+                                class="form-control"
+                                [disabled]="viewFormMode"
+                                [placeholder]="'label.any' | translate">
+                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                    <input type="checkbox" class="k-checkbox"
+                                    [checked]="isFulfillmentAccuracySelected(dataItem.value)">
+                                    <label class="k-checkbox-label">{{ dataItem?.label | translate }}</label>
+                                </ng-template>
+                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                            </kendo-multiselect>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-label">{{'label.cargoLoadability' | translate}}</label>
+                            <kendo-multiselect
+                                name="cargoLoadability"
+                                [data]="cargoLoadabilityOptions"
+                                [textField]="'label'"
+                                [valueField]="'value'"
+                                [valuePrimitive]="true"
+                                [(ngModel)]="model.cargoLoadabilityIds"
+                                [autoClose]="false"
+                                class="form-control"
+                                [disabled]="viewFormMode"
+                                [placeholder]="'label.any' | translate">
+                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                    <input type="checkbox" class="k-checkbox"
+                                    [checked]="isCargoLoadabilitySelected(dataItem.value)">
+                                    <label class="k-checkbox-label">{{ dataItem?.label | translate }}</label>
+                                </ng-template>
+                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                            </kendo-multiselect>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-label">{{'label.bookingPeriod' | translate}}</label>
+                            <kendo-multiselect
+                                name="bookingTimeless"
+                                [data]="bookingTimelessOptions"
+                                [textField]="'label'"
+                                [valueField]="'value'"
+                                [valuePrimitive]="true"
+                                [(ngModel)]="model.bookingTimelessIds"
+                                [autoClose]="false"
+                                class="form-control policy-grid-cell"
+                                [disabled]="viewFormMode"
+                                [placeholder]="'label.any' | translate"
+                                [placeholder]="'label.any' | translate">
+                                <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                    <input type="checkbox" class="k-checkbox"
+                                    [checked]="isBookingTimelessSelected(dataItem.value)">
+                                    <label class="k-checkbox-label">{{ dataItem?.label | translate }}</label>
+                                </ng-template>
+                                <ng-template kendoMultiSelectTagTemplate  let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                            </kendo-multiselect>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-label">{{'label.itinerary' | translate}}</label>
+                            <kendo-dropdownlist name="itineraryIsEmpty"
+                                                [(ngModel)]="model.itineraryIsEmpty"
+                                                [data]="itineraryIsEmptyTypeOptions"
+                                                [valuePrimitive]="true"
+                                                [textField]="'label'"
+                                                [valueField]="'value'"
+                                                class="form-control"
+                                                [disabled]="viewFormMode">
+                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                            </kendo-dropdownlist>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="form-label required">{{'label.action' | translate}}</label>
+                            <kendo-dropdownlist name="action"
+                                                [defaultItem]="defaultDropDownItem"
+                                                [(ngModel)]="model.action"
+                                                [data]="actionOptions"
+                                                [valuePrimitive]="true"
+                                                [textField]="'label'"
+                                                [valueField]="'value'"
+                                                class="form-control"
+                                                [disabled]="viewFormMode"
+                                                required>
+                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                            </kendo-dropdownlist>
+                            <div *ngIf="formErrors['action']" class="k-invalid-msg">
+                                {{ formErrors.action }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" *ngIf="model.action === validationResult.PendingForApproval">
+                        <label class="form-label">{{'label.approverSetting' | translate}}</label>
+                        <kendo-dropdownlist name="approverSetting"
+                                            [(ngModel)]="model.approverSetting"
+                                            [data]="approverSettingOptions"
+                                            [valuePrimitive]="true"
+                                            [textField]="'label'"
+                                            [valueField]="'value'"
+                                            class="form-control"
+                                            [disabled]="viewFormMode">
+                            <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                {{ dataItem?.label | translate }}
+                            </ng-template>
+                            <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                {{ dataItem?.label | translate }}
+                            </ng-template>
+                        </kendo-dropdownlist>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group" *ngIf="model.approverSetting === approverSetting.SpecifiedApprover && model.action === validationResult.PendingForApproval">
+                            <label class="form-label">{{'label.approverUser' | translate}}</label>
+                            <input name="approverUser" required type="text" class="form-control"
+                                [(ngModel)]="model.approverUser" [disabled]="viewFormMode"
+                                [pattern]="patternEmail"
+                                maxlength="128" placeholder="Enter email."/>
+                            <div *ngIf="formErrors['approverUser']" class="k-invalid-msg">
+                                {{ formErrors.approverUser }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()" #Cancel>{{'label.cancel' | translate}}</button>
+        <button type="submit" class="btn prim-button dialog-button" [disabled]="!mainForm.valid" (click)="onSave()">{{'label.save' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

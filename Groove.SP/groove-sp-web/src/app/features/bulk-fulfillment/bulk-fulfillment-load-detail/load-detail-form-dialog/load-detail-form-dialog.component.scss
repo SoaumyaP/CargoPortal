@@ -1,0 +1,111 @@
+@import '../../../../../styles/variables';
+
+.po-fulfillment-load-detail-popup ::ng-deep  {
+    .k-dialog .k-content {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .load-detail-form-wrapper {
+        .input-group .k-numerictextbox {
+            &.ng-invalid {
+                .k-numeric-wrap {
+                    border-color: rgba(243,23,0,0.5);
+                }
+            }
+            .k-numeric-wrap {
+                border-right: rgba(0,0,0,0.08) 1px solid;
+            }
+        }
+    }
+
+}
+.load-detail-form-wrapper {
+    width: 864px;
+
+    .load-item-container-image {
+
+        img {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+        }
+
+        .load-item-container-icon {
+            position: absolute;
+            top: 50%;
+            left: 80px;
+            transform: translate(-50%, -50%);
+
+            .equipment-type-name {
+                font-weight: bold;
+                font-size: 31px;
+                color: #333333;
+            }
+        }
+    }
+
+    .break-line {
+        border-color: $theme-color !important;
+    }
+
+    .static-info {
+        &-value {
+            font-size: 16px;
+        }
+    }
+
+    .edit-info {
+        &-form-input {
+            width: 100%;
+        }
+
+        .form-input-icon {
+            position: absolute;
+            right: -9px;
+            top: 38px;
+            font-size: 18px;
+            color: $color-grey-bright-1;
+        }
+
+        .form-input-icon-equal {
+            position: absolute;
+            right: -5px;
+            top: 38px;
+            font-size: 18px;
+            color: $color-grey-bright-1;
+        }
+    }
+}
+
+.note-textarea {
+    height: 86px !important;
+}
+
+// Custom input-group for Kendo numerictextbox
+.k-numerictextbox ::ng-deep {
+    height: fit-content !important;
+    border: 1px;
+
+    .k-numeric-wrap {
+        .k-select {
+            display: none;
+        }
+    }
+
+    +.input-group-append {
+        .input-group-text {
+            border: 1px solid #ebebeb;
+        }
+    }
+}
+
+.input-group > .k-numerictextbox ::ng-deep {
+    .k-numeric-wrap {
+        border-right: none;
+    }
+}
+textarea.form-control {
+    border: 1px solid #ebebeb;
+}

@@ -1,0 +1,42 @@
+<kendo-dialog [title]="'label.similarCompaniesFound' | translate | uppercase" *ngIf="isOpenDialog" (close)="onCloseDialog()"
+    novalidate [width]="1024" [height]="710" class="custom-header-dialog max-screen-1280x768">
+    <div class="container">
+        <div class="mb-3">
+            <fa-icon [icon]="faInfoCircle" class="info-icon"></fa-icon>
+            <span class="info-text">
+                {{'label.moreThanOneConsigneeCompany' | translate}}
+            </span>
+        </div>
+
+        <p class="mb-2">{{'label.wouldYouLikeReselect' | translate}}</p>
+        <kendo-grid  
+            [kendoGridBinding]="duplicatedCompanies"
+            [kendoGridSelectBy]="selectedCompany"
+            [(selectedKeys)]="selectedCompanies" 
+            [sortable]="true"
+            [selectable]="selectableSettings"
+            class="duplicated-companies-grid"
+            (selectionChange)="onSelectionChanged($event)">
+            
+            <kendo-grid-checkbox-column [width]="50"></kendo-grid-checkbox-column>
+            <kendo-grid-column field="name" title="{{'label.companyName' | translate}}"></kendo-grid-column>
+            <kendo-grid-column field="address" title="{{'label.address' | translate}}">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    <span class="multiple-lines-text">{{getConcatenatedAddress(dataItem)}}</span>
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="contactName" title="{{'label.contactName' | translate}}"></kendo-grid-column>
+            <kendo-grid-column field="contactEmail" title="{{'label.contactEmail' | translate}}"></kendo-grid-column>
+            <kendo-grid-column field="contactNumber" title="{{'label.contactNumber' | translate}}"></kendo-grid-column>
+        </kendo-grid>
+
+        <div *ngIf="!duplicatedCompanySelected" class="k-invalid-msg">
+            {{'validation.requiredThisField' | translate}}
+        </div>
+    </div>
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onClickNoThanks()">{{'label.noThanks' | translate}}</button>
+
+        <button type="button" class="btn prim-button dialog-button" (click)="onClickOverride()">{{'label.override' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

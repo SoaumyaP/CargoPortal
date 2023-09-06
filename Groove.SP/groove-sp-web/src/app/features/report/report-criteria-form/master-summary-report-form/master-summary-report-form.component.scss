@@ -1,0 +1,45 @@
+@import "../../../../../styles/variables";
+
+kendo-datepicker {
+    height: fit-content !important;
+}
+
+.inline-label {
+    margin-top: 11px;
+}
+
+.hint-inline-label {
+    padding-top: 12px;
+    text-align: left;
+    font-size: 11pt;
+    color: #666666;
+}
+
+.k-checkbox:indeterminate + .k-checkbox-label::after {
+    background-color: $theme-color;
+}
+
+.k-checkbox-label::before,
+.k-checkbox-label::after,
+.k-radio-label::before,
+.k-radio-label::after {
+    font-size: 11px;
+}
+
+.container-fluid {
+    padding-right: 0px;
+    padding-left: 0px;
+}
+
+.custom-legend {
+    font-weight: normal;
+    color: $theme-color;
+    font-size: 13pt;
+    margin-bottom: 0px;
+}
+
+.fieldset-container {
+    padding: 0 12px 2px 12px;
+    overflow: hidden;
+}
+

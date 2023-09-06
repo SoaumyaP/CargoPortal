@@ -1,0 +1,11 @@
+.list-of-vessels-grid.k-grid  ::ng-deep {
+    td {
+        overflow: visible;
+    }
+    th.k-header {
+        padding: 12px 12px !important;
+        .k-link {
+            padding: 8px 12px !important;
+        }
+    }
+}

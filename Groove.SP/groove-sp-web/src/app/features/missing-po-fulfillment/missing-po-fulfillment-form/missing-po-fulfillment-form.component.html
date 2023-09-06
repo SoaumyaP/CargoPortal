@@ -1,0 +1,346 @@
+<ng-template #bookingValidationTooltipTemplate let-anchor>
+    <span class="booking-validation-tooltip">{{anchor.nativeElement.getAttribute('data-tooltip')}}</span>
+</ng-template>
+
+<div class="content__header po-fulfillment-container">
+    <div class="typing_loader" *ngIf="!isInitDataLoaded"></div>
+    <form class="content-tabs row position-relative" #mainForm="ngForm" novalidate (ngSubmit)="onSubmit()" *ngIf="isInitDataLoaded">
+        <div class="container-fluid">
+
+            <!-- This is header menu section -->
+            <div class="header-group" id="headerBar" #headerBar *ngIf="isInitDataLoaded">
+    
+                <!-- Warning banner for PO being revised -->
+                <div class="booking-banner warning" *ngIf="bookingPOAdhocChange && model.status !== poFulfillmentStatus.Inactive && isInitDataLoaded && model.stage !== poFulfillmentStageType.Closed">
+                    {{ bookingPOAdhocChange?.message }}
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 d-flex align-items-center">
+                        <button attr.data-balloon="{{'tooltip.backToList' | translate}}" data-balloon-pos="right" type="button"
+                            class="btn btn-default back-button" (click)="backList()">
+                            <i class="ei ei-arrow_left"></i>
+                        </button>
+                        <label class="form-header">{{isAddMode ? ('label.addNewPOFulfillment' | translate) : model.number}}</label>
+                        <app-status-label *ngIf="!isAddMode" [status]="model.status" [statusName]="model.statusName | translate" [statusEnum]="poFulfillmentStatus">
+                        </app-status-label>
+                            <span *ngIf="isPendingStatus()" class="ml-2 status-label" >
+                                <fa-icon [icon]="faCaretLeft" class="pending-caret-left" ></fa-icon> <span class="pending-container">Pending</span>
+                            </span>
+    
+                            <span *ngIf="isRejectedStatus()" class="ml-2 status-label">
+                                <fa-icon [icon]="faCaretLeft" class="rejected-caret-left" ></fa-icon> <span class="rejected-container">Rejected</span>
+                            </span>
+                    </div>
+                    <div class="col-sm-6 text-right button-container" [class.disabled]="!isReadyForBook" *ngIf="isViewMode">
+                        <button [attr.data-balloon]="(isOnlyCancelBooking ? null : 'label.edit') | translate" data-balloon-pos="down" type="button" class="btn edit-icon-button"
+                            name="editBtn" id="editBtn" *hasPermission="[AppPermissions.PO_Fulfillment_Detail_Edit]" (click)="onEditPOFulfillmentClick()"
+                            [hidden]="hiddenBtnEdit" [disabled]="isOnlyCancelBooking">
+                                <fa-icon [icon]="faPencilAlt"></fa-icon>
+                        </button>
+                        <button type="button" class="btn header-button btn-color-grey" *hasPermission="[AppPermissions.PO_Fulfillment_Detail_Edit]"
+                            [hidden]="hiddenBtnCancel" (click)="onCancelPOFulfillmentClick()" [disabled]="!isReadyForCancelBooking">
+                            <fa-icon [icon]="faBan" class=""></fa-icon>
+                            {{'label.cancel' | translate}}
+                            <ng-template *appSpinner="!isReadyForCancelBooking"></ng-template>
+                        </button>
+                        <button type="button" class="btn header-button btn-color-orange" *hasPermission="[AppPermissions.PO_Fulfillment_Detail_Edit]"
+                            [hidden]="hiddenBtnRefreshPO" (click)="onRefreshPOClick()">
+                            <fa-icon [icon]="faRedo" class=""></fa-icon>
+                            {{'label.refreshPO' | translate}}
+                        </button>
+                        <button type="button" class="btn header-button btn-color-green" *hasPermission="[AppPermissions.PO_Fulfillment_Detail_Edit]"
+                            [hidden]="hiddenBtnBook" (click)="onBookButtonClick()" [disabled]="isOnlyCancelBooking || bookingPOAdhocChange?.priority === purchaseOrderAdhocChangePriority.Level2 || !isReadyForBook">
+                            <fa-icon [icon]="faCheck" class=""></fa-icon>
+                            {{'label.book' | translate}}
+                            <ng-template *appSpinner="!isReadyForBook"></ng-template>
+                        </button>
+                    </div>
+                </div>
+                <div class="row text-muted create-title" *ngIf="!isAddMode">
+                    <span>{{'label.createdOn' | translate}}</span>
+                    <span class="font-weight-bold pl-1">{{ model?.createdDate | date: DATE_FORMAT }}</span>
+                    <span *ngIf="model?.createdBy">
+                        <span class="mx-2">
+                            <img src="/assets/images/dote-icon.png" />
+                        </span>
+                        {{'label.owner' | translate}}: <span class="font-weight-bold pl-1">{{ model?.createdBy }}</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- This is booking milestone -->
+            <div class="col milestone-content" *ngIf="isInitDataLoaded">
+                <div class="milestone-item" *ngFor="let item of stages" [ngClass]="{ 'active': item.active, 'current': item.current }">
+                    <span class="icon" [ngClass]="item.class"></span>
+                    <h5 class="milestone-title">{{ item.title | translate}}</h5>
+                </div>
+            </div>
+
+            <!-- This is sticky bar -->
+            <div class="sticky-navigation mt-3" id="stickyBar" style="display: none;" #stickyBar [hidden]="isReloadMode">
+                <div class="row">
+                    <div class="col">
+                        <kendo-buttongroup class="button-group" selection="multiple">
+                            <button *ngFor="let tab of tabs" kendoButton [toggleable]="true" [selected]="tab.selected" [class.current]="tab.selected" (click)="$event.preventDefault()"
+                                (selectedChange)="onClickStickyBar($event, tab)" [hidden]="!tabDisplay[tab.sectionId] || (tab.sectionId === 'customerPO' && hiddenCustomerPOTab)">
+                                <span> {{ tab.text | translate | uppercase}} </span>
+                                <!-- This is validation tooltip icon -->
+                                <span kendoTooltip [tooltipTemplate]="bookingValidationTooltipTemplate"
+                                    filter="fa-icon" position="right"
+                                    *ngIf="!stringHelper.isNullOrEmpty(this.bookingValidationErrors[tab.sectionId])">
+                                    &nbsp;<fa-icon [attr.data-tooltip]="this.bookingValidationErrors.getErrorMessage(tab.sectionId)"
+                                        [icon]="faInfoCircle"
+                                        class="align-text-bottom"
+                                        [styles]="{'color': '#FF8A00'}"></fa-icon>
+                                </span>
+                            </button>
+                        </kendo-buttongroup>
+                    </div>
+                </div>
+            </div>
+
+            <!-- This is content section -->
+            <div class="section-container mt-3" id="section-container" #sectionContainer *ngIf="isInitDataLoaded">
+                <!-- General -->
+                <section class="panel-group" id="general" #general [hidden]="isReloadMode" *ngIf="tabDisplay['general']">
+                    <label class="panel-header fs-14">{{'label.general' | translate}}</label><br>
+                    <app-missing-po-fulfillment-general-info
+                        [model]="model"
+                        [parentIntegration$]='integration$'
+                        [formErrors]="formErrors"
+                        [isViewMode]="!isGeneralTabEditable"
+                        [isEditMode]="isEditMode"
+                        [isAddMode]="isAddMode"
+                        [isFulfilledFromPO]="model.isFulfilledFromPO"
+                        [allLocationOptions]="allLocationOptions"
+                        [poCurrentCarrier] = "poCurrentCarrier"
+                        [tabPrefix] = "'general#'"
+                        (contactsChanged)="onContactsChanged($event)">
+                    </app-missing-po-fulfillment-general-info>
+                    
+                </section>
+    
+                <!-- Contact -->
+                <section class="panel-group" id="contact" #contact [hidden]="isReloadMode" *ngIf="tabDisplay['contact']">
+                    <label class="panel-header fs-14 float-left">{{'label.contact' | translate}}</label>
+                    <app-missing-po-fulfillment-contact
+                        [data]="model.contacts"
+                        [shipFromId]="model.shipFrom"
+                        [isEditable]="isContactTabEditable"
+                        [isViewMode]="isViewMode"
+                        [bookingModel]="model"
+                        [parentIntegration$]='integration$'
+                        [buyerCompliance]="model.buyerCompliance"
+                        [validationRules]="validationRules"
+                        [tabPrefix]="'contact#'"
+                        [agentAssignmentMode]="model.agentAssignmentMode"
+                        [(formErrors)]="formErrors"
+                        (changeAgentMode)="onChangeAgentMode($event)"
+                        [parentForm]="mainForm"
+                        [isNotifyPartyAsConsignee]="model.isNotifyPartyAsConsignee">
+                    </app-missing-po-fulfillment-contact>
+                </section>
+
+                <!-- Customer PO -->
+                <section class="panel-group" id="customerPO" #customerPO [hidden]="isReloadMode || hiddenCustomerPOTab || !tabDisplay['customerPO']">
+                    <label class="panel-header fs-14 float-left">{{'label.customerPO' | translate}}</label>
+                    <app-missing-po-fulfillment-customer
+                        [(model)]="model"
+                        [formErrors]="formErrors"
+                        [isEditable]="isCustomerTabEditable"
+                        [isViewMode]="isViewMode"
+                        [isAddMode]="isAddMode"
+                        (contactsChanged)="onContactsChanged($event)"
+                        [parentIntegration$]='integration$'>
+                    </app-missing-po-fulfillment-customer>
+                </section>
+    
+                <!-- Load Info -->
+                <section class="panel-group" id="load" #load [hidden]="isReloadMode" *ngIf="tabDisplay['load']">
+                    <label class="panel-header fs-14">
+                        {{'label.load' | translate}}
+                        <span kendoTooltip [tooltipTemplate]="bookingValidationTooltipTemplate" filter="fa-icon" position="right" *ngIf="!stringHelper.isNullOrEmpty(this.bookingValidationErrors.loadTab)">
+                            &nbsp;<fa-icon [attr.data-tooltip]="this.bookingValidationErrors.getErrorMessage('loadTab')" [icon]="faInfoCircle" [styles]="{'color': '#FF8A00'}"></fa-icon>
+                        </span>
+                    </label>
+                    <app-missing-po-fulfillment-load-info
+                        [poType]="model.fulfilledFromPOType"
+                        [data]="model.loads"
+                        [isEditable]="isLoadTabEditable"
+                        [isViewMode]="isViewMode"
+                        [isEditMode]="isEditMode"
+                        [stage]="model.stage"
+                        [orders]="model.orders"
+                        [modeOfTransport]='model.modeOfTransport'
+                        [movementType]='model.movementType'
+                        [cargoList]="model.cargoDetails"
+                        [canUpdateContainer]='canUpdateContainer'
+                        [isShowCargoDetailsTab]="false"
+                        [customerPOs] = "model.orders"
+                        [viewSettings]="model.viewSettings"
+                        [formErrors]="formErrors"
+                        [validationRules] = "validationRules"
+                        [parentIntegration$]='integration$'
+                        [tabPrefix] = "'load#'">
+                    </app-missing-po-fulfillment-load-info>
+                </section>
+    
+                <!-- Activity -->
+                <section class="panel-group" id="activity" #activity [hidden]="isReloadMode || !tabDisplay['activity']" *ngIf="tabDisplay['activity']"> <!--*ngIf="tabDisplay['loadDetails']"-->
+                    <label class="panel-header fs-14 float-left">{{'label.activity' | translate}}</label>
+                    <app-missing-po-fulfillment-activity
+                        [poffId]="model.id"
+                        [bookingModel]="model">
+                    </app-missing-po-fulfillment-activity>
+                </section>
+    
+                <!-- Attachment -->
+                <section class="panel-group" id="attachment" #attachment [hidden]="isReloadMode" *ngIf="tabDisplay['attachment']">
+                    <label class="panel-header fs-14 float-left">{{'label.attachment' | translate}}</label>
+                    <div class="text-right top-bar-container float-right">
+                        <button type="button" class="btn header-button upload-button" (click)="uploadAttachment()" *ngIf="!isViewMode">
+                            <div class="icon-circle">
+                                <fa-icon [icon]="faCloudUploadAlt"></fa-icon>
+                            </div>
+                            <span class="icon-circle-label">{{'label.upload' | translate}}</span>
+                        </button>
+
+                        <button type="button" class="btn header-button download-button" (click)="downloadAttachments()" [disabled]="!isViewMode || selectedAttachments.length == 0">
+                            <fa-icon [icon]="faCloudDownloadAlt"></fa-icon>
+                            {{'label.download' | translate}}
+                        </button>
+
+                        <button type="button" class="btn header-button upload-button" [disabled]="!isViewMode || selectedAttachments.length == 0" data-toggle="modal" data-target="#shareFileModal">
+                            <div class="icon-circle">
+                                <fa-icon [icon]="faShare"></fa-icon>
+                            </div>
+                            <span class="icon-circle-label">{{'label.share' | translate}}</span>
+                        </button>
+                    </div>
+                    <div class="clearfix"></div>
+                    <kendo-grid #grid="kendoGrid" [data]="model?.attachments" [scrollable]="'vertical'" [selectable]="{enabled: true, checkboxOnly: true }"
+                        [kendoGridSelectBy]="selectAttachment" [selectedKeys]="selectedAttachments">
+                        <kendo-grid-checkbox-column showSelectAll="true" [width]="50" *ngIf="isViewMode"></kendo-grid-checkbox-column>
+
+                        <kendo-grid-column field="documentLevel" title="{{'label.documentLevel' | translate}}">
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                                {{getDocumentLevelText(dataItem.documentLevel)}}
+                            </ng-template>
+                        </kendo-grid-column>
+
+                        <kendo-grid-column field="attachmentType" title="{{'label.documentType' | translate}}">
+                        </kendo-grid-column>
+
+                        <kendo-grid-column field="fileName" title="{{'label.fileName' | translate}}">
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                                <a class="k-link" target="_blank" (click)="downloadFile(dataItem.id, dataItem.fileName)">{{dataItem.fileName}}</a>
+                            </ng-template>
+                        </kendo-grid-column>
+
+                        <kendo-grid-column field="referenceNo" title="{{'label.referenceNo' | translate}}">
+                        </kendo-grid-column>
+
+                        <kendo-grid-column field="uploadedBy" title="{{'label.uploadedBy' | translate}}">
+                            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                <a title="{{dataItem.uploadedBy}}">{{dataItem.uploadedBy}}</a>
+                            </ng-template>
+                        </kendo-grid-column>
+
+                        <kendo-grid-column field="uploadedDateTime" title="{{'label.uploadedDates' | translate}}">
+                            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                {{dataItem.uploadedDateTime | convertUTCDateToLocalDate | date : "MM/dd/yyyy hh:mm' 'a" }}
+                            </ng-template>
+                        </kendo-grid-column>
+
+                        <kendo-grid-column width="30" *ngIf="!isViewMode">
+                            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                <div *ngIf="dataItem.uploadedBy !== 'System' && dataItem.documentLevel === DocumentLevel.POFulfillment">
+                                    <div kendoTooltip #tooltip="kendoTooltip" [tooltipTemplate]="actionMenuTooltip" filter="button"
+                                        showOn="click" position="left" offset="-20" showAfter="200">
+                                        <button #attachmentButton type="button" class="btn">
+                                            <fa-icon [icon]="faEllipsisV"></fa-icon>
+                                        </button>
+                                    </div>
+
+                                    <ng-template #actionMenuTooltip let-anchor>
+                                        <div class="row action-button" (click)="editAttachment(dataItem); tooltip.toggle(attachmentButton)">
+                                            <button type="button" class="btn">
+                                                <fa-icon [icon]="faPencilAlt" class="action-grid-icon"></fa-icon>
+                                                <span class="action-grid-label">{{'label.edit' | translate}}</span>
+                                            </button>
+                                        </div>
+                                        <div class="row action-button" (click)="attachmentDeletedHandler(dataItem); tooltip.toggle(attachmentButton)">
+                                            <button type="button" class="btn">
+                                                <fa-icon [icon]="faTrashAlt" class="action-grid-icon"></fa-icon>
+                                                <span class="action-grid-label">{{'tooltip.delete' | translate}}</span>
+                                            </button>
+                                        </div>
+                                    </ng-template>
+                                </div>
+                            </ng-template>
+                        </kendo-grid-column>
+                    </kendo-grid>
+                </section>
+    
+                <!-- Dialog -->
+                <section class="panel-group" id="dialog" #dialog [hidden]="isReloadMode" *ngIf="tabDisplay['dialog']">
+                    <label class="panel-header fs-14 float-left">{{'label.dialog' | translate}}</label>
+                    <app-missing-po-fulfillment-note-list
+                        [poFulfillmentId]="model.id"
+                        [poFulfillmentOrders]="model.orders"
+                        [noteList]="noteList"
+                        [currentUser]="currentUser"
+                        [canAddNote]="isViewMode"
+                        [canEditAllNotes]="isViewMode">
+                    </app-missing-po-fulfillment-note-list>
+                </section>
+            </div>
+            <app-share-file-dialog [fileList]="selectedAttachments"></app-share-file-dialog>
+
+            <app-attachment-upload-popup [formMode]="attachmentFormMode" [formOpened]="attachmentUploadPopupOpened" (close)="attachmentClosedHandler()"
+                (add)="attachmentAddedHandler($event)" (edit)="attachmentEditedHandler($event)" [model]="attachmentModel"></app-attachment-upload-popup>
+
+            <div class="col-12 action-bar">
+                <button type="button" class="btn second-button" *ngIf="!isViewMode" (click)="onCancel()">{{'label.cancel' | translate}}</button>
+                <button type="submit" class="btn prim-button submit-btn" *ngIf="!isViewMode" [disabled]="!isReadyForSubmit">{{(!isReloadMode ? 'label.save' : 'label.submit') | translate}}
+                    <ng-template *appSpinner="!isReadyForSubmit"></ng-template>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <app-dynamic-notification-popup [title]="'label.poFulfillment' | translate" [content]="saveBookingErrors" (popupClosing)="saveBookingFailed = false;" *ngIf="saveBookingFailed"></app-dynamic-notification-popup>
+
+    <kendo-dialog [title]="'label.poFulfillment' | translate" *ngIf="cancelPOFulfillmentDialog" (close)="onNoOfCancelDialogClick()" class="cancel-po-dialog" [width]="475">
+        <p>{{ 'confirmation.cancelPOFulfillment' | translate }}</p>
+        <textarea
+            class="form-control cancel-reason mt-3"
+            rows="4"
+            [placeholder]="'placeholder.cancelPOReason' | translate"
+            [(ngModel)]="cancelReason"></textarea>
+
+        <kendo-dialog-actions [layout]="actionsLayout">
+            <button kendoButton (click)="onYesOfCancelDialogClick()" primary="true" [disabled]="stringHelper.isNullOrEmpty(cancelReason)" class="prim-button bg-0">{{ 'label.yes' | translate }}</button>
+            <button kendoButton (click)="onNoOfCancelDialogClick()">{{ 'label.no' | translate }}</button>
+        </kendo-dialog-actions>
+    </kendo-dialog>
+
+    <div>
+        <ng-template #confirmBookingPendingForApprovalTemplate>
+            <p>{{ 'confirmation.createBooking.questionPFA' | translate }}</p>
+            <ul class="content-details" style="padding-left: 30px; margin-top: 10px;">
+                <li *ngFor="let item of policyCheckResults">{{ item.criteriaTranslationName | translate }}: <span class="value-label">{{item.details}}</span></li>
+                <li *ngIf="stringHelper.isNullOrEmpty(policyCheckResults) || policyCheckResults.length === 0">{{ 'confirmation.createBooking.asDefaultBookingValidation' | translate }}</li>
+            </ul>
+        </ng-template>
+
+    </div><ng-template #confirmBookingRejectedTemplate>
+            <p>{{ 'confirmation.createBooking.questionRejected' | translate }}</p>
+            <ul class="content-details" style="padding-left: 30px; margin-top: 10px;">
+                <li *ngFor="let item of policyCheckResults">{{ item.criteriaTranslationName | translate }}: <span class="value-label">{{item.details}}</span></li>
+                <li *ngIf="stringHelper.isNullOrEmpty(policyCheckResults) || policyCheckResults.length === 0">{{ 'confirmation.createBooking.asDefaultBookingValidation' | translate }}</li>
+            </ul>
+        </ng-template>
+
+    <app-scroll-to-top></app-scroll-to-top>
+</div>

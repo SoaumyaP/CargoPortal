@@ -1,0 +1,217 @@
+<kendo-dialog [title]="'label.productDetails' | translate" *ngIf="customerDetailPopupOpened" (close)="onFormClosed()"
+    novalidate [width]="900" class="custom-header-dialog">
+    <div class="container">
+        <div class="wrapper-form">
+            <div class="row">
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.customerPO' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('customerPONumber') }}</div>
+                    </div>
+                </div>
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.productCode' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('productCode') }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.descriptionOfGoods' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('productName') }}</div>
+                    </div>
+                </div>
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.chineseDescription' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('chineseDescription') }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.orderedQty' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.orderedUnitQty | number:0 | default: defaultValue }}</div>
+                    </div>
+                </div>
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.balanceQty' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.balanceUnitQty | number:0 | default: defaultValue }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.bookedQty' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.fulfillmentUnitQty | number:0 | default: defaultValue }}</div>
+                    </div>
+                </div>
+                <div class="col content-details">
+                    <div class="row">
+                        <ng-template #infoTooltipTemplate let-anchor>
+                            <span class="tooltip-warning">{{ anchor.nativeElement.getAttribute('data-tooltip') }}</span>
+                        </ng-template>
+                        <div class="col-6 text-label">{{'label.bookedPackage' | translate}}</div>
+                        <div class="col-6 value-label" [class.text-danger]="model.isShowBookedPackageWarning">{{model.bookedPackage | number:0 | default: defaultValue}}
+                            <sup style="font-size: 100%;">
+                                <span kendoTooltip [tooltipTemplate]="infoTooltipTemplate"
+                                    filter="fa-icon" position="top" *ngIf="model.isShowBookedPackageWarning">
+                                    &nbsp;<fa-icon
+                                        attr.data-tooltip="{{'label.hoverBookedPackageIconWarning' | translate}}"
+                                        [icon]="faInfoCircle" [styles]="{'color': '#FF8A00'}"></fa-icon>
+                                </span>
+                            </sup>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.seasonCode' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.seasonCode | default: defaultValue }}</div>
+                    </div>
+                </div>
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.size' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.size | default: defaultValue }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.styleNo' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.styleNo | default: defaultValue }}</div>
+                    </div>
+                </div>
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.colourCode' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.colourCode | default: defaultValue }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.styleName' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.styleName | default: defaultValue }}</div>
+                    </div>
+                </div>
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.colourName' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.colourName | default: defaultValue }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.innerQuantity' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.innerQuantity | number: '0.0-0' | default: defaultValue }}</div>
+                    </div>
+                </div>
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.outerQuantity' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.outerQuantity | number: '0.0-0' | default: defaultValue }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.uom' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('unitUOM') }}</div>
+                    </div>
+                </div>
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.packageUOM' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('packageUOM') }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.grossWeightKGS' | translate}}</div>
+                        <div class="col-6 value-label">{{ !model.grossWeight && model.grossWeight !== 0 ? '--' : (model.grossWeight | number:'0.2') }}</div>
+                    </div>
+                </div>
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.netWeightKGS' | translate}}</div>
+                        <div class="col-6 value-label">{{ !model.netWeight && model.netWeight !== 0 ? '--' : (model.netWeight | number:'0.2') }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.volumeCBM' | translate}}</div>
+                        <div class="col-6 value-label">{{ !model.volume && model.volume !== 0 ? '--' : (model.volume | number:'0.3') }}</div>
+                    </div>
+                </div>
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.dimension' | translate}}</div>
+                        <div class="col-6 value-label">{{ (!model?.length && !model.width && !model.height) ? defaultValue : (model.length || 0 | number: '0.2-2') + ' x ' + (model.width || 0| number: '0.2-2') + ' x ' + (model.height || 0 | number: '0.2-2' ) }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.hsCode' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('hsCode') }}</div>
+                    </div>
+                </div>
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.countryOfOrigin' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('countryNameOfOrigin') }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.shippingMarks' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('shippingMarks') }}</div>
+                    </div>
+                </div>
+                <div class="col content-details">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.commodity' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('commodity') }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()"
+            #Cancel>{{'label.close' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

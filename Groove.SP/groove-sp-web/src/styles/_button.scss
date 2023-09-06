@@ -1,0 +1,642 @@
+.btn{
+    display: inline;
+    padding: 0px;
+    margin: 0 3px;
+    line-height: 1;
+    &:focus {
+        box-shadow: none;
+    }
+
+    // Icon in-site the button
+    &.header-button,
+    &.btn-header,
+    &.btn-header-info,
+    &.btn-header-primary,
+    &.btn-header-secondary,
+    &.btn-header-success,
+    &.btn-header-warning,
+    &.btn-header-reject {
+
+        // styles for icon in-site directly in button. Ex: Booking, Export buttons
+        >.icon, >.ng-fa-icon {
+            margin-right: 7px;
+            font-size: 19px;
+        }
+
+        // styles for icon in-site circle icon the in-site the button. Ex: Add New button, Upload, Share buttons
+        .icon-circle {
+            >.icon, >.ng-fa-icon {
+                svg {
+                }
+            }
+        }
+
+    }
+}
+
+.btn-color-theme {
+    background-color: $theme-color-brighter;
+    border-color: $theme-color;
+
+    &:hover{
+        background-color: $theme-color-darker;
+        border-color: $theme-color-darker;
+    }
+}
+
+.btn-color-red {
+    background-color: $color-red-primary !important;
+    border-color: $color-red-primary !important;
+
+    &:hover
+    {
+        background-color: $color-red-primary-darker !important;
+        border-color: $color-red-primary-darker !important;
+    }
+}
+
+.btn-color-orange {
+    background-color: $color-orange-primary !important;
+    border-color: $color-orange-primary !important;
+
+    &:hover{
+        background-color: $color-orange-primary-darker !important;
+        border-color: $color-orange-primary-darker !important;
+    }
+}
+
+.btn-color-yellow {
+    background-color: $color-yellow-primary !important;
+    border-color: $color-yellow-primary !important;
+
+    &:hover{
+        background-color: $color-yellow-primary-darker !important;
+        border-color: $color-yellow-primary-darker !important;
+    }
+}
+
+.btn-color-sky {
+    background-color: $color-sky-primary !important;
+    border-color: $color-sky-primary !important;
+
+    &:hover{
+        background-color: $color-sky-primary-darker !important;
+        border-color: $color-sky-primary-darker !important;
+    }
+}
+
+.btn-color-green {
+    background-color: $color-green-primary !important;
+    border-color: $color-green-primary !important;
+
+    &:hover{
+        background-color: $color-green-primary-darker !important;
+        border-color: $color-green-primary-darker !important;
+    }
+}
+
+.btn-color-blue-bright {
+    background-color: $color-blue-light !important;
+    border-color: $color-blue-light !important;
+
+    &:hover{
+        background-color: $color-blue-bright-1 !important;
+        border-color: $color-blue-bright-1 !important;
+    }
+}
+
+.btn-color-blue {
+    background-color: $color-blue-primary !important;
+    border-color: $color-blue-primary !important;
+
+    &:hover{
+        background-color: $color-blue-primary-darker !important;
+        border-color: $color-blue-primary-darker !important;
+    }
+}
+
+.btn-color-blue-dark {
+    background-color: $color-blue-dark-1 !important;
+    border-color: $color-blue-dark-1 !important;
+
+    &:hover{
+        background-color: $color-blue-dark-2 !important;
+        border-color: $color-blue-dark-2 !important;
+    }
+}
+
+.btn-color-grey {
+    background-color: $color-grey-primary !important;
+    border-color: $color-grey-primary !important;
+
+    &:hover{
+        background-color: $color-grey-primary-darker !important;
+        border-color: $color-grey-primary-darker !important;
+    }
+}
+
+.btn-color-white {
+    background-color: $color-white-primary !important;
+    border-color: $color-white-dark-2;
+    color: $color-grey-bright-1 !important;
+    &:hover{
+        background-color: $color-white-dark-2 !important;
+        border-color: $color-white-dark-2 !important;
+        color: $color-grey-bright-1;
+    }
+}
+
+.btn-color-white-dark {
+    background-color: $color-white-dark-1 !important;
+    border-color: $color-white-dark-2 !important;
+    color: $color-grey-dark-2 !important;
+    &:hover{
+        background-color: $color-white-dark-3 !important;
+        border-color: $color-white-dark-3 !important;
+        color: $color-grey-dark-2 !important;
+    }
+}
+
+.form-icon-button {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    color: $theme-color-blank;
+    &:hover {
+        color: $theme-color-blank;
+    }
+    &:focus {
+        box-shadow: none;
+    }
+}
+
+.header-button {
+    height: 40px;
+    font-size: 20px;
+    padding: 0 8px;
+    color: $theme-color-blank;
+    &:hover {
+        color: $theme-color-blank;
+    }
+    &:focus {
+        box-shadow: none;
+    }
+
+    color: $theme-color-blank;
+    font-size: 14px;
+    border-radius: 5px;
+
+    background-color: $theme-color;
+    border-color: $theme-color;
+
+    &:hover{
+        background-color: $theme-color-darker;
+        border-color: $theme-color-darker;
+    }
+}
+
+.second-button {
+    @extend .main-button;
+    border-color: $theme-color !important;
+    background-color: $theme-color-secondary !important;
+    color: $theme-color !important;
+    &:hover {
+        color: $theme-color !important;
+        background-color: $theme-color-secondary-darker !important;
+    }
+}
+
+.prim-button {
+    @extend .main-button;
+    background-color: $theme-color !important;
+    color: $theme-color-blank !important;
+    &:disabled{
+        background-color: $color-white-dark-2 !important;
+        border-color: $color-white-dark-2 !important;
+        color: $theme-color-disable !important;
+    }
+    &:hover:enabled{
+        background-color: $theme-color-darker !important;
+        color: $theme-color-blank !important;
+    }
+}
+
+.main-button {
+    border-radius: 23px;
+    top: 25px;
+    width: 140px;
+    height: 46px;
+    font-size: 16px;
+    font-weight: bold;
+    &:focus {
+        box-shadow: none;
+    }
+}
+
+.circle-button {
+    border-radius: 50%;
+}
+
+.form-icon-circle-button {
+    @extend .form-icon-button;
+    @extend .circle-button;
+
+    .ng-fa-icon svg{
+        margin-top: -5px;
+    }
+}
+
+// smaller than form icon button
+// use in grid only
+.grid-icon-circle-button {
+    @extend .form-icon-button;
+    @extend .circle-button;
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+    margin-left: 5px;
+}
+
+.grid-remove-icon-button
+{
+    @extend .grid-icon-circle-button;
+    @extend .btn-color-red;
+    font-size: 24px;
+}
+
+.grid-info-icon-button
+{
+    @extend .grid-icon-circle-button;
+    @extend .btn-color-blue;
+    font-size: 16px;
+}
+
+.grid-suspend-icon-button
+{
+    @extend .grid-icon-circle-button;
+    @extend .btn-color-red;
+    font-size: 16px;
+}
+
+.grid-activate-icon-button
+{
+    @extend .grid-icon-circle-button;
+    @extend .btn-color-green;
+    font-size: 16px;
+}
+
+.grid-load-icon-button {
+    @extend .grid-icon-circle-button;
+    background-color: $theme-color;
+    border-color: $theme-color;
+    font-size: 21px;
+
+    &:hover{
+        background-color: $theme-color;
+        border-color: $theme-color;
+    }
+}
+
+.grid-approve-icon-button
+{
+    @extend .grid-icon-circle-button;
+    @extend .btn-color-green;
+    font-size: 19px;
+}
+
+.grid-resend-icon-button
+{
+    @extend .grid-icon-circle-button;
+    background-color: $theme-color;
+    border-color: $theme-color;
+    font-size: 19px;
+    &:hover
+    {
+        background-color: $theme-color-darker;
+        border-color: $theme-color-darker;
+    }
+    fa-icon {
+        margin-left: -3px;
+        font-size: 17px;
+        position: relative;
+        top: -2px;
+    }
+}
+
+.grid-edit-icon-button
+{
+    @extend .grid-icon-circle-button;
+    @extend .btn-color-blue;
+}
+
+.grid-read-icon-button
+{
+    @extend .grid-icon-circle-button;
+    @extend .btn-color-blue;
+}
+
+.grid-unread-icon-button
+{
+    @extend .grid-icon-circle-button;
+    @extend .btn-color-grey;
+}
+
+.grid-green-icon-button
+{
+    @extend .grid-icon-circle-button;
+    @extend .btn-color-green;
+}
+
+.grid-add-icon-button
+{
+    @extend .grid-icon-circle-button;
+    @extend .btn-color-green;
+}
+
+.grid-copy-icon-button {
+    @extend .grid-icon-circle-button;
+    @extend .btn-color-blue-dark;
+}
+
+.grid-bars-icon-button {
+    @extend .grid-icon-circle-button;
+    @extend .btn-color-blue;
+}
+
+.grid-activate-icon-button
+{
+    @extend .grid-icon-circle-button;
+    @extend .btn-color-green;
+}
+
+.grid-deactivate-icon-button
+{
+    @extend .grid-icon-circle-button;
+    @extend .btn-color-red;
+}
+
+.approve-icon-button
+{
+    @extend .form-icon-circle-button;
+    @extend .btn-color-green;
+}
+
+.scroll-to-top-icon-button {
+    @extend .form-icon-circle-button;
+    @extend .btn-color-blue;
+}
+
+.link-icon-button
+{
+    @extend .grid-icon-circle-button;
+    @extend .btn-color-blue-bright;
+    color: $theme-color;
+    position: absolute;
+    right: 15px;
+    height: 25px;
+    width: 25px;
+    top: -3px;
+    font-size: 12px;
+    text-align: center;
+    padding-top: 3px;
+}
+
+.back-button {
+    @extend .form-icon-circle-button;
+    @extend .btn-color-white;
+    font-size: 26px;
+    top: -3px;
+}
+
+.edit-icon-button {
+    @extend .form-icon-circle-button;
+    background-color: $theme-color;
+    border-color: $theme-color;
+    color: $theme-color-blank;
+    font-size: 19px;
+
+    &:hover{
+        background-color: $theme-color-darker;
+        border-color: $theme-color-darker;
+    }
+}
+
+.preview-icon-button {
+    @extend .form-icon-circle-button;
+    background-color: $color-green-primary;
+    border-color: $color-green-primary;
+    color: $theme-color-blank;
+    font-size: 19px;
+
+    &:hover{
+        background-color: $color-green-primary-darker;
+        border-color: $color-green-primary-darker;
+    }
+}
+
+svg.svg-inline--fa {
+    vertical-align: bottom !important;
+}
+
+.btn-header {
+    color: $theme-color-blank;
+    font-size: 14px;
+    border-radius: 5px;
+    padding: 0px 15px;
+    &:hover{
+        color: $theme-color-blank;
+    }
+    height: 40px;
+}
+
+.btn-header-info {
+    @extend .btn-header;
+    background-color: $color-sky-primary;
+    border-color: $color-sky-primary;
+
+    &:hover{
+        background-color: $color-sky-primary-darker;
+        border-color: $color-sky-primary-darker;
+    }
+}
+
+.btn-header-secondary {
+    @extend .btn-header;
+    background-color: $color-grey-primary;
+    border-color: $color-grey-primary;
+
+    &:hover{
+        background-color: $color-grey-primary-darker;
+        border-color: $color-grey-primary-darker;
+    }
+
+}
+
+.btn-header-warning {
+    @extend .btn-header;
+    background-color: $color-orange-primary;
+    border-color: $color-orange-primary;
+
+    &:hover{
+        background-color: $color-orange-primary-darker;
+        border-color: $color-orange-primary-darker;
+    }
+
+}
+
+.btn-header-primary {
+    @extend .btn-header;
+    color: $theme-color-blank;
+    background-color: $theme-color;
+
+    &:hover{
+        color: $theme-color-blank;
+        background-color: $theme-color-darker;
+        border-color: $theme-color-darker;
+    }
+}
+
+.btn-header-reject {
+    @extend .btn-header;
+    background-color: $color-red-primary;
+    border-color: $color-red-primary;
+
+    &:hover
+    {
+        background-color: $color-red-primary-darker;
+        border-color: $color-red-primary-darker;
+    }
+}
+
+.btn-header-success {
+    @extend .btn-header;
+    background-color: $color-green-primary;
+    border-color: $color-green-primary;
+
+    &:hover{
+        background-color: $color-green-primary-darker;
+        border-color: $color-green-primary-darker;
+    }
+}
+
+.reject-icon {
+    margin-right: 10px;
+    font-size: 19px;
+    position: relative;
+    top: 1px;
+}
+
+.suspend-icon-button {
+    @extend .form-icon-circle-button;
+    @extend .btn-color-red;
+    font-size: 23px;
+}
+
+.close-icon-button {
+    @extend .form-icon-circle-button;
+    @extend .btn-color-red;
+    font-size: 23px;
+}
+
+.resend-activation-email-icon-button {
+    @extend .form-icon-circle-button;
+    @extend .btn-color-blue;
+    font-size: 21px;
+}
+
+.remove-icon-button {
+    @extend .form-icon-circle-button;
+    @extend .btn-color-red;
+    font-size: 23px;
+}
+
+.activate-icon-button {
+    @extend .form-icon-circle-button;
+    @extend .btn-color-green;
+    font-size: 23px;
+}
+
+.refresh-icon-button {
+    @extend .grid-icon-circle-button;
+    @extend .btn-color-white-dark;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.add-more-icon-button {
+    @extend .grid-icon-circle-button;
+    background-color: $theme-color;
+    border-color: $theme-color;
+    font-size: 27px;
+    &:hover{
+        background-color: $theme-color-darker;
+        border-color: $theme-color-darker;
+    }
+    top: 0px;
+}
+
+.k-pager-numbers .k-link:focus{
+    box-shadow: none;
+}
+
+
+.unload-all-button {
+    @extend .header-button;
+    width: 117px;
+    margin: 0;
+}
+
+.icon-circle {
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    padding-top: 5px;
+    margin-right: 5px;
+    border-radius: 50%;
+    background-color: $theme-color-darker;
+}
+
+.icon-circle-label {
+    display: inline;
+}
+
+.top-bar-container {
+    padding-right: 0px;
+    margin-bottom: 20px;
+}
+
+.k-widget.k-dropdown-button {
+    &.circle-button {
+       @extend .circle-button;
+    }
+    &.dropdown-button {
+        width: auto !important;
+        
+        @extend .header-button;
+        @extend .btn;
+
+        // styles for icon in-site directly in button. Ex: Booking, Export buttons
+        .icon, .ng-fa-icon {
+            margin-right: 7px;
+            font-size: 19px;
+        }
+
+        display: inline-block;
+    }
+    button {
+        color: inherit;
+        background: inherit;
+        border-radius: inherit;
+        width: inherit;
+        height: inherit;
+        border: none;
+        font-size: inherit;
+        padding: unset;
+    }
+}
+
+.upload-button {
+    width: 100px;
+}
+
+

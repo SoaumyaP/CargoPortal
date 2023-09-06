@@ -1,0 +1,132 @@
+<ng-template #bookingListTooltipTemplate let-anchor>
+    <span class="booking-warning-tooltip">{{anchor.nativeElement.getAttribute('data-tooltip')}}</span>
+</ng-template>
+<div class="content__header">
+    <div class="container-fluid">
+        <div class="row header-group">
+            <label class="list-header">{{'label.listOfPOFulfillments' | translate}}</label>
+            <span class="k-i-loading k-icon loading" *ngIf="service.gridLoading"></span>
+
+            <div class="col-sm text-right">
+                <button class="btn header-button" *hasPermission="[AppPermissions.PO_Fulfillment_Detail,AppPermissions.PO_Fulfillment_Detail_Add]"
+                        type="button" routerLink="/po-fulfillments/add/0" [queryParams]="{formType: formType.Add}" [hidden]="isHideBtnAddNew">
+                    <div class="icon-circle">
+                        <fa-icon [icon]="faPlus"></fa-icon>
+                    </div>
+                    <span class="icon-circle-label">{{'label.addNew' | translate}}</span>
+                </button>
+
+                <button type="button" class="btn header-button btn-color-orange" style="width: 98px;"  
+                    (click)="onConfirm()"
+                    [hidden]="isHiddenConfirmBtn">
+                    <fa-icon [icon]="faCheck" class=""></fa-icon>
+                    <span class="icon-circle-label">{{'label.confirm' | translate}}</span>
+                </button>
+
+                <kendo-dropdownbutton *hasPermission="[AppPermissions.PO_Fulfillment_Detail_Add]"
+                                    [data]="bulkBookingBtnData" textField="actionName" class="dropdown-button"
+                                    [popupSettings]="{ popupClass: 'bulk-booking-dropdown-popup'}">
+                    <fa-icon [icon]="faMinus" class="extended-content"></fa-icon>
+                    <fa-icon [icon]="faPlus" class="collapsed-content"></fa-icon>
+                    {{'label.bulkBooking' | translate}}
+                </kendo-dropdownbutton>
+            </div>
+        </div>
+
+        <div class="row">
+            <kendo-grid #grid="kendoGrid"
+                [data]="view | async"
+                [filterable]="true"
+                [filter]="service.state.filter"
+                [pageable]="true"
+                [pageSize]="service.state.take"
+                [skip]="service.state.skip"
+                [sortable]="true"
+                [sort]="service.state.sort"
+                (filterChange)="onFilterChanged($event)"
+                (dataStateChange)="gridStateChange($event)"
+                (pageChange)="service.pageChange($event)"
+                (sortChange)="service.sortChange($event)"
+                class="custom-border-grid">
+
+                <kendo-grid-column field="number" [hidden]="service.visibleColumns.indexOf('number') < 0" title="{{'label.fulfillmentNumber' | translate}}" [filterable]="true" [sortable]="true" class="link-code" width="250">
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container [ngSwitch]="dataItem.fulfillmentType">
+                            <a *ngSwitchCase="fulfillmentType.PO" class="k-link" [title]="dataItem.number"
+                                [routerLink]="(dataItem.orderFulfillmentPolicy === orderFulfillmentPolicy.AllowMissingPO && dataItem.stage === poFulfillmentStageType.Draft ? '/missing-po-fulfillments/view/' : '/po-fulfillments/view/') + dataItem.id" routerLinkActive="active" [queryParams]="{formType:formType.View}">{{dataItem.number}}</a>
+                            <a *ngSwitchCase="fulfillmentType.Bulk" class="k-link" [title]="dataItem.number" routerLink="/bulk-fulfillments/view/{{dataItem.id}}" [queryParams]="{formType:formType.View}" routerLinkActive="active">{{dataItem.number}}</a>
+                            <a *ngSwitchCase="fulfillmentType.Warehouse" class="k-link" [title]="dataItem.number" routerLink="/warehouse-bookings/view/{{dataItem.id}}" routerLinkActive="active">{{dataItem.number}}</a>
+                        </ng-container>
+                        <span kendoTooltip [tooltipTemplate]="bookingListTooltipTemplate" filter="fa-icon" position="top" *ngIf="dataItem.isPOAdhocChanged && dataItem.status !== poFulfillmentStatus.Inactive && dataItem.stage !== poFulfillmentStageType.Closed">
+                            &nbsp;<fa-icon attr.data-tooltip="{{'msg.poBeingRevised' | translate}}" [icon]="faInfoCircle" [styles]="{'color': '#FF8A00'}"></fa-icon>
+                        </span>
+                        <span *ngIf="isRejectedStatus(dataItem)" class="rejected_arrow_box">Rejected</span>
+                        <span *ngIf="dataItem.isPending" class="pending_arrow_box">Pending</span>
+                    </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column field="customer" [hidden]="service.visibleColumns.indexOf('customer') < 0" title="{{'label.customer' | translate}}" [filterable]="true" [sortable]="true">
+                </kendo-grid-column>
+                <kendo-grid-column field="supplier" [hidden]="service.visibleColumns.indexOf('supplier') < 0" title="{{'label.supplier' | translate}}" [filterable]="true" [sortable]="true">
+                </kendo-grid-column>
+                <kendo-grid-column field="shipFromName" [hidden]="service.visibleColumns.indexOf('shipFromName') < 0" title="{{'label.portOfLoading' | translate}}" [filterable]="true" [sortable]="true">
+                </kendo-grid-column>
+                <kendo-grid-column field="bookingDate" [hidden]="service.visibleColumns.indexOf('bookingDate') < 0" title="{{'label.bookingDates' | translate}}" filter="date" format="{0:{{DATE_FORMAT}}}" [filterable]="true" [sortable]="true" width="150">
+                </kendo-grid-column>
+                <kendo-grid-column field="cargoReadyDate" [hidden]="service.visibleColumns.indexOf('cargoReadyDate') < 0" title="{{'label.bookingCargoReadyDates' | translate}}" filter="date" format="{0:{{DATE_FORMAT}}}" [filterable]="true" [sortable]="true" width="150">
+                </kendo-grid-column>
+                <kendo-grid-column field="stageName" [hidden]="service.visibleColumns.indexOf('stageName') < 0" title="{{'label.milestone' | translate}}" [sortable]="true">
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                        <span>{{dataItem.stageName | translate}}</span>
+                    </ng-template>
+
+                    <ng-template kendoGridFilterCellTemplate let-filter>
+                        <kendo-multiselect
+                        class="booking-Stage-multiSelect"
+                        kendoMultiSelectSummaryTag
+                        [valueField]="'value'"
+                        [textField]="'label'"
+                        [autoClose]="false"
+                        [(ngModel)]="bookingStageFilterModel"
+                        (valueChange)="bookingStageChanged$.next($event)"
+                        [data]="service.poFulfillmentStage">
+
+                        <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                            <input type="checkbox" class="k-checkbox" [checked]="isItemSelected(dataItem)">
+                            <label class="k-checkbox-label">{{ dataItem?.text | translate}}</label>
+                        </ng-template>
+                        
+                        <ng-template kendoMultiSelectTagTemplate let-dataItem>
+                            {{ dataItem.text | translate}}
+                        </ng-template>
+
+                        <ng-template kendoMultiSelectGroupTagTemplate let-dataItems>
+                            {{ (dataItems.length > 1 ? 'label.item_sSelected' : 'label.itemSelected') | translate : {'count': dataItems.length} }}
+                        </ng-template>
+                    </kendo-multiselect>
+                    </ng-template>
+                    
+                </kendo-grid-column>
+                <kendo-grid-column field="statusName" [hidden]="service.visibleColumns.indexOf('statusName') < 0" title="{{'label.status' | translate}}" [sortable]="true" width="109">
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                        <span [className]="dataItem.status == poFulfillmentStatus.Active ? 'active-status' : 'inactive-status'">{{dataItem.statusName | translate}}</span>
+                    </ng-template>
+                    <ng-template kendoGridFilterCellTemplate let-filter="filter">
+                        <app-drop-down-list-filter [filter]="filter"
+                                                    fieldName="status"
+                                                    [data]="service.poFulfillmentStatus"
+                                                    textField="text"
+                                                    valueField="value">
+                        </app-drop-down-list-filter>
+                    </ng-template>
+                </kendo-grid-column>
+                <ng-template kendoPagerTemplate>
+                    <app-custom-grid-pager [service]="service" (pageSizeChanged)="gridPageSizeChange($event)"></app-custom-grid-pager>
+                </ng-template>
+            </kendo-grid>
+        </div>
+    </div>
+</div>
+<app-po-fulfillment-copy-popup *ngIf="isOpenCopyBookingPopup"
+        [open]="isOpenCopyBookingPopup"
+        (close)="onCopyBookingPopupClosed($event)">
+</app-po-fulfillment-copy-popup>

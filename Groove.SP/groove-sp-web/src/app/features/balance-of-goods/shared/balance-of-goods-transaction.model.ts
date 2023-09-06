@@ -1,0 +1,31 @@
+export interface BalanceOfGoodsTransactionModel {
+    id?: number;
+    principleId?: number;
+    principleCode?: string;
+    principleName?: string;
+    articleId?: number;
+    articleCode?: string;
+    articleName?: string;
+    warehouseId?: number;
+    warehouseCode?: string;
+    warehouseName?: string;
+    locationId?: number;
+    locationName?: string;
+    transactionType?: number | string;
+    transactionDate?: Date;
+    transactionBy?: string;
+    quantity?: number;
+    quantityUOM?: string;
+    poId?: number;
+    poNumber?: string;
+    soId?: number;
+    soNumber?: string;
+    blId?: number;
+    blNumber?: string;
+    documentNumber?: string;
+    noOfPackage?: number;
+    packageUOM?: string;
+    cbm?: number;
+    grossWeight?: number;
+    remarks?: string;
+}

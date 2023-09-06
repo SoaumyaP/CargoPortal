@@ -1,0 +1,540 @@
+<div class="content__header">
+    <div class="typing_loader" *ngIf="!isInitDataLoaded"></div>
+    <div class="container-fluid" *ngIf="isInitDataLoaded">
+        <div class="row header-group">
+            <div class="col-sm">
+                <button attr.data-balloon="{{'tooltip.backToList' | translate}}" data-balloon-pos="up" type="button" class="btn btn-default back-button"
+                            (click)="backToList()">
+                            <i class="ei ei-arrow_left"></i>
+                </button>
+                <label class="none-margin-form-header ml-3">{{'label.container' | translate}} #{{ editingContainerNumber }}</label>
+                <span class="rejected_arrow_box" *ngIf="isExceptionContainer">Exception</span>
+            </div>
+            <div class="col-sm-5 text-right" *ngIf="!isEditMode && model.isFCL">
+                <button attr.data-balloon="{{'label.edit' | translate}}" data-balloon-pos="up" type="button"
+                    *hasPermission="[AppPermissions.Shipment_ContainerDetail_Edit]"
+                    class="btn edit-icon-button" (click)="editContainer()">
+                    <fa-icon [icon]="faPencilAlt"></fa-icon>
+                </button>
+            </div>
+        </div>
+        <app-milestone *ngIf="!isEditMode" #milestone [data] class="row" [type]="milestoneType.Container" [isInitDataLoaded]="isInitDataLoaded"></app-milestone>
+
+        <div class="content-tabs mt-5 row position-relative" *ngIf="!isEditMode">
+            <kendo-tabstrip class="container-tabs">
+                <kendo-tabstrip-tab [title]="'label.general' | translate" [selected]="true">
+                    <ng-template kendoTabContent>
+                        <div class="row">
+                            <div class="col content-details">
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.containerNo' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.containerNo }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.containerType' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.containerTypeName }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.originAgent' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.shipmentOriginAgent }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.destinationAgent' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.shipmentDestinationAgent }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.movement' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.movement }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 small-text-label">{{'label.loadingDates' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.loadingDate | date: DATE_FORMAT | default: defaultValue }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 small-text-label">{{'label.carrierSONo' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.carrierSONo }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 small-text-label">{{'label.sealNo' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.sealNo }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 small-text-label">{{'label.sealNo2' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.sealNo2 }}</div>
+                                </div>
+                            </div>
+                            <div class="col content-details">
+                                <div class="row location">
+                                    <div class="col-4 text-label">{{'label.shipFrom' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.shipFrom }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.shipTo' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.shipTo }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.shipFromETDDates' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.shipFromETDDate | date: DATE_FORMAT}}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.shipToETADates' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.shipToETADate | date: DATE_FORMAT}}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.totalPackage' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.totalPackage | number:'0.0-0' }} {{ model.totalPackageUOM }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.totalVolume' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.totalVolume | number:'0.3' }} {{ model.totalVolumeUOM }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.totalGrossWeight' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.totalGrossWeight | number:'0.2' }} {{ model.totalGrossWeightUOM }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4 text-label">{{'label.totalNetWeight' | translate}}</div>
+                                    <div class="col-8 value-label">{{ model?.totalNetWeight | number:'0.2' }} {{ model.totalNetWeightUOM }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+
+                <kendo-tabstrip-tab [title]="'label.activity' | translate">
+                    <ng-template kendoTabContent>
+                        <div class="title-grid mt-0 clearfix" *ngIf="canAddActivity">
+                            <button class="btn header-button add-activity-button float-right" type="button"
+                                (click)="onAddActivityClick()">
+                                <div class="icon-circle">
+                                    <fa-icon [icon]="faPlus"></fa-icon>
+                                </div>
+                                <span class="icon-circle-label">{{'label.addNew' | translate}}</span>
+                            </button>
+                        </div>
+                        <kendo-grid #grid="kendoGrid" [data]="groupedActivityList" [selectable]="false" class="activity-grid custom-edit-grid" [sortable]="true"
+                            [sort]="[{field: 'activityDate', dir: 'desc'}]" [rowClass]="rowCallback">
+
+                            <kendo-grid-column field="activityCode" title="{{'label.eventCode' | translate}}"
+                                [headerClass]="'multiline-header'">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    <a class="k-link" (click)="openActivityPopup(dataItem)">{{dataItem.activityCode}}</a>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="activityLevel"
+                                title="{{'label.activityLevel' | translate}}"
+                                [headerClass]="'multiline-header'">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="activityDescription" title="{{'label.activityDescription' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="activityDate" format="{0:{{DATE_FORMAT}}}" title="{{'label.activityDates' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="location" title="{{'label.location' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="remark" title="{{'label.remark' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column width="30">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                    <div *ngIf="currentUser.isInternal || isAgentUser || dataItem.createdBy === currentUser.username">
+                                        <div kendoTooltip #tooltip="kendoTooltip"
+                                            [tooltipTemplate]="actionMenuTooltip" filter="button" showOn="click"
+                                            position="left" offset="-20" showAfter="200">
+                                            <button #activityButton type="button" class="btn">
+                                                <fa-icon [icon]="faEllipsisV"></fa-icon>
+                                            </button>
+                                        </div>
+
+                                        <ng-template #actionMenuTooltip let-anchor>
+                                            <div class="row action-button"
+                                                (click)="onEditActivityClick(dataItem); tooltip.toggle(activityButton)">
+                                                <button type="button" class="btn">
+                                                    <fa-icon [icon]="faPencilAlt" class="action-grid-icon">
+                                                    </fa-icon>
+                                                    <span
+                                                        class="action-grid-label">{{'label.edit' | translate}}</span>
+                                                </button>
+                                            </div>
+                                            <div class="row action-button"
+                                                (click)="onDeleteActivityClick(dataItem.id); tooltip.toggle(activityButton)">
+                                                <button type="button" class="btn">
+                                                    <fa-icon [icon]="faTrashAlt" class="action-grid-icon"></fa-icon>
+                                                    <span
+                                                        class="action-grid-label">{{'tooltip.delete' | translate}}</span>
+                                                </button>
+                                            </div>
+                                        </ng-template>
+                                    </div>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <ng-template kendoGridDetailTemplate let-dataItem let-rowIndex="rowIndex" *ngIf="isShowNestedActivityGrid">
+
+                                <kendo-grid #grid="kendoGrid" [data]="dataItem.nestedList"
+                                    [selectable]="false" class="custom-edit-grid nested-grid" [sortable]="true"
+                                    [sort]="[{field: 'activityDate', dir: 'desc'}]">
+
+                                    <kendo-grid-column field="activityCode" title="{{'label.eventCode' | translate}}"
+                                        [headerClass]="'multiline-header'">
+                                        <ng-template kendoGridCellTemplate let-dataItem>
+                                            <a class="k-link" (click)="openActivityPopup(dataItem)">{{dataItem.activityCode}}</a>
+                                        </ng-template>
+                                    </kendo-grid-column>
+
+                                    <kendo-grid-column field="activityLevel"
+                                        title="{{'label.activityLevel' | translate}}"
+                                        [headerClass]="'multiline-header'">
+                                    </kendo-grid-column>
+
+                                    <kendo-grid-column field="activityDescription" title="{{'label.activityDescription' | translate}}">
+                                    </kendo-grid-column>
+
+                                    <kendo-grid-column field="activityDate" format="{0:{{DATE_FORMAT}}}" title="{{'label.activityDates' | translate}}">
+                                    </kendo-grid-column>
+
+                                    <kendo-grid-column field="location" title="{{'label.location' | translate}}">
+                                    </kendo-grid-column>
+
+                                    <kendo-grid-column field="remark" title="{{'label.remark' | translate}}">
+                                    </kendo-grid-column>
+
+                                    <kendo-grid-column width="30">
+                                        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                            <div *ngIf="currentUser.isInternal || isAgentUser || dataItem.createdBy === currentUser.username">
+                                                <div kendoTooltip #tooltip="kendoTooltip"
+                                                    [tooltipTemplate]="actionMenuTooltip" filter="button" showOn="click"
+                                                    position="left" offset="-20" showAfter="200">
+                                                    <button #activityButton type="button" class="btn">
+                                                        <fa-icon [icon]="faEllipsisV"></fa-icon>
+                                                    </button>
+                                                </div>
+
+                                                <ng-template #actionMenuTooltip let-anchor>
+                                                    <div class="row action-button"
+                                                        (click)="onEditActivityClick(dataItem); tooltip.toggle(activityButton)">
+                                                        <button type="button" class="btn">
+                                                            <fa-icon [icon]="faPencilAlt" class="action-grid-icon">
+                                                            </fa-icon>
+                                                            <span
+                                                                class="action-grid-label">{{'label.edit' | translate}}</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="row action-button"
+                                                        (click)="onDeleteActivityClick(dataItem.id); tooltip.toggle(activityButton)">
+                                                        <button type="button" class="btn">
+                                                            <fa-icon [icon]="faTrashAlt" class="action-grid-icon"></fa-icon>
+                                                            <span
+                                                                class="action-grid-label">{{'tooltip.delete' | translate}}</span>
+                                                        </button>
+                                                    </div>
+                                                </ng-template>
+                                            </div>
+                                        </ng-template>
+                                    </kendo-grid-column>
+                                </kendo-grid>
+                            </ng-template>
+                        </kendo-grid>
+                        <app-container-activity-form *ngIf="activityFormOpened" [activityFormOpened]="activityFormOpened"
+                            [allEventOptions]="allEventOptions"
+                            [activityFormMode]="activityFormMode" (add)="onActivityAdded($event)"
+                            (edit)="onActivityEdited($event)" (close)="onActivityFormClosed()"
+                            [orderType]="model.orderType"
+                            [model]="activityDetails" [containerId]="model.id" [heightPopup]="heightActivity">
+                        </app-container-activity-form>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+
+                <kendo-tabstrip-tab [title]="'label.itinerary' | translate">
+                    <ng-template kendoTabContent>
+                        <kendo-grid #grid="kendoGrid" [data]="itineraries" [scrollable]="'vertical'">
+                            <kendo-grid-column field="modeOfTransport" title="{{'label.modeOfTransport' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="carrierName" title="{{'label.carrier' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="vesselFlight" title="{{'label.vesselFlight' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="loadingPort" title="{{'label.loadingPort' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="etdDate" format="{0:{{DATE_FORMAT}}}" title="{{'label.etdDates' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="dischargePort" title="{{'label.dischargePort' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="etaDate" format="{0:{{DATE_FORMAT}}}" title="{{'label.etaDates' | translate}}">
+                            </kendo-grid-column>
+                        </kendo-grid>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+
+                <kendo-tabstrip-tab [title]="'label.cargoDetails' | translate">
+                    <ng-template kendoTabContent>
+                        <kendo-grid #grid="kendoGrid" [data]="cargoDetails" [scrollable]="'vertical'">
+                            <kendo-grid-column width="12" field="shipment.shipmentNo" title="{{'label.shipmentNo' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    <a class="k-link" target="_blank" routerLink="/shipments/{{dataItem.shipmentId}}" routerLinkActive="active">{{dataItem.shipment.shipmentNo}}</a>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column width="12" field="billOfLadings" title="{{'label.houseBLNo' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    <ng-container *ngFor="let billOfLadingNo of dataItem.billOfLadingNos; let last = last">
+                                        <a class="k-link" routerLink="/bill-of-ladings/{{billOfLadingNo.item1}}" routerLinkActive="active" target="_blank">
+                                            {{billOfLadingNo.item2}}
+                                        </a>
+                                        {{!last ? ", " : ""}}
+                                    </ng-container>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column width="16" field="cargoDetail.description" title="{{'label.cargoDescription' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    {{dataItem.cargoDetail.description | showless: 100}} <a class="k-link" *ngIf="dataItem.cargoDetail?.description?.length > 100" style="font-weight: normal;" (click)="seeMoreCargoDescription(dataItem.cargoDetail.description)">{{'label.seeMore' | translate | lowercase}}</a>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column width="9" field="package" title="{{'label.package' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    {{dataItem.package | number }} {{dataItem.packageUOM}}
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column width="9" field="Volume" title="{{'label.volume' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    {{dataItem.volume | number:'0.3' }} {{dataItem.volumeUOM}}
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column width="9" field="grossWeight" title="{{'label.grossWeight' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    {{dataItem.grossWeight | number:'0.2' }} {{dataItem.grossWeightUOM}}
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <!-- Customer PO # -->
+                            <kendo-grid-column width="12" field="cargoDetail.customerPONumber" title="{{'label.poNo' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex>
+                                    <div *ngIf="!dataItem.cargoDetail.purchaseOrderId; else linkedCustomerPONumber">
+                                        {{dataItem.cargoDetail.customerPONumber}}
+                                    </div>
+                                    <ng-template #linkedCustomerPONumber>
+                                        <a *ngIf="dataItem.cargoDetail.orderType === 1" class="k-link" target="_blank" routerLink="/purchase-orders/{{dataItem.cargoDetail.purchaseOrderId}}" routerLinkActive="active">{{dataItem.cargoDetail.customerPONumber}}</a>
+                                        <a *ngIf="dataItem.cargoDetail.orderType === 2" class="k-link" target="_blank" routerLink="/cruise-orders/view/{{dataItem.cargoDetail.purchaseOrderId}}" routerLinkActive="active">{{dataItem.cargoDetail.customerPONumber}}</a>
+                                    </ng-template>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column width="9" field="cargoDetail.lineOrder" title="{{'label.poSeq' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column width="12" field="cargoDetail.productCode" title="{{'label.itemNo' | translate}}">
+                            </kendo-grid-column>
+                        </kendo-grid>
+
+                        <app-cargo-description-detail-popup *ngIf="openCargoDescriptionDetailPopup"
+                            [cargoDescription]="cargoDescriptionDetail"
+                            (close)="onCargoDescriptionDetailPopupClosed()">
+                        </app-cargo-description-detail-popup>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+
+                <kendo-tabstrip-tab [title]="'label.attachment' | translate">
+                    <ng-template kendoTabContent>
+                        <div class="col-sm text-right top-bar-container">
+                            <button type="button" class="btn header-button upload-button" (click)="uploadAttachment()">
+                                <div class="icon-circle">
+                                    <fa-icon [icon]="faCloudUploadAlt"></fa-icon>
+                                </div>
+                                <span class="icon-circle-label">{{'label.upload' | translate}}</span>
+                            </button>
+
+                            <button type="button" class="btn header-button download-button" (click)="downloadAttachments()" [disabled]="selectedAttachments.length == 0">
+                                <fa-icon [icon]="faCloudDownloadAlt"></fa-icon>
+                                {{'label.download' | translate}}
+                            </button>
+
+                            <button type="button" class="btn header-button upload-button" [disabled]="selectedAttachments.length == 0" data-toggle="modal" data-target="#shareFileModal">
+                                <div class="icon-circle">
+                                    <fa-icon [icon]="faShare"></fa-icon>
+                                </div>
+                                <span class="icon-circle-label">{{'label.share' | translate}}</span>
+                            </button>
+                        </div>
+
+                        <kendo-grid #grid="kendoGrid" [data]="attachments" [scrollable]="'vertical'" [selectable]="{enabled: true, checkboxOnly: true }" [kendoGridSelectBy]="selectAttachment"
+                            [selectedKeys]="selectedAttachments">
+                            <kendo-grid-checkbox-column showSelectAll="true" [width]="50"></kendo-grid-checkbox-column>
+
+                            <kendo-grid-column field="documentLevel" title="{{'label.documentLevel' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    {{getDocumentLevelText(dataItem.documentLevel)}}
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="attachmentType" title="{{'label.documentType' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="fileName" title="{{'label.fileName' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    <a class="k-link" target="_blank" (click)="downloadFile(dataItem.id, dataItem.fileName)">{{dataItem.fileName}}</a>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="referenceNo" title="{{'label.referenceNo' | translate}}">
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="uploadedBy" title="{{'label.uploadedBy' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                    <a title="{{dataItem.uploadedBy}}">{{dataItem.uploadedBy}}</a>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column field="uploadedDate" title="{{'label.uploadedDates' | translate}}">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                    {{dataItem.uploadedDateTime | convertUTCDateToLocalDate | date : "MM/dd/yyyy hh:mm' 'a"}}
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column width="30">
+                                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                    <div *ngIf="(currentUser.isInternal || dataItem.uploadedBy === currentUser.username) && dataItem.documentLevel === documentLevel.Container">
+                                        <div kendoTooltip #tooltip="kendoTooltip" [tooltipTemplate]="actionMenuTooltip" filter="button"
+                                            showOn="click" position="left" offset="-20" showAfter="200">
+                                            <button #attachmentButton type="button" class="btn">
+                                                <fa-icon [icon]="faEllipsisV"></fa-icon>
+                                            </button>
+                                        </div>
+
+                                        <ng-template #actionMenuTooltip let-anchor>
+                                            <div class="row action-button" (click)="editAttachment(dataItem.id); tooltip.toggle(attachmentButton)">
+                                                <button type="button" class="btn">
+                                                    <fa-icon [icon]="faPencilAlt" class="action-grid-icon"></fa-icon>
+                                                    <span class="action-grid-label">{{'label.edit' | translate}}</span>
+                                                </button>
+                                            </div>
+                                            <div class="row action-button" (click)="deleteAttachment(dataItem.id); tooltip.toggle(attachmentButton)">
+                                                <button type="button" class="btn">
+                                                    <fa-icon [icon]="faTrashAlt" class="action-grid-icon"></fa-icon>
+                                                    <span class="action-grid-label">{{'tooltip.delete' | translate}}</span>
+                                                </button>
+                                            </div>
+                                        </ng-template>
+                                    </div>
+                                </ng-template>
+                            </kendo-grid-column>
+                        </kendo-grid>
+                    </ng-template>
+                </kendo-tabstrip-tab>
+            </kendo-tabstrip>
+            <app-share-file-dialog [fileList]="selectedAttachments"></app-share-file-dialog>
+            <app-attachment-upload-popup [formMode]="attachmentFormMode" [formOpened]="importFormOpened" (close)="importFormOpened = false;"
+            (add)="attachmentAddHandler($event)" (edit)="attachmentEditHandler($event)" [model]="attachmentModel"></app-attachment-upload-popup>
+        </div>
+
+         <!-- Form for edit mode -->
+         <ng-container *ngIf="isEditMode">
+            <form class="row" #mainForm="ngForm" (ngSubmit)="onSubmit()" *ngIf="isInitDataLoaded">
+                <div class="col-12 panel-group remove-padding-first-panel">
+                    <label class="panel-header">{{'label.containerDetail' | translate}}</label>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" [class.force-invalid]="formErrors['containerNumber']">
+                                <label for="containerNumber" class="required">{{'label.containerNo' | translate}}</label>
+                                <input type="text" class="form-control" name="containerNumber" required
+                                    [(ngModel)]="model.containerNo" (focusout)="onContainerNumberFocusout()"/>
+                                <div *ngIf="formErrors['containerNumber']" class="k-invalid-msg">
+                                    {{formErrors.containerNumber}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="loadingDate">{{'label.loadingDates' | translate}}</label>
+                                <kendo-datepicker name="loadingDate" class="form-control"
+                                    [(ngModel)]="model.loadingDate">
+                                </kendo-datepicker>
+                                <div *ngIf="formErrors['loadingDate']" class="k-invalid-msg">
+                                    {{formErrors.loadingDate}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="containerType">{{'label.containerType' | translate}}</label>
+                                <kendo-dropdownlist name="containerType" class="form-control"
+                                    [data]="containerTypeOptions" [valuePrimitive]="true" [textField]="'label'"
+                                    [valueField]="'value'" [(ngModel)]="model.containerType">
+                                    <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                        {{ dataItem?.label | translate }}
+                                    </ng-template>
+                                    <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                        {{ dataItem?.label | translate }}
+                                    </ng-template>
+                                </kendo-dropdownlist>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" [class.force-invalid]="formErrors['carrierSONumber']">
+                                <label for="carrierSONumber">{{'label.carrierSONo' | translate}}</label>
+                                <input type="text" class="form-control" name="carrierSONumber"
+                                    [(ngModel)]="model.carrierSONo" (ngModelChange)="validateCarrierSONumber()"
+                                    (focusout)="checkDuplicateContainer().subscribe()"/>
+                                <div *ngIf="formErrors['carrierSONumber']" class="k-invalid-msg">
+                                    {{formErrors.carrierSONumber}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="sealNo">{{'label.sealNo' | translate}}</label>
+                                <input type="text" class="form-control" name="sealNo"
+                                    [(ngModel)]="model.sealNo" />
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="sealNo2">{{'label.sealNo2' | translate}}</label>
+                                <input type="text" class="form-control" name="sealNo2"
+                                    [(ngModel)]="model.sealNo2" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 action-bar p-0" *ngIf="isEditMode">
+                    <button type="button" class="btn second-button"
+                        (click)="cancelEditingContainer()">{{'label.cancel' | translate}}</button>
+                    <button type="submit" class="btn prim-button"
+                        (click)="saveContainer()">{{'label.save' | translate}}</button>
+                </div>
+            </form>
+        </ng-container>
+    </div>
+</div>

@@ -1,0 +1,248 @@
+@import "../../../../src/styles/variables";
+
+.import-data-dialog {
+    ::ng-deep .k-dialog .k-content {
+        padding: 0px !important;
+    }
+
+    ::ng-deep .k-dropzone {
+        background: url("/assets/images/import-popup/upload-icon.png");
+        background-size: auto;
+        height: 310px;
+        background-position: center;
+
+        &.k-dropzone-active.k-dropzone-hovered {
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            border: 2px #247ae1 dashed;
+        }
+    }
+
+    ::ng-deep .k-file-single {
+        display: none !important;
+    }
+
+    ::ng-deep kendo-upload-action-buttons {
+        display: none !important;
+    }
+
+    ::ng-deep kendo-upload-status-total {
+        display: none;
+    }
+
+    ::ng-deep .k-upload-files {
+        display: none;
+    }
+
+    ::ng-deep .k-upload-button {
+        display: none !important;
+    }
+
+    ::ng-deep .k-dropzone-hint {
+        margin-top: 105px;
+        margin-left: 225px !important;
+        display: none !important;
+    }
+
+    ::ng-deep .import-process-container {
+        margin-left: 15px;
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+
+    .icon-xls {
+        background: url("/assets/images/import-popup/icon-excel.png");
+        padding: 27px;
+        background-size: cover;
+        margin-top: 35px;
+    }
+
+    .icon-xlsx {
+        background: url("/assets/images/import-popup/icon-excel.png");
+        padding: 27px;
+        background-size: cover;
+    }
+
+    .icon-csv {
+        background: url("/assets/images/import-popup/icon-excel.png");
+        padding: 27px;
+        background-size: cover;
+    }
+
+    .icon-pdf {
+        background: url("/assets/images/import-popup/icon-pdf@2x.png");
+        padding: 27px;
+        background-size: cover;
+    }
+
+    .icon-doc {
+        background: url("/assets/images/import-popup/icon-word@2x.png");
+        padding: 27px;
+        background-size: cover;
+    }
+
+    .icon-docx {
+        background: url("/assets/images/import-popup/icon-word@2x.png");
+        padding: 27px;
+        background-size: cover;
+    }
+
+    .icon-png {
+        background: url("/assets/images/import-popup/icon-img@2x.png");
+        padding: 27px;
+        background-size: cover;
+    }
+
+    .icon-jpg {
+        background: url("/assets/images/import-popup/icon-img@2x.png");
+        padding: 27px;
+        background-size: cover;
+    }
+
+    .icon-default {
+        background: url("/assets/images/import-popup/icon-img@2x.png");
+        padding: 27px;
+        background-size: cover;
+    }
+
+    .import-header {
+        color: $theme-color;
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+        top: 45px;
+        z-index: 1;
+        position: relative;
+    }
+
+    .importing-header {
+        top: 35px;
+    }
+
+    .choose-file {
+        text-align: center;
+        position: relative;
+    }
+
+    .file-msg {
+        font-size: 14px;
+        display: block;
+    }
+
+    .drop-file-msg {
+        margin-top: -130px;
+        color: #c6c6c6;
+    }
+
+    .choose-file-msg {
+        color: #333333;
+        margin-top: -5px;
+    }
+
+    .browse-file {
+        color: $theme-color !important;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .icon-remove-item {
+        background: url("/assets/images/import-popup/icon-close@2x.png");
+        padding: 5.5px;
+        background-size: cover;
+        cursor: pointer;
+        font-size: 15px;
+        left: 30px;
+        margin-top: auto;
+        margin-bottom: auto;
+        margin-left: 15px;
+    }
+
+    .k-upload {
+        background-color: white;
+        border-width: 0px;
+    }
+
+    .form-group {
+        .row {
+            position: absolute;
+            bottom: 0px;
+            margin-left: 0;
+            margin-right: 0;
+            width: 100%;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+    }
+
+    .status-progress {
+        margin-top: 5px;
+        max-width: 500px;
+        overflow: hidden;
+    }
+
+    .import-file-container {
+        margin-top:20px;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+
+        ::ng-deep .progress {
+            height: 0.5rem;
+        }
+
+        .file-name {
+            color: $color-grey-dark-2 !important;
+        }
+
+        &.success {
+            color: $color-green-primary;
+
+            ::ng-deep.progress-bar {
+                background-color: $color-green-primary;
+            }
+        }
+
+        &.failed {
+            color: $color-red-primary;
+
+            ::ng-deep.progress-bar {
+                background-color: $color-red-primary;
+            }
+        }
+
+        &.warning {
+            color: $color-orange-primary;
+            ::ng-deep.progress-bar {
+                background-color: $color-orange-primary;
+            }
+        }
+    }
+
+    .log-details-container {
+        display: flex;
+        flex-wrap: wrap;
+
+        .download-error-list {
+            text-align: right;
+            color: $color-blue-primary;
+            float: right;
+            cursor: pointer;
+            .ng-fa-icon {
+                margin-right: 4px;
+                ::ng-deep .svg-inline--fa {
+                    font-size: 0.9em;
+                    margin-bottom: 3px;
+                }
+            }
+        }
+    }
+
+    .limit-item-upload {
+        position: absolute;
+        opacity: 0.5;
+        bottom: 0;
+        left: calc(50% - 135px);
+    }
+}

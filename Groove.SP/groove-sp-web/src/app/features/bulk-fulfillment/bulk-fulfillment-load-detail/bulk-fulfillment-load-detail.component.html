@@ -1,0 +1,277 @@
+<div class="load-plan-wrapper">
+    <form #mainForm="ngForm">
+        <div class="load-plan-grid">
+            <div class="load-plan-grid-row load-plan-grid-header">
+                <div class="main-line border border-bottom-0">
+                    <div class="load-plan-grid-item-image col-1 border-right middle-header" [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'loads')">
+                        {{ "label.loads" | translate }}
+                    </div>
+                    <div class="load-plan-grid-header-item-group row ml-0 mr-0">
+                        <div [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'sequence')" class="py-2 border-right middle-header">{{ "label.seq" | translate }}
+                            <img class="ml-1" src="/assets/images/compliance/drag-icon.png">
+                        </div>
+                        <div [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'productCode')"class="py-2 border-right middle-header">
+                            {{ "label.itemNo" | translate }}
+                        </div>
+                        <div [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'packageDescription')"class="py-2 border-right middle-header">
+                            {{ "label.descriptionOfGoods" | translate }}
+                        </div>
+                        <div [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'unitQuantity')"class="py-2 border-right middle-header">
+                            <label class='required' style="margin-bottom: unset;">
+                                {{ "label.loadedQty" | translate }}
+                            </label>
+                        </div>
+                        <div [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'packageQuantity')"class="py-2 border-right middle-header">
+                            <label class='required' style="margin-bottom: unset;">
+                                {{ "label.loadedPackage" | translate }}
+                            </label>
+                        </div>
+                        <div [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'volume')"class="py-2 border-right middle-header">
+                            <label class='required' style="margin-bottom: unset;">
+                                {{ "label.volume" | translate }}
+                            </label>
+                        </div>
+                        <div [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'grossWeight')"class="py-2 middle-header">
+                            <label class='required' style="margin-bottom: unset;">
+                                {{ "label.grossWeight" | translate }}
+                            </label>
+                        </div>
+                        <div class="py-2 middle-header border-left" *ngIf="isEditable">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="load-plan-grid-row" *ngFor="let load of model.loads; let loadRowIndex = index; let l = count">
+                <div class="main-line border-left border-right border-top" [class.border-bottom]="load.details?.length > 0 || loadRowIndex > 0 || l === 1">
+                    <div [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'loads')" class="load-plan-grid-item-image col-1 p-2 border-right text-center">
+                        <div class="load-plan-container">
+                            <div class="load-plan-container-icon p-1 mt-2">
+                                <span class="equipment-type-name">
+                                    {{ load.equipmentType }}
+                                </span>
+                            </div>
+                            <div class="load-plan-container-number mt-1">
+                                <a class="k-link" *ngIf="load.containerNumber; else loadReferenceNumber" (click)="viewContainerPopup(loadRowIndex)">
+                                    {{load.containerNumber}}
+                                </a>
+                                <ng-template #loadReferenceNumber>
+                                    {{load.loadReferenceNumber}}
+                                </ng-template>
+                            </div>
+                            <button *ngIf="isEditable" (click)="onLoadBtnClick(load.id)" [attr.data-balloon]="'label.load' | translate" data-balloon-pos="up" type="button" class="btn grid-load-icon-button load-button-icon">
+                                <fa-icon [icon]="faAngleRight"></fa-icon>
+                            </button>
+                            <fa-icon [icon]="faPencilAlt" class="container-edit-icon" [attr.data-balloon]="'label.updateContainerInfo' | translate" data-balloon-pos="up"
+                                (click)="editContainerPopup(loadRowIndex)" *ngIf="!isViewMode && canUpdateContainer"></fa-icon>
+                        </div>
+                    </div>
+                    
+                    <kendo-grid #grid="kendoGrid" [data]="load.details | orderBy:'sequence'" class="custom-border-grid load-details-kendo-grid"
+                        [class.custom-edit-grid]="isEditable" [rowClass]="rowCallback" [class.draggable]='isEditable'>
+    
+                        <kendo-grid-column field="sequence" [hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'sequence')"></kendo-grid-column>
+    
+                        <kendo-grid-column field="productCode"[hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'productCode')"></kendo-grid-column>
+    
+                        <kendo-grid-column field="packageDescription"[hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'packageDescription')"></kendo-grid-column>
+
+                        <kendo-grid-column field="unitQuantity"[hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'unitQuantity')">
+                            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                <kendo-numerictextbox
+                                    [class.force-invalid]="getControlByName('unitQuantity_' + loadRowIndex + '_' + rowIndex)?.errors"
+                                    *ngIf="isEditable; else viewOnlyUnitQuantityTemplate"
+                                    name="unitQuantity_{{loadRowIndex}}_{{rowIndex}}"
+                                    required
+                                    [min]="0"
+                                    [decimals]="0"
+                                    [spinners]="false"
+                                    [format]="'n'"
+                                    [autoCorrect]="true"
+                                    [(ngModel)]="dataItem.unitQuantity"
+                                    (valueChange)="onUnitQtyValueChange($event, rowIndex, loadRowIndex)"
+                                    class="form-control">
+                                </kendo-numerictextbox>
+                                <ng-template #viewOnlyUnitQuantityTemplate>
+                                    {{ dataItem.unitQuantity | number }}
+                                </ng-template>
+                                <div *ngIf="getControlByName('unitQuantity_' + loadRowIndex + '_' + rowIndex)?.errors" class="k-invalid-msg">
+                                    <p *ngIf="getControlByName('unitQuantity_' + loadRowIndex + '_' + rowIndex).errors.required">
+                                        {{ 'validation.requiredField' | translate: {'fieldName': 'label.loadedQty' | translate} }}
+                                    </p>
+                                    <p *ngIf="getControlByName('unitQuantity_' + loadRowIndex + '_' + rowIndex).errors.lessThanOrEqualZero">
+                                        {{'validation.valueMustBeGreaterThanZero' | translate}}
+                                    </p>
+                                </div>
+                            </ng-template>
+                        </kendo-grid-column>
+    
+                        <kendo-grid-column field="packageQuantity"[hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'packageQuantity')">
+                            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                <kendo-numerictextbox
+                                    [class.force-invalid]="getControlByName('packageQuantity_' + loadRowIndex + '_' + rowIndex)?.errors"
+                                    *ngIf="isEditable; else viewOnlyPackageQuantityTemplate"
+                                    name="packageQuantity_{{loadRowIndex}}_{{rowIndex}}"
+                                    required
+                                    [min]="0"
+                                    [decimals]="0"
+                                    [spinners]="false"
+                                    [format]="'n'"
+                                    [autoCorrect]="true"
+                                    [(ngModel)]="dataItem.packageQuantity"
+                                    (valueChange)="onPackageQtyValueChange($event, rowIndex, loadRowIndex)"
+                                    class="form-control">
+                                </kendo-numerictextbox>
+                                <ng-template #viewOnlyPackageQuantityTemplate>
+                                    {{ dataItem.packageQuantity | number }}
+                                </ng-template>
+                                <div *ngIf="getControlByName('packageQuantity_' + loadRowIndex + '_' + rowIndex)?.errors" class="k-invalid-msg">
+                                    <p *ngIf="getControlByName('packageQuantity_' + loadRowIndex + '_' + rowIndex).errors.required">
+                                        {{ 'validation.requiredField' | translate: {'fieldName': 'label.loadedPackage' | translate} }}
+                                    </p>
+                                    <p *ngIf="getControlByName('packageQuantity_' + loadRowIndex + '_' + rowIndex).errors.lessThanOrEqualZero">
+                                        {{'validation.valueMustBeGreaterThanZero' | translate}}
+                                    </p>
+                                </div>
+                            </ng-template>
+                        </kendo-grid-column>
+    
+                        <kendo-grid-column field="volume"[hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'volume')">
+                            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                <kendo-numerictextbox
+                                    [class.force-invalid]="getControlByName('volume_' + loadRowIndex + '_' + rowIndex)?.errors"
+                                    *ngIf="isEditable; else viewOnlyVolumeTemplate"
+                                    name="volume_{{loadRowIndex}}_{{rowIndex}}"
+                                    required
+                                    [min]="0"
+                                    [decimals]="3"
+                                    [spinners]="false"
+                                    [format]="'n3'"
+                                    [autoCorrect]="true"
+                                    [(ngModel)]="dataItem.volume"
+                                    (valueChange)="onVolumeValueChange($event, rowIndex, loadRowIndex)"
+                                    class="form-control">
+                                </kendo-numerictextbox>
+                                <ng-template #viewOnlyVolumeTemplate>
+                                    {{dataItem.volume | number: '0.3-3'}}
+                                </ng-template>
+                                <div *ngIf="getControlByName('volume_' + loadRowIndex + '_' + rowIndex)?.errors" class="k-invalid-msg">
+                                    <p *ngIf="getControlByName('volume_' + loadRowIndex + '_' + rowIndex).errors.required">
+                                        {{ 'validation.requiredField' | translate: {'fieldName': 'label.volume' | translate} }}
+                                    </p>
+                                    <p *ngIf="getControlByName('volume_' + loadRowIndex + '_' + rowIndex).errors.lessThanOrEqualZero">
+                                        {{'validation.valueMustBeGreaterThanZero' | translate}}
+                                    </p>
+                                </div>
+                            </ng-template>
+                        </kendo-grid-column>
+    
+                        <kendo-grid-column field="grossWeight"[hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'grossWeight')">
+                            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                <kendo-numerictextbox
+                                    [class.force-invalid]="getControlByName('grossWeight_' + loadRowIndex + '_' + rowIndex)?.errors"
+                                    *ngIf="isEditable; else viewOnlyGrossWeightTemplate"
+                                    name="grossWeight_{{loadRowIndex}}_{{rowIndex}}"
+                                    required
+                                    [min]="0"
+                                    [decimals]="2"
+                                    [spinners]="false"
+                                    [format]="'n2'"
+                                    [autoCorrect]="true"
+                                    [(ngModel)]="dataItem.grossWeight"
+                                    (valueChange)="onGrossWeightValueChange($event, rowIndex, loadRowIndex)"
+                                    class="form-control">
+                                </kendo-numerictextbox>
+                                <ng-template #viewOnlyGrossWeightTemplate>
+                                    {{dataItem.grossWeight | number: '0.2-2'}}
+                                </ng-template>
+                                <div *ngIf="getControlByName('grossWeight_' + loadRowIndex + '_' + rowIndex)?.errors" class="k-invalid-msg">
+                                    <p *ngIf="getControlByName('grossWeight_' + loadRowIndex + '_' + rowIndex).errors.required">
+                                        {{ 'validation.requiredField' | translate: {'fieldName': 'label.grossWeight' | translate} }}
+                                    </p>
+                                    <p *ngIf="getControlByName('grossWeight_' + loadRowIndex + '_' + rowIndex).errors.lessThanOrEqualZero">
+                                        {{'validation.valueMustBeGreaterThanZero' | translate}}
+                                    </p>
+                                </div>
+                            </ng-template>
+                        </kendo-grid-column>
+    
+                        <ng-template kendoGridNoRecordsTemplate></ng-template>
+    
+                        <kendo-grid-command-column
+                            [headerStyle]="{'text-align': 'center'}" [headerClass]="'multiline-header'"
+                            class="action-column-grid col-action">
+                            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                                <div [hidden]="!isEditable" kendoTooltip
+                                    #tooltip="kendoTooltip" [tooltipTemplate]="actionMenuTooltip" filter="button" showOn="click"
+                                    position="left" offset="-20" showAfter="200">
+                                    <button #first type="button" class="btn">
+                                        <fa-icon [icon]="faEllipsisV"></fa-icon>
+                                    </button>
+                                </div>
+    
+                                <ng-template #actionMenuTooltip let-anchor>
+                                    <div class="row action-button"
+                                        (click)="onLoadDetailItemEditClick(load.id, rowIndex); tooltip.toggle(first)">
+                                        <button type="button" class="btn">
+                                            <fa-icon [icon]="faPencilAlt" class="action-grid-icon"></fa-icon>
+                                            <span class="action-grid-label">{{'label.edit' | translate}}</span>
+                                        </button>
+                                    </div>
+                                    <div class="row action-button"
+                                        (click)="onLoadDetailItemDeleteClick(load.id, rowIndex); tooltip.toggle(first)">
+                                        <button type="button" class="btn">
+                                            <fa-icon [icon]="faTrashAlt" class="action-grid-icon"></fa-icon>
+                                            <span class="action-grid-label">{{'tooltip.delete' | translate}}</span>
+                                        </button>
+                                    </div>
+                                </ng-template>
+                            </ng-template>
+                        </kendo-grid-command-column>
+                    </kendo-grid>
+                </div>
+                <div class="subtotal-line" *ngIf="load.details && load.details.length > 0">
+                    <div class="load-plan-grid-item-image py-2 pl-3"></div>
+                    <div class="load-plan-grid-item row ml-0 mr-0">
+                        <div class="py-2 text-right"></div>
+                        <div class="py-2 text-left">
+                            Subtotal
+                        </div>
+                        <div class="py-2 text-left"[hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'unitQuantity')">
+                            {{ load.subtotalUnitQuantity | number }}
+                        </div>
+                        <div class="py-2 text-left"[hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'packageQuantity')">{{ load.subtotalPackageQuantity | number }}</div>
+                        <div class="py-2 text-left"[hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'volume')">{{ load.subtotalVolume | number: '0.3-3' }}</div>
+                        <div class="py-2 text-left"[hidden]="isViewMode && formHelper.isHiddenColumn(viewSettings, viewSettingModuleIdType.BULKBOOKING_DETAIL_LOAD_DETAILS,'grossWeight')">{{ load.subtotalGrossWeight | number: '0.2-2' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<app-load-detail-form-dialog
+    [loadDetailFormOpened]="loadDetailFormOpened"
+    (closed)="onLoadDetailFormClosed()"
+    (edited)="onLoadDetailItemEdited($event)"
+    [model]="selectedLoadDetailForm"
+    [isEditing]="true">
+</app-load-detail-form-dialog>
+
+<app-load-container-dialog *ngIf="loadContainerFormOpened"
+    [loadContainerFormOpened]="loadContainerFormOpened"
+    [loadContainerFormMode]="loadContainerFormMode"
+    (edit)="onLoadContainerEdited($event)"
+    (close)="onLoadContainerFormClosed()"
+    [model]="selectedLoad"
+    [viewSettings]="model.viewSettings"
+    [index]="selectedLoadIndex"
+    [loadList]="model.loads">
+</app-load-container-dialog>
+
+<app-load-cargo-dialog *ngIf="loadCargoDialogOpened"
+    [loadNumber]='selectedLoadNumber'
+    [orders]="availableOrders"
+    [popupOpened]="loadCargoDialogOpened"
+    (close)="onLoadCargoPopupClosed()"
+    (save)="onLoadCargoPopupSaved($event)">
+</app-load-cargo-dialog>

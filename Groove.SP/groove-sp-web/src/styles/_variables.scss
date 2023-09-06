@@ -1,0 +1,71 @@
+// This section is set of colors which can be modified as theme
+
+$theme-color: #009FFF;
+$theme-color-darker: #0A89D6;
+$theme-color-secondary: #DDF1FA;
+$theme-color-secondary-darker: #ACD7EB;
+$theme-color-brighter: #7FC6FC;
+$theme-color-disable: #999999;
+$theme-background-color: #F6FAFB;
+$theme-background-color-disable: #F8F9FC;
+$theme-color-blank: #FFFFFF;
+
+
+// End This section is set of colors which can be modified as theme
+
+
+// From here, it contains set of colors which are being used in the system
+// Try to prevent a new, please prefer to use existing if possibly
+// bright-2 is brighter than bright-1 and dark-2 is darker than dark-1
+// only one light with color: red-light, orange-light
+
+// red + white
+$color-red-light: #FAE8E8;
+$color-red-bright-1: #F31700;
+$color-red-primary: #D61A1A;
+// darker color is going with $color-red-primary, it is used for hover event
+$color-red-primary-darker: #BE0101;
+
+// orange + white
+$color-orange-light: #FEEAD3;
+$color-orange-primary: #FF8A00;
+// darker color is going with $color-orange-primary, it is used for hover event
+$color-orange-primary-darker: #D87F0B;
+
+$color-sky-primary: #29ABA9;
+// darker color is going with $color-sky-primary, it is used for hover event
+$color-sky-primary-darker: #249998;
+
+$color-green-primary: #42BC5F;
+// darker color is going with $color-green-primary, it is used for hover event
+$color-green-primary-darker: #3BA855;
+
+$color-yellow-primary:#FFC107;
+// darker color is going with $color-yellow-primary, it is used for hover event
+$color-yellow-primary-darker: #E0A800;
+
+// blue + white
+$color-blue-light: #E5F5FE;
+
+$color-blue-bright-1: #7FC6FC;
+$color-blue-primary: #009FFF;
+// darker color is going with $color-blue-primary, it is used for hover event
+$color-blue-primary-darker: #0A89D6;
+$color-blue-dark-1: #0747A6;
+$color-blue-dark-2: #053884;
+
+// common use for label
+$color-grey-bright-1: #999999;
+$color-grey-primary: #727272;
+// darker color is going with $color-grey-primary, it is used for hover event
+$color-grey-primary-darker: #676767;
+$color-grey-dark-2: #666666;
+$color-grey-dark-3: #333333;
+
+$color-white-primary: #FFFFFF;
+// darker color is going with $color-white-primary, it is used for hover event
+$color-white-primary-darker: #E5E5E5;
+$color-white-dark-1: #F3F3F3;
+// common use for border color
+$color-white-dark-2: #ECECEC;
+$color-white-dark-3: #BDBDBD;

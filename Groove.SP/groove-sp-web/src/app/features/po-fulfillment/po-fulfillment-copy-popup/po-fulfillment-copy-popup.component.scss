@@ -1,0 +1,25 @@
+.po-fulfillment-copy-popup-dialog {
+    .k-i-loading {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        font-size: 24px;
+        background-color: rgba(255, 255, 255, .3);
+        z-index: 1000;
+    }
+    
+    .grid-container {
+        position: relative;
+    }
+    
+    .hiddenPagerWrap {
+        ::ng-deep .k-pager-wrap {
+            display: none;
+        }
+        ::ng-deep tr:last-child td {
+            border-bottom: 0;
+        }
+    }
+}

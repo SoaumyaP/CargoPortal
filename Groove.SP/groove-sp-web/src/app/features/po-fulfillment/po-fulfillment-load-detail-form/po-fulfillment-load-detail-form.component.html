@@ -1,0 +1,279 @@
+<kendo-dialog [title]="'label.loadDetails' | translate" *ngIf="loadDetailFormOpened" (close)="onCancelClick()"
+    [height]="710" class="custom-header-dialog po-fulfillment-load-detail-popup max-screen-1280x768">
+    <div class="load-detail-form-wrapper px-3">
+        <div class="static-info row mt-4">
+            <div class="col">
+                <div class="load-item-container-image">
+                    <img src="../assets/images/container-icon/big/container-big.png" />
+                    <div class="load-item-container-icon">
+                        <span class="equipment-type-name">{{model.load.equipmentType}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="static-info-label py-1">
+                    {{ "label.loadRefNo" | translate }}
+                </div>
+                <div class="static-info-value py-1 font-weight-bold text-color-333">
+                    {{model.load?.loadReferenceNumber}}
+                </div>
+            </div>
+            <div class="col">
+                <div class="static-info-label py-1">
+                    {{ "label.poNo" | translate }}
+                </div>
+                <div class="static-info-value py-1 font-weight-bold text-color-333">
+                    {{model.customerPO?.customerPONumber}}
+                </div>
+            </div>
+            <div class="col">
+                <div class="static-info-label py-1">
+                    {{ "label.productNo" | translate }}
+                </div>
+                <div class="static-info-value py-1 font-weight-bold text-color-333">
+                    {{model.customerPO?.productCode}}
+                </div>
+            </div>
+            <div class="col">
+                <div class="static-info-label py-1">
+                    {{ "label.remainingPkg" | translate }}
+                </div>
+                <div class="static-info-value py-1 font-weight-bold text-color-333">
+                    {{(model.customerPO?.openQty || 0) | number}}
+                </div>
+            </div>
+        </div>
+        <div class="break-line row border-bottom mx-0 my-4"></div>
+        <div class="edit-info row">
+            <form class="edit-info-form-input" #mainForm="ngForm">
+                <div class="col-12">
+                    <div class="row my-2">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="required">{{"label.loadSequence" | translate}}</label>
+                                        <kendo-numerictextbox name="loadSequence" class="form-control"
+                                            [(ngModel)]="model.sequence" [autoCorrect]="true" [format]="'n0'"
+                                            [decimals]="0" [min]="0" required [disabled]="true" appGreaterThan="0">
+                                        </kendo-numerictextbox>
+                                        <div *ngIf="formErrors['loadSequence']" class="k-invalid-msg">{{formErrors['loadSequence']}}</div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="required">{{"label.loadedQty" | translate}}</label>
+                                        <kendo-numerictextbox name="loadedQty" class="form-control"
+                                            [autoCorrect]="true"
+                                            [(ngModel)]="model.unitQuantity" [format]="'n0'" [decimals]="0" [min]='0' required appGreaterThan="0">
+                                        </kendo-numerictextbox>
+                                        <div *ngIf="formErrors['loadedQty']" class="k-invalid-msg">{{formErrors['loadedQty']}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="required">{{"label.loadedPackage" | translate}}</label>
+                                        <kendo-numerictextbox name="loadedPackage" class="form-control" [ngClass]="formErrors['custom_packageQuantity'] ? 'force-invalid' : ''"
+                                            [(ngModel)]="model.packageQuantity"
+                                            [min] = '0'
+                                            [autoCorrect]="true"
+                                            (ngModelChange)="onPackageQuantityChange($event)"
+                                            [format]="'n0'" [decimals]="0" required>
+                                        </kendo-numerictextbox>
+                                        <div *ngIf="formErrors['loadedPackage']" class="k-invalid-msg">{{formErrors['loadedPackage']}}</div>
+                                        <!-- Temporary comment for PSP-2733 -->
+                                        <!-- <div *ngIf="formErrors['custom_packageQuantity']" class="k-invalid-msg">{{formErrors['custom_packageQuantity']}}</div> -->
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label>{{"label.packageUOM" | translate}}</label>
+                                        <input class="form-control" readonly [(ngModel)]="model.packageUOM"
+                                            name="packageUOM" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="required">{{"label.grossWeight" | translate}}</label>
+                                        <div class="input-group">
+                                            <kendo-numerictextbox name="grossWeight" class="form-control"
+                                                [(ngModel)]="model.grossWeight" [autoCorrect]="true" [format]="'n2'"
+                                                [decimals]="2" [min]="0" (ngModelChange)="onGrossWeightChange($event)"
+                                                required appGreaterThan="0">
+                                            </kendo-numerictextbox>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text bg-white text-black-50">KGS</span>
+                                            </div>
+                                            <div *ngIf="formErrors['grossWeight']" class="k-invalid-msg">{{formErrors['grossWeight']}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label>{{"label.netWeight" | translate}}</label>
+                                        <div class="input-group">
+                                            <kendo-numerictextbox name="netWeight" class="form-control"
+                                                [(ngModel)]="model.netWeight" [autoCorrect]="true" [format]="'n2'"
+                                                [decimals]="2" [min]="0" (ngModelChange)="onNetWeightChange($event)"
+                                                >
+                                            </kendo-numerictextbox>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text bg-white text-black-50">KGS</span>
+                                            </div>
+                                            <div *ngIf="formErrors['netWeight']" class="k-invalid-msg">{{formErrors['netWeight']}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label>{{"label.innerQuantity" | translate}}</label>
+                                        <input class="form-control" readonly [(ngModel)]="model.customerPO.innerQuantity"
+                                            name="innerQuantity" />
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label>{{"label.outerQuantity" | translate}}</label>
+                                        <input class="form-control" readonly [(ngModel)]="model.customerPO.outerQuantity"
+                                            name="outerQuantity" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label>{{"label.packageDimensionInCm" | translate}}</label>
+                                        <div class="input-group">
+                                            <kendo-numerictextbox name="length" class="form-control"
+                                                [(ngModel)]="model.length" [autoCorrect]="true" [format]="'n2'"
+                                                [decimals]="2" [min]="0" (ngModelChange)="onLengthChange($event)"
+                                                >
+                                            </kendo-numerictextbox>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text bg-white text-black-50">L</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-input-icon">
+                                        <span class="ei ei-icon_close"></span>
+                                    </div>
+                                    <div *ngIf="formErrors['length']" class="k-invalid-msg">{{formErrors['length']}}</div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label>&nbsp;</label>
+                                        <div class="input-group">
+                                            <kendo-numerictextbox name="width" class="form-control"
+                                                [(ngModel)]="model.width" [autoCorrect]="true" [format]="'n2'"
+                                                [decimals]="2" [min]="0" (ngModelChange)="onWidthChange($event)"
+                                                >
+                                            </kendo-numerictextbox>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text bg-white text-black-50">W</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-input-icon">
+                                        <span class="ei ei-icon_close"></span>
+                                    </div>
+                                    <div *ngIf="formErrors['width']" class="k-invalid-msg">{{formErrors['width']}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label>&nbsp;</label>
+                                        <div class="input-group">
+                                            <kendo-numerictextbox name="height" class="form-control"
+                                                [(ngModel)]="model.height" [autoCorrect]="true" [format]="'n2'"
+                                                [decimals]="2" [min]="0" (ngModelChange)="onHeightChange($event)"
+                                                >
+                                            </kendo-numerictextbox>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text bg-white text-black-50">H</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="formErrors['height']" class="k-invalid-msg">{{formErrors['height']}}</div>
+                                    <div class="form-input-icon-equal">
+                                        <span>=</span>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="required">{{"label.volume" | translate}}</label>
+                                        <div class="input-group">
+                                            <kendo-numerictextbox name="volume" class="form-control" #volume
+                                                [(ngModel)]="model.volume" [autoCorrect]="true" [format]="'n3'"
+                                                [decimals]="3" [min]="0" appGreaterThan="0"
+                                                required>
+                                            </kendo-numerictextbox>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text bg-white text-black-50">CBM</span>
+                                            </div>
+                                        </div>
+                                        <div *ngIf="formErrors['volume']" class="k-invalid-msg">{{formErrors['volume']}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label>{{"label.shippingMarks" | translate}}</label>
+                                        <textarea class="form-control note-textarea" [(ngModel)]="model.shippingMarks"
+                                            name="shippingMarks"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label>{{"label.descriptionOfGoods"| translate}}</label>
+                                        <textarea class="form-control note-textarea" [(ngModel)]="
+                                                model.packageDescription
+                                            " name="packageDescription"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onCancelClick()"
+            #Cancel>{{'label.cancel' | translate}}</button>
+        <button type="button" class="btn prim-button dialog-button" (click)="onSaveClick()" *ngIf="!isEditing"
+            >{{'label.add' | translate}}</button>
+        <button type="button" class="btn prim-button dialog-button" (click)="onSaveClick()" *ngIf="isEditing"
+            >{{'label.save' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

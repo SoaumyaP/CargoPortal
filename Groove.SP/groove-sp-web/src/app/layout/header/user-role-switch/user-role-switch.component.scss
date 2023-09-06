@@ -1,0 +1,80 @@
+@import "../../../../styles/variables";
+
+@keyframes wheelHueColor {
+    from, to { color: hsl(324, 70%, 45%); }
+    10%      { color: hsl(360, 65%, 45%); }
+    20%      { color: hsl( 36, 80%, 45%); }
+    30%      { color: hsl( 72, 75%, 35%); }
+    40%      { color: hsl(108, 65%, 35%); }
+    50%      { color: hsl(144, 75%, 35%); }
+    60%      { color: hsl(180, 75%, 35%); }
+    70%      { color: hsl(216, 60%, 45%); }
+    80%      { color: hsl(252, 65%, 50%); }
+    90%      { color: hsl(288, 60%, 40%); }
+}
+
+.user-role-switch-container {
+    float: left;
+    height: 60px;
+    width: 60px;
+
+    .switch-menu {
+        margin-top: 3px;
+        margin-left: 10px;
+
+        .ng-fa-icon {
+            font-size: 1.5em;
+            color: $theme-color-blank;
+
+            &.active {
+                color: $color-orange-primary;
+                animation: wheelHueColor 5s infinite;
+            }
+        }
+    }
+
+    .switch-popup-content {
+        padding: 20px;
+        width: 500px;
+
+        .input-group-text {
+            height: 100%;
+            background-color: $theme-color;
+            width: 32px;
+
+            &.k-i-zoom {
+                padding-left: 7px;
+            }
+        }
+
+        .vertical-line {
+            border-left: 2px solid $theme-color-darker;
+        }
+
+        .legend {
+            font-weight: normal;
+            color: $theme-color;
+        }
+
+        ul {
+            list-style-type: none;
+            li {
+                margin: 5px;
+                display: flex;
+            }
+        }
+
+        .selection-list {
+            li:hover {
+                color: $theme-color;
+                cursor: pointer;
+            }
+        }
+
+        .search-result {
+            max-height: 250px;
+            overflow: auto;
+        }
+
+    }
+}

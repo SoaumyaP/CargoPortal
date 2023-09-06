@@ -1,0 +1,184 @@
+<div class="content__header warehouse-fulfillment-container">
+    <div class="typing_loader" *ngIf="!isInitDataLoaded"></div>
+    <form class="content-tabs row position-relative" #mainForm="ngForm" novalidate (ngSubmit)="onSubmit()" [ngClass]="{'hidden-content': !isInitDataLoaded}">
+        <div class="container-fluid">
+            <!-- This is header menu section -->
+            <div class="header-group" id="headerBar" #headerBar>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <button attr.data-balloon="{{'tooltip.backToList' | translate}}" data-balloon-pos="right"
+                            data-container="body"
+                            type="button" class="btn btn-default back-button" (click)="backToList()">
+                            <i class="ei ei-arrow_left"></i>
+                        </button>
+                        <label class="form-header">{{isAddMode ? ('label.addNewPOFulfillment' | translate) : model.number}}</label>
+                        <app-status-label *ngIf="!isAddMode" [status]="model.status" [statusName]="model.statusName | translate" [statusEnum]="POFulfillmentStatus"></app-status-label>
+
+                        <span *ngIf="isPendingStatus()" class="ml-2 status-label" >
+                            <fa-icon [icon]="faCaretLeft" class="pending-caret-left" ></fa-icon> <span class="pending-container">Pending</span>
+                        </span>
+
+                        <span *ngIf="isRejectedStatus" class="ml-2 status-label">
+                            <fa-icon [icon]="faCaretLeft" class="rejected-caret-left" ></fa-icon> <span class="rejected-container">Rejected</span>
+                        </span>
+                    </div>
+                    <div class="col-sm-6 text-right button-container" *ngIf="isViewMode">
+                        <button [attr.data-balloon]="'label.edit' | translate" data-balloon-pos="left" type="button" class="btn edit-icon-button"
+                            routerLink="/warehouse-bookings/edit/{{model.id}}" name="editBtn" id="editBtn" *hasPermission="[AppPermissions.PO_Fulfillment_Detail_Edit]" [hidden]="hiddenBtnEdit">
+                            <fa-icon [icon]="faPencilAlt"></fa-icon>
+                        </button>
+
+                        <button type="button" class="btn header-button btn-color-grey"
+                            [hidden]="hiddenBtnCancel" (click)="onCancelWarehouseFulfillmentClick()" [disabled]="isCancelling">
+                            <fa-icon [icon]="faBan" class=""></fa-icon>
+                            {{'label.cancel' | translate}}
+                            <ng-template *appSpinner="isCancelling"></ng-template>
+                        </button>
+
+                        <button type="button" class="btn header-button btn-color-orange" style="width: 98px;"  
+                            (click)="onConfirm()"
+                            [hidden]="isHiddenConfirmBtn">
+                            <fa-icon [icon]="faCheck" class=""></fa-icon>
+                            <span class="icon-circle-label">{{'label.confirm' | translate}}</span>
+                        </button>
+
+                        <button type="button" class="btn header-button btn-color-blue"
+                            [hidden]="hiddenBtnCargoReceive" (click)="onCargoReceiveBtnClick($event)">
+                            <fa-icon [icon]="faClipboardCheck"></fa-icon>
+                            {{'label.cargoReceive' | translate}}
+                        </button>
+                    </div>
+                </div>
+                <div class="row text-muted create-title" *ngIf="!isAddMode">
+                    <span>{{'label.createdOn' | translate}}</span>
+                    <span class="font-weight-bold pl-1">{{ model?.createdDate | date: DATE_FORMAT }}</span>
+                    <span *ngIf="model?.createdBy">
+                        <span class="mx-2">
+                            <img src="/assets/images/dote-icon.png" />
+                        </span>
+                        {{'label.owner' | translate}}: <span class="font-weight-bold pl-1">{{ model?.createdBy }}</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- This is milestone section -->
+            <app-warehouse-fulfillment-milestone [currentStage]="model.stage" *ngIf="isInitDataLoaded">
+            </app-warehouse-fulfillment-milestone>
+
+            <!-- This is sticky bar -->
+            <div class="sticky-navigation mt-3" id="stickyBar" #stickyBar style="display: none;" [hidden]="isCargoReceiveMode">
+                <div class="row">
+                    <div class="col">
+                        <kendo-buttongroup class="button-group" selection="multiple">
+                            <button *ngFor="let tab of tabs" kendoButton [toggleable]="true" [selected]="tab.selected" [class.current]="tab.selected" (click)="$event.preventDefault()"
+                                (selectedChange)="onClickStickyBar($event, tab)">
+                                <span> {{ tab.text | translate | uppercase}} </span>
+                            </button>
+                        </kendo-buttongroup>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- This is content section -->
+            <div class="section-container mt-3" id="section-container" #sectionContainer [hidden]="isCargoReceiveMode">
+                <!-- General -->
+                <section class="panel-group" id="general" #general *ngIf="getTabDetails('general')">
+                    <label class="panel-header fs-14">{{'label.general' | translate}}</label><br>
+                    <app-warehouse-fulfillment-general-info
+                        [model]="model"
+                        [formErrors]="formErrors"
+                        [tabPrefix]="'general#'"
+                        [isEditMode]="isEditMode"
+                        [isViewMode]="true"
+                        [customerId]="customerId"
+                        [supplierName]="supplierName"
+                        [saveAsDraft]="saveAsDraft">
+                    </app-warehouse-fulfillment-general-info>
+                </section>
+
+                 <!-- Warehouse -->
+                 <section class="panel-group" id="warehouse" #warehouse *ngIf="getTabDetails('warehouse')">
+                    <label class="panel-header fs-14">{{'label.warehouse' | translate}}</label>
+                    <app-warehouse-fulfillment-warehouse [model]="model" *ngIf="isInitDataLoaded">
+                    </app-warehouse-fulfillment-warehouse>
+                </section>
+
+                <!-- Contact -->
+                <section class="panel-group" id="contact" #contact *ngIf="getTabDetails('contact')">
+                    <label class="panel-header fs-14">{{'label.contact' | translate}}</label>
+                    <app-warehouse-fulfillment-contact *ngIf="isInitDataLoaded"
+                        [data]="model.contacts"
+                        [isViewMode]="true"
+                        [isAddMode]="isAddMode"
+                        [saveAsDraft]="saveAsDraft"
+                        [validationRules]="validationRules"
+                        [tabPrefix]="'contactTab#'"
+                        [(formErrors)]="formErrors">
+                    </app-warehouse-fulfillment-contact>
+                </section>
+
+                <!-- Customer PO -->
+                <section class="panel-group" id="customerPO" #customerPO *ngIf="getTabDetails('customerPO')" [hidden]="isReloadMode">
+                    <label class="panel-header fs-14">{{'label.customerPO' | translate}}</label>
+                    <app-warehouse-fulfillment-customer-po
+                            [(poffModel)]="model"
+                            [isViewMode]="true">
+                    </app-warehouse-fulfillment-customer-po>
+                </section>
+
+                <!-- Attachment -->
+                <section class="panel-group" id="attachment" #attachment *ngIf="getTabDetails('attachment')" [hidden]="isReloadMode">
+                    <app-warehouse-fulfillment-attachment
+                        [warehouseFulfillmentModel]="model"
+                        [isViewMode]="isViewMode">
+                    </app-warehouse-fulfillment-attachment>
+                </section>
+
+                <!-- Activity -->
+                <section class="panel-group" id="activity" #activity *ngIf="getTabDetails('activity')" [hidden]="isReloadMode">
+                    <label class="panel-header fs-14">{{'label.activity' | translate}}</label>
+                    <app-warehouse-fulfillment-activity
+                        [bookingModel]="model"
+                        [poffId]="model.id">
+                    </app-warehouse-fulfillment-activity>
+                </section>
+            </div>
+
+            <div class="panel-group" *ngIf="isCargoReceiveMode">
+                <label class="panel-header fs-14">{{'label.cargoReceive' | translate}}</label><br>
+                <app-warehouse-fulfillment-cargo-receive
+                    [orders]="model.orders"
+                    [formErrors]="formErrors"
+                    [tabPrefix]="'cargoReceive#'"
+                    [validationRules]="validationRules">
+                </app-warehouse-fulfillment-cargo-receive>
+            </div>
+
+            <!-- This is save/cancel buttons -->
+            <div class="col-12 action-bar mt-3" *ngIf="!isViewMode">
+                <button type="button" class="btn second-button" (click)="onCancel()" [disabled]="isSubmitting">{{'label.cancel' | translate}}</button>
+                <button type="submit" class="btn prim-button" [disabled]="isSubmitting">{{(!isCargoReceiveMode ? 'label.save' : 'label.submit') | translate}}
+                    <ng-template *appSpinner="isSubmitting"></ng-template>
+                </button>
+            </div>
+
+        </div>
+    </form>
+
+    <kendo-dialog [title]="'label.poFulfillment' | translate" *ngIf="cancelWarehouseFulfillmentDialog" (close)="onNoOfCancelDialogClick()" class="cancel-po-dialog" [width]="475">
+        <p>{{ 'confirmation.cancelPOFulfillment' | translate }}</p>
+        <textarea
+            class="form-control cancel-reason mt-3"
+            rows="4"
+            [placeholder]="'placeholder.cancelPOReason' | translate"
+            [(ngModel)]="cancelReason"></textarea>
+
+        <kendo-dialog-actions>
+          <button kendoButton (click)="onYesOfCancelDialogClick()" primary="true" [disabled]="stringHelper.isNullOrEmpty(cancelReason)" class="prim-button bg-0">{{ 'label.yes' | translate }}</button>
+          <button kendoButton (click)="onNoOfCancelDialogClick()">{{ 'label.no' | translate }}</button>
+        </kendo-dialog-actions>
+    </kendo-dialog>
+
+    <app-scroll-to-top></app-scroll-to-top>
+</div>

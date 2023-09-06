@@ -1,0 +1,50 @@
+.add-activity-button {
+    width: 110px;
+}
+.rejected_arrow_box {
+    font-weight: bold;
+    width: 85px;
+    position: relative;
+    left: 15px;
+    top: -2px !important;
+}
+
+::ng-deep .activity-grid {
+    th.k-hierarchy-cell + th {
+        border-width: 0 !important;
+    }
+    td.k-hierarchy-cell {
+        border-right: none !important;
+    }
+    tr.k-master-row {
+        td.k-hierarchy-cell {
+            a {
+                display: none !important;
+            }
+        }
+        &+tr.k-detail-row {
+            display: none;
+        }
+    }
+    tr.k-master-row.expandable {
+        td.k-hierarchy-cell {
+            a {
+                display: block !important;
+                font-size: 18px;
+            }
+        }
+        &+tr.k-detail-row {
+            display: table-row;
+        }
+    }
+}
+
+::ng-deep .nested-grid.k-grid {
+    border-width: 0 !important;
+    th {
+        display: none;
+    }
+    .k-grid-header {
+        border-width: 0;
+    }
+}

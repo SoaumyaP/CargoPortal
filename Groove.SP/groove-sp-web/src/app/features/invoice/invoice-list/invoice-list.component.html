@@ -1,0 +1,95 @@
+<div class="content__header">
+    <div class="container-fluid">
+        <div class="row header-group">
+            <label class="list-header">{{'label.listOfInvoices' | translate}}</label>
+            <span class="k-i-loading k-icon loading" *ngIf="service.gridLoading"></span>
+        </div>
+
+        <div class="row">
+            <kendo-grid #grid="kendoGrid" [data]="view | async" [filterable]="true" [filter]="service.state.filter"
+                [pageable]="true" [pageSize]="service.state.take" [skip]="service.state.skip" [sortable]="true" [sort]="service.state.sort"
+                (dataStateChange)="gridStateChange($event)" (pageChange)="service.pageChange($event)" (sortChange)="service.sortChange($event)"
+                class="custom-border-grid" >
+
+                <kendo-grid-column field="invoiceType" title="{{'label.invoiceType' | translate}}" [filterable]="true" [sortable]="true">
+                    <ng-template kendoGridFilterCellTemplate let-filter>
+                        <app-drop-down-list-filter [filter]="filter" fieldName="invoiceType" [data]="service.invoiceType"
+                            textField="text" valueField="value">
+                        </app-drop-down-list-filter>
+                    </ng-template>
+
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                        {{ getInvoiceType(dataItem.invoiceType)}}
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column field="invoiceNo" title="{{'label.invoiceNo' | translate}}" [filterable]="true"
+                    [sortable]="true">
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                        <a class="k-link" target="_blank" [title]="dataItem.invoiceNo" (click)="downloadFile(dataItem.invoiceNo, dataItem.fileName)">{{dataItem.invoiceNo}}</a>
+                        <span kendoTooltip [tooltipTemplate]="tooltipTemplate"
+                            tooltipClass="ready-to-book-tooltip-container"
+                            position="right" filter="fa-icon"
+                            *ngIf="dataItem.dateOfSubmissionToCruise || dataItem.paymentDueDate">
+                                <fa-icon
+                                    [icon]="faInfoCircle"
+                                    class="ml-2 ready-to-book-icon" [size]="'lg'">
+                                </fa-icon>
+                                <ng-template #tooltipTemplate let-anchor>
+                                    <span class="ready-to-book-tooltip">
+                                        <fa-icon [icon]="faCheck" class="mr-1 ready-to-book-icon"></fa-icon>{{'label.dateOfSubmission' | translate}}: {{dataItem.dateOfSubmissionToCruise | date: DATE_FORMAT | default: defaultValue }}
+                                        <br/>
+                                        <fa-icon [icon]="faCheck" class="mr-1 ready-to-book-icon"></fa-icon>{{'label.paymentDueDate' | translate }}: {{ dataItem.paymentDueDate | date: DATE_FORMAT | default: defaultValue}}
+                                    </span>
+                                </ng-template>
+                            </span>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column field="invoiceDate" title="{{'label.invoiceDates' | translate}}" [filterable]="true"
+                    filter="date" format="{0:{{DATE_FORMAT}}}" [sortable]="true">
+                </kendo-grid-column>
+
+                <kendo-grid-column field="etdDate" title="{{'label.etdDates' | translate}}" [filterable]="true" filter="date"
+                    format="{0:{{DATE_FORMAT}}}" [sortable]="true">
+                </kendo-grid-column>
+
+                <kendo-grid-column field="etaDate" title="{{'label.etaDates' | translate}}" [filterable]="true" filter="date"
+                    format="{0:{{DATE_FORMAT}}}" [sortable]="true">
+                </kendo-grid-column>
+
+                <kendo-grid-column field="billOfLadingNo" title="{{'label.houseBLNo' | translate}}" [filterable]="true"
+                    [sortable]="true">
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container *ngFor="let item of dataItem.billOfLadingNos; let last = last">
+                            <a *ngIf="item.isExistingInSystem" class="k-link" routerLink="/bill-of-ladings/{{item.billOfLadingNo}}" routerLinkActive="active" target="_blank">{{item.billOfLadingNo}}</a><span *ngIf="!item.isExistingInSystem">{{item.billOfLadingNo}}</span>{{ !last ? ", " : ""}}
+                        </ng-container>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column field="jobNo" title="{{'label.jobNo' | translate}}" [filterable]="true" [sortable]="true"></kendo-grid-column>
+
+                <kendo-grid-column field="billTo" title="{{'label.billTo' | translate}}" [filterable]="true" [sortable]="true"></kendo-grid-column>
+
+                <kendo-grid-column field="billBy" title="{{'label.billBy' | translate}}" [filterable]="true" [sortable]="true"></kendo-grid-column>
+
+                <kendo-grid-column field="paymentStatus" title="{{'label.paymentStatus' | translate}}" >
+                    <ng-template kendoGridFilterCellTemplate let-filter>
+                        <app-drop-down-list-filter [filter]="filter" fieldName="paymentStatus" [data]="service.paymentStatusType"
+                            textField="text" valueField="value">
+                        </app-drop-down-list-filter>
+                    </ng-template>
+
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                        <p class="payment-status-text">{{dataItem.paymentStatusName | translate}}</p>
+                        <p *ngIf="dataItem.paymentStatus">{{'label.paidOn' | translate}} {{ dataItem.paymentDate | date: DATE_FORMAT }}</p>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <ng-template kendoPagerTemplate>
+                    <app-custom-grid-pager [service]="service" (pageSizeChanged)="gridPageSizeChange($event)"></app-custom-grid-pager>
+                </ng-template>
+            </kendo-grid>
+        </div>
+    </div>
+</div>

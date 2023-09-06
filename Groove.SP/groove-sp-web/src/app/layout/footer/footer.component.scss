@@ -1,0 +1,16 @@
+@import "../../../styles/variables";
+
+.version-text {
+    position: fixed;
+    color: $color-yellow-primary;
+    font-size: 46px;
+    opacity: 0.5;
+    left: 0;
+    right: 0;
+    bottom: 20px;
+    margin: auto;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+    width: fit-content;
+}

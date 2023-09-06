@@ -1,0 +1,67 @@
+<div class="content__header">
+    <div class="container-fluid">
+
+        <div class="row header-group">
+            <label class="list-header">{{'label.listOfTasks' | translate}}</label>
+            <span class="k-i-loading k-icon loading" *ngIf="service.gridLoading"></span>
+            <div class="col-sm text-right">
+                <button *hasPermission="[AppPermissions.Reports_TaskDetail_Add]" type="button"
+                    (click)="onAddBtnClick()"
+                    class="btn header-button btn-color-primary">
+                    <fa-icon [icon]="faPlus" class="collapsed-content"></fa-icon>
+                    {{'label.newTask' | translate}}
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <kendo-grid #grid="kendoGrid" [data]="view | async" [filterable]="true" [filter]="service.state.filter"
+                [pageable]="true" [pageSize]="service.state.take" [skip]="service.state.skip" [sortable]="true" [sort]="service.state.sort"
+                (dataStateChange)="gridStateChange($event)" (pageChange)="service.pageChange($event)" (sortChange)="service.sortChange($event)"
+                [scrollable]="'vertical'"
+                class="custom-border-grid">
+                <kendo-grid-column field="name" title="{{'label.name' | translate}}" [filterable]="true"
+                    [sortable]="true" >
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                        <a class="k-link" [title]="dataItem.name" routerLink="/scheduling/view/{{dataItem.id}}">{{dataItem.name}}</a>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column field="reportGroup" title="{{'label.reportGroup' | translate}}" [filterable]="true"
+                    [sortable]="true" >
+                </kendo-grid-column>
+
+                <kendo-grid-column field="reportName" title="{{'label.reportName' | translate}}" [filterable]="true"
+                    [sortable]="true" >
+                </kendo-grid-column>
+
+                <kendo-grid-column field="status" title="{{'label.status' | translate}}" [filterable]="true"
+                [sortable]="true" >
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                        <span [className]="dataItem.status == schedulingStatus.Active ? 'active-status' : 'inactive-status'">{{dataItem.statusName | translate}}</span>
+                    </ng-template>
+                    <ng-template kendoGridFilterCellTemplate let-filter>
+                        <app-drop-down-list-filter [filter]="filter" fieldName="status"
+                            [data]="service.schedulingStatus" textField="text" valueField="value">
+                        </app-drop-down-list-filter>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column field="createdBy" title="{{'label.createdBy' | translate}}" [filterable]="true"
+                [sortable]="true" >
+                </kendo-grid-column>
+
+                <kendo-grid-column field="nextOccurrence" title="{{'label.nextOccurrence' | translate }}" [filterable]="false" [headerStyle]="{'vertical-align': 'middle'}"
+                filter="date" [sortable]="false" >
+                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                        {{dataItem.nextOccurrence | date: DATE_HOUR_FORMAT}}
+                    </ng-template>
+                </kendo-grid-column>
+
+                <ng-template kendoPagerTemplate>
+                    <app-custom-grid-pager [service]="service" (pageSizeChanged)="gridPageSizeChange($event)"></app-custom-grid-pager>
+                </ng-template>
+            </kendo-grid>
+        </div>
+    </div>
+</div>

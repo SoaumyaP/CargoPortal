@@ -1,0 +1,176 @@
+<div class="row">
+    <div class="col content-details">
+        <div class="row">
+            <div class="col-6 text-label">{{'label.itemNumber' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('itemId') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.orderedQty' | translate}}</div>
+            <div class="col-6 value-label">{{ cruiseOrderItemModel?.orderQuantity | number: '0.0-0' | default: '--' }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.requestedQty' | translate}}</div>
+            <div class="col-6 value-label">{{ cruiseOrderItemModel?.requestQuantity | number: '0.0-0' | default: '--' }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.quantityDelivered' | translate}}</div>
+            <div class="col-6 value-label">{{ cruiseOrderItemModel?.quantityDelivered | number: '0.0-0' | default: '--' }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.reqNumber' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('requestNumber') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.reqLine' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('requestLine') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.reqLineShoreNotes' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('requestLineShoreNotes') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.shipREQLineNotes' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('shipRequestLineNotes') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.lineEstimatedDeliveryDates' | translate}}</div>
+            <div class="col-6 value-label">{{ cruiseOrderItemModel?.lineEstimatedDeliveryDate | date: DATE_FORMAT | default : '--' }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.commercialInvoice' | translate}}</div>
+            <div class="col-6 value-label">{{ returnCommercialInvoiceText() }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.contract' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('contract') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.shipboardLoadingLoc' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('shipboardLoadingLocation') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.origin' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('origin') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.deliveryPort' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('deliveryPort') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.destination' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('destination') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.approvedBy' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('approvedBy') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.reqOnboardDates' | translate}}</div>
+            <div class="col-6 value-label">{{ cruiseOrderItemModel?.reqOnboardDate | date: DATE_FORMAT | default : '--' }}</div>
+        </div>
+    </div>
+
+    <div class="col content-details">
+        <div class="row">
+            <div class="col-6 text-label">&nbsp;</div>
+            <div class="col-6 value-label">&nbsp;</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.markerReference' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('makerReferenceOfItemName2') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.unitUOM' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('uom') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.netUnitPrice' | translate}}</div>
+            <div class="col-6 value-label">{{ cruiseOrderItemModel?.netUnitPrice | number: '0.2-2' | default: '--' }} {{ returnText('currencyCode') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.netUnitPriceUSD' | translate}}</div>
+            <div class="col-6 value-label">{{ cruiseOrderItemModel?.netUSUnitPrice | number: '0.2-2' | default: '--' }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.totalOrderPrice' | translate}}</div>
+            <div class="col-6 value-label">{{ cruiseOrderItemModel?.totalOrderPrice | number: '0.2-2' | default: '--' }}</div>
+        </div>
+
+        <!-- <div class="row">
+            <div class="col-6 text-label">{{'label.currency' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('currencyCode') }}</div>
+        </div> -->
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.firstReceivedDates' | translate}}</div>
+            <div class="col-6 value-label">{{ cruiseOrderItemModel?.firstReceivedDate | date: DATE_FORMAT | default : '--' }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.sub1' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('sub1') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.sub2' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('sub2') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.priority' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('priority') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.quotedCost' | translate}}</div>
+            <div class="col-6 value-label">{{ cruiseOrderItemModel?.quotedCost| number: '0.0-0' | default : defaultValue}} {{ returnText('quotedCostCurrency') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.delayCause' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('delayCause') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.estReadyDates' | translate}}</div>
+            <div class="col-6 value-label">{{ cruiseOrderItemModel?.readyDate | date: DATE_FORMAT | default : '--' }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.deliveryTicket' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('deliveryTicket') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.destinationCountry' | translate}}</div>
+            <div class="col-6 value-label">{{ returnText('destinationCountry') }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 text-label">{{'label.approvedDates' | translate}}</div>
+            <div class="col-6 value-label">{{ cruiseOrderItemModel?.approvedDate | date: DATE_FORMAT | default : '--' }}</div>
+        </div>
+
+    </div>
+</div>

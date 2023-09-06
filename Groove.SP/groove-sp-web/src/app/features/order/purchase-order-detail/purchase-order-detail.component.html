@@ -1,0 +1,738 @@
+<div class="content__header">
+    <div class="typing_loader" *ngIf="!isInitDataLoaded"></div>
+    <div class="container-fluid" *ngIf="isInitDataLoaded">
+        <div class="header-group" id="headerBar" #headerBar>
+            <div class="row">
+                <div class="col-sm-8">
+                        <button attr.data-balloon="{{'tooltip.backToList' | translate}}" data-balloon-pos="right" type="button" class="btn btn-default back-button"
+                            (click)="backList()">
+                            <i class="ei ei-arrow_left"></i>
+                        </button>
+                        <label class="form-header">{{ model.poNumber }}</label>
+                        <app-status-label [status]="model.status" [statusName]="model.statusName | translate" [statusEnum]="purchaseOrderStatus">
+                        </app-status-label>
+                </div>
+                <div class="col-sm-4 text-right">
+                    <button 
+                        *hasPermission="[AppPermissions.PO_ProgressCheckCRD]" type="button"
+                        [hidden]="isHiddenProgressCheck()"
+                        (click)="progressCheck()"
+                        class="btn header-button btn-color-yellow">
+                        <fa-icon [icon]="faPlus" class="collapsed-content"></fa-icon>
+                        {{'label.progressCheck' | translate}}
+                    </button>
+                    <button type="button" class="btn header-button btn-color-green" 
+                        [hidden]="hiddenBtnFulfillment() || isProductBalanceEqualZero() || isHiddenByProgressCheck()"
+                        *hasPermission="[AppPermissions.PO_Fulfillment_Detail_Edit]" (click)="onBtnFulfillmentClick()">
+                        <fa-icon [icon]="faCheck" class=" icon-fulfillment"></fa-icon>
+                        {{ 'label.fulfillment' | translate}}
+                    </button>
+                    <button type="button" class="btn btn-header-info btn-delegation" [hidden]="hiddenBtnPODelegation() || isProductBalanceEqualZero()"
+                    *hasPermission="[AppPermissions.PO_Delegation]" [disabled]="disableBtnPODelegation()"
+                    data-toggle="modal" data-target="#poDelegationModal">
+                        <i class="ei ei-arrow_left-right_alt icon-delegation"></i>
+                        <span class="text-delegation">{{ 'label.delegation' | translate}}</span>
+                    </button>
+                    <button type="button" class="btn header-button btn-color-grey" 
+                        *hasPermission="[AppPermissions.PO_Detail_Close]" [hidden]="model.stage !== poStageType.ShipmentDispatch"
+                        [disabled]="isCanceling"
+                        (click)="onCancelPOClicked()">
+                        <fa-icon [icon]="faBan" class=""></fa-icon>
+                        {{'label.close' | translate}}
+                    </button>
+                </div>
+            </div>
+           <div class="row text-muted create-title">
+                <span>{{'label.createdOn' | translate}}</span>
+                <span class="font-weight-bold pl-1">{{ model?.createdDate | date: DATE_FORMAT }}</span>
+                <span class="mx-2">
+                    <img src="/assets/images/dote-icon.png" />
+                </span>
+                {{'label.owner' | translate}}: <span class="font-weight-bold pl-1">{{ model?.createdBy }}</span>
+           </div>
+        </div>
+
+        <div class="col milestone-content" *ngIf="isInitDataLoaded">
+            <div class="milestone-item" *ngFor="let item of poStages" [ngClass]="{ 'active': item.active, 'current': item.current }">
+                <span class="icon" [ngClass]="item.class"></span>
+                <h5 class="milestone-title">{{ item.title | translate}}</h5>
+            </div>
+        </div>
+
+    
+            <!-- This is sticky bar -->
+            <div class="sticky-navigation mt-3" id="stickyBar" #stickyBar style="display: none;">
+                <div class="row">
+                    <div class="col">
+                        <kendo-buttongroup class="button-group" selection="multiple">
+                            <button *ngFor="let tab of tabs" kendoButton [toggleable]="true" [selected]="tab.selected" [class.current]="tab.selected" (click)="$event.preventDefault()"
+                                (selectedChange)="onClickStickyBar($event, tab)">
+                                <span> {{ tab.text | translate | uppercase}} </span>
+                            </button>
+                        </kendo-buttongroup>
+                    </div>
+                </div>
+            </div>
+
+        <!-- This is content section -->
+        <div class="section-container mt-3" id="section-container" #sectionContainer>
+            <!-- General -->
+            <section class="panel-group" id="general" #general *ngIf="getTabDetails('general')" [hidden]="isReloadMode">
+                <label class="panel-header fs-14">{{'label.general' | translate}}</label><br>
+                <div class="row">
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'poNumber')">
+                            <div class="col-5 text-label">{{'label.poNumber' | translate}}</div>
+                            <div class="col-7 value-label">{{ returnText('poNumber') }}</div>
+                    </div>
+                    
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'poIssueDate')">
+                        <div class="col-5 text-label">{{'label.poIssueDates' | translate}}</div>
+                        <div class="col-7 value-label">{{ model.poIssueDate ? (model.poIssueDate | date: DATE_FORMAT) : '--'}}</div>
+                    </div>
+
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'numberOfLineItems')">
+                        <div class="col-5 text-label">{{'label.numberOfLineItems' | translate}}</div>
+                        <div class="col-7 value-label">{{ returnText('numberOfLineItems') }}</div>
+                    </div>
+                    
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'cargoReadyDate')">
+                        <div class="col-5 text-label">{{'label.cargoReadyDates' | translate}}</div>
+                        <div class="col-7 value-label">{{ model.cargoReadyDate ? (model.cargoReadyDate | date: DATE_FORMAT) : '--'}}
+                            <span *ngIf="model.isProgressCargoReadyDates && model.stage <= POStageType.Released" tooltipClass="pending-for-progress-tooltip-container" kendoTooltip [tooltipTemplate]="pendingForProgressCheckTooltip" position="right" filter="fa-icon">
+                                <fa-icon
+                                    *ngIf="checkPendingForProgress(model) && !model.productionStarted" 
+                                    [icon]="faExclamationCircle" 
+                                    class="ml-2 pending-for-progress-icon" [size]="'lg'">
+                                </fa-icon>
+                                 <ng-template #pendingForProgressCheckTooltip let-anchor>
+                                     <span class="pending-for-progress-check-tooltip">
+                                         <fa-icon
+                                             [icon]="faExclamationCircle" 
+                                             class="mr-1 pending-for-progress-icon">
+                                         </fa-icon>
+                                         {{'label.pendingForProgressCheck' | translate}}
+                                     </span>
+                                 </ng-template>
+                             </span>
+ 
+                             <span 
+                                 kendoTooltip [tooltipTemplate]="readyToBookTooltip" 
+                                 tooltipClass="ready-to-book-tooltip-container"  
+                                 *ngIf="model.productionStarted && model.stage < poStageType.ForwarderBookingRequest && model.isProgressCargoReadyDates" 
+                                 position="right" filter="fa-icon">
+                                 <fa-icon
+                                     [icon]="faCheckCircle" 
+                                     class="ml-2 ready-to-book-icon" [size]="'lg'">
+                                 </fa-icon>
+                                 <ng-template #readyToBookTooltip let-anchor>
+                                     <span class="ready-to-book-tooltip">
+                                         <fa-icon
+                                         [icon]="faCheck" 
+                                         class="mr-1 ready-to-book-icon">
+                                         </fa-icon>
+                                         {{'label.readyToBook' | translate}}
+                                     </span>
+                                 </ng-template>
+                             </span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'customer')">
+                            <div class="col-5 text-label">{{'label.customer' | translate}}</div>
+                            <div class="col-7 value-label">{{ returnText('customer') }}</div>
+                    </div>
+
+                    
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'incoterm')">
+                        <div class="col-5 text-label">{{'label.incoterms' | translate}}</div>
+                        <div class="col-7 value-label">{{ returnText('incoterm') }}</div>
+                    </div>
+
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'customerReferences')">
+                            <div class="col-5 text-label">{{'label.customerReferences' | translate}}</div>
+                            <div class="col-7 value-label">{{ returnText('customerReferences') }}</div>
+                    </div>
+                    
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'modeOfTransport')">
+                        <div class="col-5 text-label">{{'label.modeOfTransport' | translate}}</div>
+                        <div class="col-7 value-label">{{ returnText('modeOfTransport') }}</div>
+                    </div>
+
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'supplier')">
+                            <div class="col-5 text-label">{{'label.supplier' | translate}}</div>
+                            <div class="col-7 value-label">{{ returnText('supplier') }}</div>
+                    </div>
+
+                    
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'department')">
+                        <div class="col-5 text-label">{{'label.department' | translate}}</div>
+                        <div class="col-7 value-label">{{ returnText('department') }}</div>
+                    </div>
+
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'shipper')">
+                            <div class="col-5 text-label">{{'label.shipper' | translate}}</div>
+                            <div class="col-7 value-label">{{ returnText('shipper') }}</div>
+                    </div>
+
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'consignee')">
+                        <div class="col-5 text-label">{{'label.consignee' | translate}}</div>
+                        <div class="col-7 value-label">{{ returnText('consignee') }}</div>
+                    </div>
+
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'grossWeight')">
+                        <div class="col-5 text-label">{{'label.grossWeight' | translate}}</div>
+                        <div class="col-7 value-label">{{ model.grossWeight ? (model.grossWeight | number: '0.2-2') : '--' }} {{'label.kgs' | translate}}</div>
+                    </div>
+
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'shipFrom')">
+                        <div class="col-5 text-label">{{'label.portOfLoading' | translate}}</div>
+                        <div class="col-7 value-label">{{ returnText('shipFrom') }}</div>
+                    </div>
+
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'volume')">
+                        <div class="col-5 text-label">{{'label.volume' | translate}}</div>
+                        <div class="col-7 value-label">{{ model.volume ? (model.volume | number: '0.3-3') : '--' }} {{'label.cbm' | translate}}</div>
+                    </div>
+
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'shipTo')">
+                        <div class="col-5 text-label">{{'label.portOfDischarge' | translate}}</div>
+                        <div class="col-7 value-label">{{ returnText('shipTo') }}</div>
+                    </div>
+
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'expectedShipDate')">
+                        <div class="col-5 text-label">{{'label.expectedShipDates' | translate}}</div>
+                        <div class="col-7 value-label">{{ model.expectedShipDate ? (model.expectedShipDate | date: DATE_FORMAT) : '--' }}</div>
+                    </div>
+
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'earliestShipDate')">
+                        <div class="col-5 text-label">{{'label.earliestShipDates' | translate}}</div>
+                        <div class="col-7 value-label">{{ model.earliestShipDate ? (model.earliestShipDate | date: DATE_FORMAT) : '--' }}</div>
+                    </div>
+
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'expectedDeliveryDate')">
+                        <div class="col-5 text-label">{{'label.expectedDeliveryDates' | translate}}</div>
+                        <div class="col-7 value-label">{{ model.expectedDeliveryDate ? (model.expectedDeliveryDate | date: DATE_FORMAT) : '--'}}</div>
+                    </div>
+
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'earliestDeliveryDate')">
+                        <div class="col-5 text-label">{{'label.earliestDeliveryDates' | translate}}</div>
+                        <div class="col-7 value-label">{{ model.earliestDeliveryDate ? (model.earliestDeliveryDate | date: DATE_FORMAT) : '--'}}</div>
+                    </div>
+
+
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'latestShipDate')">
+                        <div class="col-5 text-label">{{'label.latestShipDates' | translate}}</div>
+                        <div class="col-7 value-label">{{ model.latestShipDate ? (model.latestShipDate | date: DATE_FORMAT) : '--'}}</div>
+                    </div>
+
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'contractShipmentDate')">
+                            <div class="col-5 text-label">{{'label.contractShipmentDate' | translate}}</div>
+                            <div class="col-7 value-label">{{ model.contractShipmentDate ? (model.contractShipmentDate | date: DATE_FORMAT) : '--'}}</div>
+                    </div>
+
+                    
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'latestDeliveryDate')">
+                        <div class="col-5 text-label">{{'label.latestDeliveryDates' | translate}}</div>
+                        <div class="col-7 value-label">{{ model.latestDeliveryDate ? (model.latestDeliveryDate | date: DATE_FORMAT) : '--'}}</div>
+                    </div>
+
+                    <div class="col-md-6 row" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'latestDeliveryDate')" *ngIf="model.poType === poType.Allocated">
+                        <div class="col-5 text-label">{{'label.blanketPO' | translate}}</div>
+                        <div class="col-7 value-label">
+                            <a class="k-link"
+                               [title]="model.blanketPO?.poNumber"
+                               routerLinkActive="active"
+                               routerLink="/purchase-orders/{{model.blanketPO?.id}}"
+                               target="_blank">{{ model.blanketPO?.poNumber}}</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Product -->
+            <section class="panel-group" id="product" #product *ngIf="getTabDetails('product')" [hidden]="isReloadMode">
+                <label class="panel-header fs-14">{{'label.product' | translate}}</label><br>
+                <kendo-grid #grid="kendoGrid" [data]="model.lineItems" [scrollable]="'vertical'">
+                    <kendo-grid-column field="lineOrder" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'lineOrder')" title="{{'label.lineOrder' | translate}}" [headerClass]="'multiline-header'">
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                            {{getLineOrder(dataItem)}}
+                        </ng-template>
+                    </kendo-grid-column>
+                    
+                    <kendo-grid-column field="productCode" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'productCode')" title="{{'label.productCode' | translate}}" [headerClass]="'multiline-header'">
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                            <a class="k-link" (click)="openProductPopup(dataItem)">{{dataItem.productCode}}</a>
+                        </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="descriptionOfGoods" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'descriptionOfGoods')" title="{{'label.descriptionOfGoods' | translate}}" [headerClass]="'multiline-header'">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="orderedUnitQty" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'orderedUnitQty')" title="{{'label.orderedQty' | translate}}" [format]="'n0'" [headerClass]="'multiline-header'">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="unitUOM" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'unitUOM')" title="{{'label.unitUOM' | translate}}" [headerClass]="'multiline-header'">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="bookedUnitQty" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'bookedUnitQty')" title="{{'label.bookedQty' | translate}}" [format]="'n0'" [headerClass]="'multiline-header'">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="balanceUnitQty" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'balanceUnitQty')" title="{{'label.balanceQty' | translate}}" [format]="'n0'" [headerClass]="'multiline-header'">
+                    </kendo-grid-column>
+                    
+                </kendo-grid>
+                <app-product-detail-popup [model]="productDetailModel" [visibleColumns]="GetVisibleColumns(ViewSettingModuleIdType.PO_DETAIL_ITEMS)" [productPopupOpened]="productPopupOpened" (close)="productPopupClosedHandler()"></app-product-detail-popup>
+            </section>
+
+            <!-- Contact -->
+            <section class="panel-group" id="contact" #contact *ngIf="getTabDetails('contact')" [hidden]="isReloadMode">
+                <label class="panel-header fs-14">{{'label.contact' | translate}}</label>
+                <kendo-grid #grid="kendoGrid" [data]="model.contacts | contactSequence" [scrollable]="'vertical'">
+                    <kendo-grid-column field="organizationRole" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_CONTACTS,'organizationRole')" title="{{'label.organizationRole' | translate}}">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="companyName" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_CONTACTS,'companyName')" title="{{'label.companyName' | translate}}">
+                        <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                            {{dataItem.companyName | default: defaultValue}}
+                        </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="addressLine1" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_CONTACTS,'addressLine1')" title="{{'label.address' | translate}}" [class]="{'multiple-lines-text': true}">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="contactName" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_CONTACTS,'contactName')" title="{{'label.contactName' | translate}}">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="contactNumber" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_CONTACTS,'contactNumber')" title="{{'label.contactPhoneNumber' | translate}}">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="contactEmail" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_CONTACTS,'contactEmail')" title="{{'label.contactEmail' | translate}}">
+                        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                            <a breakLine title="{{dataItem.contactEmail}}">{{dataItem.contactEmail}}</a>
+                        </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="weChatOrWhatsApp" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_CONTACTS,'weChatOrWhatsApp')" title="{{'label.weChatOrWhatsApp' | translate}}">
+                    </kendo-grid-column>
+                </kendo-grid>
+            </section>
+
+            <!-- Terms and Instruction -->
+            <section class="panel-group" id="termsAndInstructions" #termsAndInstructions *ngIf="getTabDetails('termsAndInstructions')" [hidden]="isReloadMode">
+                <h5 class="title-grid mt-0">{{'label.termsAndInstructions' | translate}}</h5>
+                        <div class="row">
+                            <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'poTerms')">
+                                <div class="row">
+                                    <div class="col-5 text-label">{{'label.poTerms' | translate}}</div>
+                                    <div class="col-7 value-label">{{ model?.poTerms }}</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'containerTypeName')">
+                                <div class="row">
+                                    <div class="col-5 text-label">{{'label.equipmentType' | translate}}</div>
+                                    <div class="col-7 value-label">{{ model?.containerTypeName | translate }}</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'hazardousMaterialsInstruction')">
+                                <div class="row">
+                                    <div class="col-5 text-label">{{'label.hazardousMaterialsInstruction' | translate}}</div>
+                                    <div class="col-7 value-label">{{ model?.hazardousMaterialsInstruction }}</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'specialHandlingInstruction')">
+                                <div class="row">
+                                    <div class="col-5 text-label">{{'label.specialHandlingInstruction' | translate}}</div>
+                                    <div class="col-7 value-label">{{ model?.specialHandlingInstruction }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL,'poRemark')">
+                                <div class="row">
+                                    <div class="col-5 text-label">{{'label.poRemark' | translate}}</div>
+                                <div class="col-7 value-label">{{ model?.poRemark }}</div>
+                                </div>
+                            </div>
+                        </div>
+            </section>
+
+            <!-- Allocated PO -->
+            <section class="panel-group" id="allocatedPO" #allocatedPO *ngIf="getTabDetails('allocatedPO')" [hidden]="isReloadMode">
+                <label class="panel-header fs-14">{{'label.allocatedPO' | translate}}</label>
+                <kendo-grid #grid="kendoGrid" [data]="model.allocatedPOs" [scrollable]="'vertical'">
+                    <kendo-grid-column field="poNumber" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ALLOCATEDPOS,'poNumber')" title="{{'label.poNo' | translate}}" [headerClass]="'multiline-header'">
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                            <a class="k-link"
+                                [title]="dataItem.poNumber"
+                                routerLinkActive="active"
+                                routerLink="/purchase-orders/{{dataItem.id}}"
+                                target="_blank">{{dataItem.poNumber}}</a>
+                        </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column title="{{'label.blanketPOQty' | translate}}" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ALLOCATEDPOS,'totalBlanketPOQty')" [headerClass]="'multiline-header'">
+                        <ng-template kendoGridCellTemplate let-dataItem>{{totalBlanketPOQty | number: '0.0-0' | default: defaultValue}}</ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column title="{{'label.allocatedPOQty' | translate}}" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ALLOCATEDPOS,'totalAllocatedQty')" [headerClass]="'multiline-header'">
+                        <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                            {{totalAllocatedQty(rowIndex) | number: '0.0-0' | default: defaultValue}}
+                        </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="shipTo" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ALLOCATEDPOS,'shipTo')" title="{{'label.portOfDischarge' | translate}}" [headerClass]="'multiline-header'">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="expectedDeliveryDate" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ALLOCATEDPOS,'expectedDeliveryDate')" title="{{'label.expectedDeliveryDates' | translate}}" format="{0:{{DATE_FORMAT}}}" [headerClass]="'multiline-header'">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="stageName" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ALLOCATEDPOS,'stageName')" title="{{'label.poStage' | translate}}" [headerClass]="'multiline-header'">
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                            {{dataItem.stageName | translate}}
+                        </ng-template>
+                    </kendo-grid-column>
+
+                </kendo-grid>
+            </section>
+
+            <!-- Booking -->
+            <section class="panel-group" id="fulfillment" #fulfillment *ngIf="getTabDetails('fulfillment')">
+                <label class="panel-header fs-14">{{'label.fulfillment' | translate}}</label>
+                <kendo-grid #grid="kendoGrid" *ngIf="model.fulfillments && !model.shipments" [data]="model.fulfillments" [scrollable]="'vertical'">
+                    <kendo-grid-column field="number" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_BOOKINGS,'number')" title="{{'label.fulfillmentNo' | translate}}" [headerClass]="'multiline-header'">
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                            <a *ngIf="model.customerServiceType === buyerComplianceServiceType.Freight; else warehouseBookingNumber" class="k-link" [title]="dataItem.number"
+                                routerLinkActive="active"
+                                target="_blank"
+                                [routerLink]="(dataItem.orderFulfillmentPolicy === orderFulfillmentPolicy.AllowMissingPO && dataItem.stage === poFulfillmentStageType.Draft ? '/missing-po-fulfillments/view/' : '/po-fulfillments/view/') + dataItem.id"
+                                [queryParams]="{formType: formModeType.View}">
+                                {{dataItem.number}}
+                            </a>
+                            <span *ngIf="dataItem.stage === poFulfillmentStageType.Draft" class="draft_arrow_box">{{'label.draft' | translate}}</span>
+
+                            <ng-template #warehouseBookingNumber>
+                                <a class="k-link" [title]="dataItem.number"
+                                    routerLinkActive="active"routerLink="/warehouse-bookings/view/{{dataItem.id}}" target="_blank">
+                                    {{dataItem.number}}
+                                </a>
+                            </ng-template>
+                        </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="shipmentNumber" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_BOOKINGS,'soNo')" title="{{'label.shipmentNo' | translate}}" [headerClass]="'multiline-header'">
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                            <ng-container *ngIf="model.customerServiceType === buyerComplianceServiceType.Freight; else soNumberText">
+                                <div *ngFor="let shipment of dataItem.shipments; index as i">
+                                    <a  *ngIf="shipment.shipmentId && isCanClickShipmentNo;else shipmentNumberText" class="k-link" [title]="shipment.shipmentNumber" routerLinkActive="active"
+                                    routerLink="/shipments/{{shipment.shipmentId}}" target="_blank">
+                                        {{shipment.shipmentNumber}}
+                                    </a>
+                                    <p *ngIf="!shipment.shipmentId || !isCanClickShipmentNo" [title]="shipment.shipmentNumber">
+                                        {{shipment.shipmentNumber}}
+                                    </p>
+                                </div>
+                            </ng-container>
+                            <ng-template #soNumberText>{{dataItem.soNo}}</ng-template>
+                        </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="fulfillmentUnitQty" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_BOOKINGS,'fulfillmentUnitQty')" title="{{'label.bookedQty' | translate}}" [format]="'n0'" [headerClass]="'multiline-header'">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="shipFromName" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_BOOKINGS,'shipFromName')" title="{{'label.portOfLoading' | translate}}" [headerClass]="'multiline-header'">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="expectedShipDate" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_BOOKINGS,'expectedShipDate')" title="{{'label.expectedShipDates' | translate}}" format="{0:{{DATE_FORMAT}}}" [headerClass]="'multiline-header'">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="shipToName" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_BOOKINGS,'shipToName')" title="{{'label.portOfDischarge' | translate}}" [headerClass]="'multiline-header'">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="expectedDeliveryDate" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_BOOKINGS,'expectedDeliveryDate')" title="{{'label.expectedDeliveryDates' | translate}}" format="{0:{{DATE_FORMAT}}}" [headerClass]="'multiline-header'">
+                    </kendo-grid-column>
+
+                </kendo-grid>
+                
+                <kendo-grid #grid="kendoGrid"  *ngIf="model.shipments" [data]="model.shipments" [scrollable]="'vertical'">
+                    <kendo-grid-column field="number" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_BOOKINGS,'number')" title="{{'label.fulfillmentNo' | translate}}" [headerClass]="'multiline-header'">
+                      
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="shipmentNo" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_BOOKINGS,'shipmentNo')" title="{{'label.shipmentNo' | translate}}" [headerClass]="'multiline-header'">
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                            <ng-container *ngIf="model.customerServiceType === buyerComplianceServiceType.Freight; else soNumberText">
+                                <a  *ngIf="dataItem.id && isCanClickShipmentNo;else soNumberText" class="k-link" [title]="dataItem.shipmentNo" routerLinkActive="active"
+                                routerLink="/shipments/{{dataItem.id}}" target="_blank">
+                                    {{dataItem.shipmentNo}}
+                                </a>
+                            </ng-container>
+                            <ng-template #soNumberText>{{dataItem.shipmentNo}}</ng-template>
+                        </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="bookedQuantity" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_BOOKINGS,'bookedQuantity')" title="{{'label.bookedQty' | translate}}" [format]="'n0'" [headerClass]="'multiline-header'">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="shipFrom" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_BOOKINGS,'shipFrom')" title="{{'label.portOfLoading' | translate}}" [headerClass]="'multiline-header'">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="expectedShipDate" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_BOOKINGS,'expectedShipDate')" title="{{'label.expectedShipDates' | translate}}" format="{0:{{DATE_FORMAT}}}" [headerClass]="'multiline-header'">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="shipTo" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_BOOKINGS,'shipTo')" title="{{'label.portOfDischarge' | translate}}" [headerClass]="'multiline-header'">
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="expectedDeliveryDate" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_BOOKINGS,'expectedDeliveryDate')" title="{{'label.expectedDeliveryDates' | translate}}" format="{0:{{DATE_FORMAT}}}" [headerClass]="'multiline-header'">
+                    </kendo-grid-column>
+                </kendo-grid>
+            </section>
+          
+            <!-- Activity -->
+            <section class="panel-group" id="activity" #activity *ngIf="getTabDetails('activity')" [hidden]="isReloadMode">
+                <div class="row">
+                    <div class="col">
+                        <label class="panel-header fs-14">{{'label.activity' | translate}}</label>    
+                    </div>
+                    
+                    <div class="col text-right">
+                        <button type="button" class="btn header-button add-new-button" (click)="onAddActivityClick()">
+                            <div class="icon-circle">
+                                <fa-icon [icon]="faPlus"></fa-icon>
+                            </div>
+                            <span class="icon-circle-label">{{'label.addNew' | translate}}</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="activity-wrapper">
+                    <div class="row">
+                        <div class="col-10 text-left top-bar-container d-flex" style="align-items: center;" *ngIf="showActivityActionButton">
+                            <div class="form-inline-control mr-5 filter-by-control" style="width: 40%">
+                                <label class="form-label">{{'label.filterBy' | translate}}</label>
+                                <kendo-dropdownlist name="filterActivityBy"
+                                                [valuePrimitive]="true"
+                                                [textField]="'label'"
+                                                [valueField]="'value'"
+                                                [(ngModel)]="filterActivityModel.filterBy"
+                                                (valueChange)="filterActivityByValueChange($event)"
+                                                [data]="filterActivityByOptions"
+                                                class="form-control pr-3">
+                                    <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                        {{ dataItem?.label | translate }}
+                                    </ng-template>
+                                    <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                        {{ dataItem?.label | translate }}
+                                    </ng-template>
+                                </kendo-dropdownlist>
+                                <kendo-dropdownlist name="filterActivityValue"
+                                                [disabled]="!filterActivityModel.filterBy"
+                                                [valuePrimitive]="true"
+                                                [textField]="'text'"
+                                                [valueField]="'value'"
+                                                [(ngModel)]="filterActivityModel.filterValue"
+                                                [data]="filterActivityValueDataSource$ | async"
+                                                class="form-control">
+                                </kendo-dropdownlist>
+                            </div>
+                            <div class="form-inline-control filter-date-control" style="width: 40%">
+                                <label class="form-label">{{'label.activityDates' | translate}}</label>
+                                <kendo-datepicker class="date-filter form-control" (valueChange)="onFromDateFilterChange($event)" [(ngModel)]="filterActivityModel.filterFromDate"></kendo-datepicker>
+                                <kendo-datepicker class="date-filter form-control" (valueChange)="onToDateFilterChange($event)" [(ngModel)]="filterActivityModel.filterToDate"></kendo-datepicker>
+                            </div>
+                            <div class="action_button_container" style="width: 20%">
+                                <button type="button" class="btn btn-header-success" (click)="applyActivityFilter()" [disabled]="!enableApplyActivityFilterButton">
+                                    <span class="icon-circle-label">{{'label.apply' | translate}}</span>
+                                </button>
+                                <a (click)="clearActivityFilter()" class="clear_activity_filter_btn">{{'label.clearAll' | translate}}</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="activity-list">
+                            <div class="date-group" >
+                                <div class="activity-item" *ngFor="let item of defaultMilestone">
+                                    <div class="milestone">{{ item.milestone | translate }}</div>
+                                    <div class="added-circle rounded-circle added-info"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="date-group" *ngFor="let groupActivity of groupActivityModel" [style.display]="!groupActivity.matchFilter ? 'none' : 'block'">
+                                <div class="date-title rounded-pill">
+                                    <span>{{groupActivity.dateGroup | date: DATE_FORMAT}}</span>
+                                </div>
+
+                                <div class="activity-item" *ngFor="let activity of groupActivity.activities" [style.display]="!activity.matchFilter && !activity.activity.milestone ? 'none' : 'flex'">
+                                    <div class="milestone" [style.background-color]="!activity.activity.milestone ? 'white':''">{{ activity.activity.milestone | translate }}</div>
+                                    <div class="added-info"><fa-icon [icon]="faCheckCircle" style="font-size: 16px; color:#009FFF"></fa-icon></div>
+                                    <div *ngIf="activity.activity.activityCode !== 'Released'" class="activity-info rounded" [class.milestone-event]="milestoneEventCode.includes(activity.activity.activityType)" [style.display]="!activity.matchFilter ? 'none' : 'block'">
+                                        <div>
+                                            <span class="activity-code">
+                                                {{activity.activity.activityDescription}} 
+                                            </span>
+                                            <span class="added-time">{{"label.at" | translate}} {{ activity.activityDate | date:'hh:mm a'}}</span>  
+                                        </div>
+                                        
+                                        <div *ngIf="activity.vesselFlight" class="activity-message pt-2">
+                                            <span>{{"label.vesselSlashVoyage" | translate}} </span>
+                                            <ng-container *ngFor="let vesselInfo of activity.vesselFlightArray; index as i; let length = count; let last = last">
+                                                <span *ngIf="i < 5 && !isCanClickVessel" class="un_clickable__number">{{ vesselInfo.text }}</span>
+                                                <a *ngIf="i < 5 && isCanClickVessel" class="k-link"
+                                                    routerLink="/freight-schedulers/schedule-detail/{{vesselInfo.value}}"
+                                                    routerLinkActive="active" target="_blank">{{ vesselInfo.text }}</a>{{ !last && i < 5 ? ", " : ""}}
+                    
+                                                <span *ngIf="length > 5 && i === 4 && !activity.isShowAllVessel" class="k-link" (click)="showAllVessel(activity)">+{{length - 5}}</span>
+
+                                                <span *ngIf="i >= 5 && activity.isShowAllVessel && !isCanClickVessel" class="un_clickable__number">{{ vesselInfo.text }}</span>
+                                                <a
+                                                    *ngIf="i >= 5 && activity.isShowAllVessel && isCanClickVessel"
+                                                    class="k-link" 
+                                                    routerLink="/freight-schedulers/schedule-detail/{{vesselInfo.value}}"
+                                                    routerLinkActive="active" target="_blank">
+                                                    {{ vesselInfo.text }}</a>{{ !last && i >= 5 && activity.isShowAllVessel ? ", " : ""}}
+                                                
+                                            </ng-container>
+                                        </div>
+
+                                        <div *ngIf="activity.containerNos" class="activity-message pt-2">
+                                            <span>{{'label.containerNo' | translate}} </span>
+                                            <ng-container *ngFor="let containerInfo of activity.containerNosArray; index as i; let length = count; let last = last">
+                                                <span *ngIf="i < 5 && !isCanClickContainerNo" class="un_clickable__number">{{ containerInfo.text }}</span>
+                                                <a *ngIf="i < 5 && isCanClickContainerNo" class="k-link"
+                                                    routerLink="/containers/{{containerInfo.value}}"
+                                                    routerLinkActive="active" target="_blank">{{ containerInfo.text }}</a>{{ !last && i < 5 ? ", " : ""}}
+                    
+                                                <span *ngIf="length > 5 && i === 4 && !activity.isShowAllContainerNo" class="k-link" (click)="showAllContainerNo(activity)">+{{length - 5}}</span>
+
+                                                <span *ngIf="i >= 5 && activity.isShowAllContainerNo && !isCanClickContainerNo" class="un_clickable__number">{{ containerInfo.text }}</span>
+                                                <a
+                                                    *ngIf="i >= 5 && activity.isShowAllContainerNo && isCanClickContainerNo"
+                                                    class="k-link" 
+                                                    routerLink="/containers/{{containerInfo.value}}"
+                                                    routerLinkActive="active" target="_blank">
+                                                    {{ containerInfo.text }}</a>{{ !last && i >= 5 && activity.isShowAllContainerNo ? ", " : ""}}
+                                            </ng-container>
+                                        </div>
+
+                                         <div *ngIf="activity.shipmentNos" class="activity-message pt-2">
+                                            <span>{{'label.shipmentNo' | translate}} </span>
+                                            <ng-container *ngFor="let shipmentInfo of activity.shipmentNosArray; index as i; let length = count; let last = last">
+                                                <span *ngIf="i < 5 && !isCanClickShipmentNo" class="un_clickable__number">{{ shipmentInfo.text }}</span>
+                                                <a *ngIf="i < 5 && isCanClickShipmentNo" class="k-link"
+                                                    routerLink="/shipments/{{shipmentInfo.value}}"
+                                                    routerLinkActive="active" target="_blank">{{ shipmentInfo.text }}</a>{{ !last && i < 5 ? ", " : ""}}
+                    
+                                                <span *ngIf="length > 5 && i === 4 && !activity.isShowAllShipmentNo" class="k-link" (click)="showAllShipmentNo(activity)">+{{length - 5}}</span>
+
+                                                <span *ngIf="i >= 5 && activity.isShowAllShipmentNo && !isCanClickShipmentNo" class="un_clickable__number">{{ shipmentInfo.text }}</span>
+                                                <a
+                                                    *ngIf="i >= 5 && activity.isShowAllShipmentNo && isCanClickShipmentNo"
+                                                    class="k-link" 
+                                                    routerLink="/shipments/{{shipmentInfo.value}}"
+                                                    routerLinkActive="active" target="_blank">
+                                                    {{ shipmentInfo.text }}</a>{{ !last && i >= 5 && activity.isShowAllShipmentNo ? ", " : ""}}
+                                            </ng-container>
+                                        </div>
+
+                                        <div *ngIf="activity.poFulfillmentNos" class="activity-message pt-2">
+                                            <span>{{'label.fulfillmentNo' | translate}} </span>
+                                            <ng-container *ngFor="let poFulfillmentInfo of activity.poFulfillmentNosArray; index as i; let length = count; let last = last">
+                                                <span *ngIf="i < 5 && !isCanClickBookingNo" class="un_clickable__number">{{ poFulfillmentInfo.text }}</span>
+                                                
+                                                <a *ngIf="i < 5 && isCanClickBookingNo" class="k-link"
+                                                    routerLink="{{model.customerServiceType === buyerComplianceServiceType.Freight ? (poFulfillmentInfo.orderFulfillmentPolicy === orderFulfillmentPolicy.AllowMissingPO && poFulfillmentInfo.stage === poFulfillmentStageType.Draft ? '/missing-po-fulfillments/view/' : '/po-fulfillments/view/') + poFulfillmentInfo.value : '/warehouse-bookings/view/' + poFulfillmentInfo.value}}"
+                                                    routerLinkActive="active" target="_blank"
+                                                    [queryParams]="{formType: formModeType.View}">{{ poFulfillmentInfo.text }}</a>{{ !last && i < 5 ? ", " : ""}}
+                    
+                                                    <span *ngIf="length > 5 && i === 4 && !activity.isShowAllBookingNo" class="k-link" (click)="showAllBookingNo(activity)">+{{length - 5}}</span>
+
+                                                    <span *ngIf="i >= 5 && activity.isShowAllBookingNo && !isCanClickBookingNo" class="un_clickable__number">{{ poFulfillmentInfo.text }}</span>
+                                                <a
+                                                    *ngIf="i >= 5 && activity.isShowAllBookingNo && isCanClickBookingNo"
+                                                    class="k-link" 
+                                                    routerLink="{{model.customerServiceType === buyerComplianceServiceType.Freight ? (poFulfillmentInfo.orderFulfillmentPolicy === orderFulfillmentPolicy.AllowMissingPO && poFulfillmentInfo.stage === poFulfillmentStageType.Draft ? '/missing-po-fulfillments/view/' : '/po-fulfillments/view/') + poFulfillmentInfo.value : '/warehouse-bookings/view/' + poFulfillmentInfo.value}}"
+                                                    [queryParams]="{formType: formModeType.View}"
+                                                    routerLinkActive="active" target="_blank">
+                                                    {{ poFulfillmentInfo.text }}</a>{{ !last && i >= 5 && activity.isShowAllBookingNo ? ", " : ""}}
+                                            </ng-container>
+                                        </div>
+
+                                        <div class="pt-2" *ngIf="activity.location">
+                                            <fa-icon [icon]="faMapMarkerAlt"></fa-icon> <span class="pl-2"><span class="activity-code">{{activity.location}}</span></span>
+                                        </div>
+                                        
+                                        <div class="pt-2" *ngIf="activity.remark">
+                                            {{ 'label.remark' | translate }} <span class="remark">{{ activity.remark }}</span>
+                                        </div>
+
+                                        <!-- <div class="added-by pt-2">
+                                            {{ 'label.by' | translate }}  <span class="activity-code">{{activity.actor}}</span>
+                                        </div> -->
+
+                                        <div class="activity-btn-container" *ngIf="isEditableActivity(activity)">
+                                            <div kendoTooltip #tooltip="kendoTooltip"
+                                                [tooltipTemplate]="actionMenuTooltip" filter="button" showOn="click"
+                                                position="left" offset="-20" showAfter="200">
+                                                <button #activityButton type="button" class="btn">
+                                                    <fa-icon [icon]="faEllipsisV"></fa-icon>
+                                                </button>
+                                            </div>
+                                            <ng-template #actionMenuTooltip let-anchor>
+                                                <div class="row action-button"
+                                                    (click)="onEditActivityClick(activity.activity); tooltip.toggle(activityButton)">
+                                                    <button type="button" class="btn">
+                                                        <fa-icon [icon]="faPencilAlt" class="action-grid-icon">
+                                                        </fa-icon>
+                                                        <span
+                                                            class="action-grid-label">{{'label.edit' | translate}}</span>
+                                                    </button>
+                                                </div>
+                                                <div class="row action-button"
+                                                    (click)="onDeleteActivityClick(activity.activity); tooltip.toggle(activityButton)">
+                                                    <button type="button" class="btn">
+                                                        <fa-icon [icon]="faTrashAlt" class="action-grid-icon"></fa-icon>
+                                                        <span
+                                                            class="action-grid-label">{{'tooltip.delete' | translate}}</span>
+                                                    </button>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row position-relative load-more">
+                        <div class="btn-load-more" *ngIf="showActivityLoadMoreButton">
+                            <a (click)="onLoadMoreClick()"><i>{{'label.loadMoreActivities' | translate}}</i></a>
+                        </div>
+                    </div>
+                </div>
+                <app-purchase-order-activity-popup *ngIf="activityFormOpened" [activityFormOpened]="activityFormOpened"
+                    [allEventOptions]="allEventOptions"
+                    [activityFormMode]="activityFormMode" (add)="onActivityAdded($event)"
+                    (edit)="onActivityEdited($event)" (close)="onActivityFormClosed()"
+                    [model]="activityDetails" [heightPopup]="heightActivity">
+                </app-purchase-order-activity-popup>
+            </section>
+
+            <!-- Dialog -->
+            <section class="panel-group" id="dialog" #dialog *ngIf="getTabDetails('dialog')" [hidden]="isReloadMode">
+                <app-order-note-list [noteList]="noteList"
+                        [poId]="model.id"
+                        [poItems]="model.lineItems"
+                        [currentUser]="currentUser"
+                        [canAddNote]="true"
+                        [canEditAllNotes]="true"
+                        >
+                        <label class="panel-header fs-14">{{'label.dialog' | translate}}</label>
+                    </app-order-note-list>
+            </section>
+        </div>
+    </div>
+    <app-scroll-to-top></app-scroll-to-top>
+</div>
+
+<app-po-delegation-modal [poId]="model.id" [contactList]="model.contacts" (close)="onPODelegationModalClosed($event)"></app-po-delegation-modal>

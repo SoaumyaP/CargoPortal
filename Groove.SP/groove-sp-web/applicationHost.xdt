@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+    <system.webServer>
+        <proxy xdt:Transform="InsertIfMissing" enabled="true" preserveHostHeader="false" reverseRewriteHostInResponseHeaders="false" />
+        <!-- <security>
+            <requestFiltering allowDoubleEscaping="True">
+                <requestLimits maxQueryString="32768" maxUrlLength="65536" />
+            </requestFiltering>
+        </security> -->
+    </system.webServer>
+   <system.web>
+        <!-- in seconds -->
+        <httpRuntime executionTimeout="300" />
+    </system.web>
+    <system.applicationHost>
+        <webLimits xdt:Transform="SetAttributes(connectionTimeout)" connectionTimeout="00:05:00" />
+    </system.applicationHost>
+</configuration>

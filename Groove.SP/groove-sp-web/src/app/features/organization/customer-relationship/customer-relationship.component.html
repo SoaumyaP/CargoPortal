@@ -1,0 +1,70 @@
+<div class="col-12 panel-group">
+    <label class="panel-header">{{'label.customerRelationship' | translate}}</label>
+    <kendo-grid #grid="kendoGrid"
+        [data]="customerList"
+        [scrollable]="'vertical'"
+        [selectable]="false">
+
+        <kendo-grid-column field="code" title="{{'label.organizationCode' | translate}}" [class.link-code]="currentUser.isInternal">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex" class="organization-code-dropdown">
+                <a class="k-link" routerLinkActive="active" *ngIf="dataItem.userAction == UserAction.RemoveCustomer && currentUser.isInternal" target="_blank" routerLink="/organizations/view/{{dataItem.id}}">{{dataItem.code}}</a>
+                <ng-container *ngIf="dataItem.userAction == UserAction.RemoveCustomer && !currentUser.isInternal">{{dataItem.code}}</ng-container>
+                <kendo-dropdownlist
+                    *ngIf="dataItem.userAction == UserAction.AddCustomer"
+                    name="organizationCode_{{rowIndex}}"
+                    required
+                    [(ngModel)]="dataItem.code"
+                    [data]="organizationCodeOptions"
+                    [valuePrimitive]="true"
+                    [textField]="'label'"
+                    [valueField]="'value'"
+                    (valueChange)="onOrganizationCodeAssignmentChanged($event, rowIndex)">
+                </kendo-dropdownlist>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="name" title="{{'label.name' | translate}}">
+        </kendo-grid-column>
+        <kendo-grid-column field="customerRefId" title="{{'label.customerRefId' | translate}}">
+            <ng-template kendoGridCellTemplate let-dataItem>
+                <app-editable-field [isEditable]="isViewMode && isEditableCustomerRefId" [value]="dataItem.customerRefId" (save)="saveCustomerRefId(dataItem.id, $event)">
+                </app-editable-field>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="countryName" title="{{'label.country' | translate}}">
+        </kendo-grid-column>
+        <kendo-grid-column field="contactName" title="{{'label.contactName' | translate}}">
+        </kendo-grid-column>
+        <kendo-grid-column field="contactEmail" title="{{'label.contactEmail' | translate}}" class="organization-email">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                <a title="{{dataItem.contactEmail}}">{{dataItem.contactEmail}}</a>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="connectionTypeName" title="{{'label.connection' | translate}}" [sortable]="true" width="109px">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                <span [className]="dataItem.connectionType == connectionType.Active ? 'active-status' :
+                                (dataItem.connectionType == connectionType.Pending ?'pending-status' : 'inactive-status')">{{dataItem.connectionTypeName | translate}}</span>
+            </ng-template>s
+        </kendo-grid-column>
+
+        <!-- <kendo-grid-command-column title="{{'label.action' | translate}}" [headerStyle]="{'text-align': 'center'}" class="action-column-grid col-action" width="120"  *ngIf="canEditInfor">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                <button attr.data-balloon="{{'tooltip.delete' | translate}}" data-balloon-pos="left" type="button" class="btn btn-default grid-remove-icon-button" *ngIf="dataItem.userAction == UserAction.RemoveCustomer" (click)="onUserAction.emit(dataItem)" [disabled]="isAddingNewCustomer">
+                    <i class="ei ei-icon_minus-06"></i>
+                </button>
+                <button attr.data-balloon="{{'tooltip.approve' | translate}}" data-balloon-pos="left" type="button" class="btn btn-default grid-approve-icon-button" *ngIf=" dataItem.userAction == UserAction.AddCustomer" (click)="onUserAction.emit(dataItem)" [disabled]="!dataItem.code">
+                    <i class="ei ei-icon_check"></i>
+                </button>
+                <button attr.data-balloon="{{'label.resend' | translate}}" data-balloon-pos="left" type="button" class="btn btn-default grid-resend-icon-button" [disabled]="dataItem.connectionType !== connectionType.Inactive" *ngIf="isAdmin" (click)="resendEmail(dataItem)">
+                    <fa-icon [icon]="faPaperPlane"></fa-icon>
+                </button>
+            </ng-template>
+        </kendo-grid-command-column> -->
+    </kendo-grid>
+    <!-- <div class="margin-add-icon-button" *ngIf="canEditInfor">
+        <button type="button" class="btn prim-button add-more-icon-button"
+                attr.data-balloon="{{'label.addMore' | translate}}" data-balloon-pos="up"
+                (click)="addBlankCustomerOrganization()" [disabled]="isAddingNewCustomer" id="addMoreBtn">
+            <i class="ei ei-icon_plus"></i>
+        </button>
+    </div> -->
+</div>

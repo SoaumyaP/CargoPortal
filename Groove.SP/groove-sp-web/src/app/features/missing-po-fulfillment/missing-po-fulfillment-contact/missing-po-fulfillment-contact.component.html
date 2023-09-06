@@ -1,0 +1,299 @@
+<ng-template #addressTooltipTemplate let-anchor>
+    <span class="address-tooltip">{{anchor.nativeElement.getAttribute('data-tooltip')}}</span>
+</ng-template>
+
+<div *ngIf="isCanChangeAgent" class="change-agent-btn-container">
+    <button type="button"
+            [disabled]="!isEditable"
+            data-balloon-length="medium"
+            data-balloon-pos="down"
+            attr.data-balloon="{{'tooltip.changeAgent' | translate}}"
+            [class]="!isDefaultAgentSelected ? 'btn btn-header-primary' : 'btn btn-header-primary unselected-btn'"
+            (click)="onChangeAgent()">
+        {{ 'label.changeAgent' | translate }}
+    </button>
+
+    <button type="button"
+            [disabled]="!isEditable"
+            data-balloon-pos="down"
+            attr.data-balloon="{{'tooltip.defaultAgent' | translate}}"
+            [class]="isDefaultAgentSelected ? 'btn btn-header-primary' : 'btn btn-header-primary unselected-btn'"
+            (click)="onSetDefaultAgent()">
+        {{ 'label.defaultAgent' | translate }}
+    </button>
+</div>
+<div class="clearfix"></div>
+<kendo-grid #grid="kendoGrid" [rowClass]="rowCallback" [data]="contactList" [scrollable]="'vertical'" [selectable]="false" class="custom-edit-grid">
+    <kendo-grid-column field="organizationRole"
+                    title="{{'label.organizationRole' | translate}}"
+                    [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CONTACTS, 'organizationRole')">
+        <ng-template *ngIf="isEditable" kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex" class="organization-code-dropdown">
+            {{isDisabledRow(rowIndex) || dataItem.organizationRole === organizationNameRole.Pickup  ? dataItem.organizationRole : ""}}
+            <kendo-dropdownlist name="{{tabPrefix}}organizationRole_{{rowIndex}}"
+                                required
+                                *ngIf="!isDisabledRow(rowIndex) && dataItem.organizationRole !== organizationNameRole.Pickup"
+                                (valueChange)="roleValueChange($event, rowIndex)"
+                                [(ngModel)]="dataItem.organizationRole"
+                                [data]="dataItem.organizationRoleOptions"
+                                (open)="onRoleOptionsOpen(rowIndex)"
+                                [valuePrimitive]="true"
+                                [textField]="'name'"
+                                [valueField]="'name'">
+            </kendo-dropdownlist>
+            <div *ngIf="formErrors[tabPrefix + 'organizationRole_' + rowIndex]" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'organizationRole_' + rowIndex] }}
+            </div>
+        </ng-template>
+    </kendo-grid-column>
+
+    <!-- Company column -->
+    <kendo-grid-column field="companyName"
+                    title="{{'label.companyName' | translate}}"
+                    [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CONTACTS, 'companyName')">
+        <ng-template *ngIf="isEditable" kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+            {{isDisabledRow(rowIndex) && (isDefaultAgentSelected || !(isEnableOrignAgent(dataItem) || isEnableDestinationAgent(dataItem))) ? (dataItem.companyName | default : defaultValue): "" }} 
+
+            <ng-container *ngIf="!isAllowInputContact(rowIndex) && !isEnableOrignAgent(dataItem) && !isEnableDestinationAgent(dataItem)">
+                    <kendo-autocomplete required
+                                        *ngIf="!isDisabledRow(rowIndex)"
+                                        name="{{tabPrefix}}companyName_{{rowIndex}}"
+                                        (valueChange)="contactValueChange($event, rowIndex)"
+                                        (filterChange)="contactFilterChange($event, rowIndex)"
+                                        [valueField]="'name'"
+                                        (focusout)="onFocusOutCompany(dataItem.companyName,rowIndex)"
+                                        [(ngModel)]="dataItem.companyName"
+                                        [data]="getContactOptions(rowIndex)"
+                                        [filterable]="true"
+                                        [placeholder]="'e.g. Organization Name'">
+                    </kendo-autocomplete>
+            </ng-container>
+
+            <div [ngClass]="formErrors[tabPrefix + 'companyName_' + rowIndex + '_maxLength']  ? 'force-invalid' : ''">
+                <input kendoTextBox
+                        *ngIf="!isDisabledRow(rowIndex) && isAllowInputContact(rowIndex)"
+                        name="{{tabPrefix}}companyName_{{rowIndex}}"
+                        (input)="validateCompany($event.target.value, rowIndex)"
+                        [required] = "dataItem.organizationRole === organizationNameRole.BillingParty"
+                        type="text"
+                        class="form-control"
+                        (focusout)="onFocusOutCompany(dataItem.companyName,rowIndex)"
+                        [(ngModel)]="dataItem.companyName"
+                        [disabled]="!isEditable"/>
+            </div>
+
+            <ng-container *ngIf="isEnableOrignAgent(dataItem) && !isDefaultAgentSelected">
+                <kendo-dropdownlist required
+                                    name="{{tabPrefix}}companyName_{{rowIndex}}"
+                                    [filterable]="true"
+                                    [textField]="'agentOrganizationName'"
+                                    [valueField]="'agentOrganizationId'"
+                                    (filterChange)="onFilterOriginCompany($event)"
+                                    (valueChange)="onChangeOriginContactModel($event,rowIndex)"
+                                    [data]="originAgentAssignmentFiltered"
+                                    [valuePrimitive]="true"
+                                    (focusout)="onFocusOutCompany(dataItem.companyName,rowIndex)"
+                                    [(ngModel)]="originContactModel.organizationId"
+                                    class="form-control">
+                </kendo-dropdownlist>
+            </ng-container>
+
+            <ng-container *ngIf="isEnableDestinationAgent(dataItem) && !isDefaultAgentSelected">
+                <kendo-dropdownlist required
+                                    name="{{tabPrefix}}companyName_{{rowIndex}}"
+                                    [filterable]="true"
+                                    [textField]="'agentOrganizationName'"
+                                    [valueField]="'agentOrganizationId'"
+                                    (filterChange)="onFilterDestinationCompany($event)"
+                                    (valueChange)="onChangeDestinationContactModel($event)"
+                                    [data]="destinationAgentAssignmentFiltered"
+                                    [valuePrimitive]="true"
+                                    (focusout)="onFocusOutCompany(dataItem.companyName,rowIndex)"
+                                    [(ngModel)]="destinationContactModel.organizationId"
+                                    class="form-control">
+                </kendo-dropdownlist>
+            </ng-container>
+
+            <div *ngIf="formErrors[tabPrefix + 'companyName_' + rowIndex + '_theSameName']" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'companyName_' + rowIndex + '_theSameName'] }}
+            </div>
+
+            <div *ngIf="formErrors[tabPrefix + 'companyName_' + rowIndex + '_maxLength']" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'companyName_' + rowIndex + '_maxLength'] }}
+            </div>
+
+            <div *ngIf="formErrors[tabPrefix + 'companyName_' + rowIndex]" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'companyName_' + rowIndex] }}
+            </div>
+        </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column field="address"
+                    title="{{'label.address' | translate}}"
+                    [class]="{'multiple-lines-text': true}"
+                    [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CONTACTS, 'address')">
+        <ng-template kendoGridHeaderTemplate>
+            {{'label.address' | translate}}
+                <span kendoTooltip [tooltipTemplate]="addressTooltipTemplate" filter="fa-icon" position="right">
+                    <fa-icon attr.data-tooltip="{{'label.tooltipAddressLine' | translate}}" data-balloon-pos="right" [icon]="faInfoCircle" [styles]="{'color': '#0A89D6'}"></fa-icon>
+                </span>
+        </ng-template>
+
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+            <span *ngIf="isViewOnlyRow(rowIndex)" title="{{dataItem.address}}">{{dataItem.address}}</span>
+            <div [ngClass]="formErrors[tabPrefix + 'address_' + rowIndex + '_custom'] ? 'force-invalid' : ''">
+                <textarea kendoTextArea
+                        style="overflow-x:auto; height: 110px !important;"
+                        *ngIf="!isViewOnlyRow(rowIndex)"
+                        id="{{tabPrefix}}address_{{rowIndex}}"
+                        name="{{tabPrefix}}address_{{rowIndex}}"
+                        type="text"
+                        [required]="dataItem.organizationRole !== organizationNameRole.BillingParty"
+                        class="form-control"
+                        [(ngModel)]="dataItem.address"
+                        [disabled]="!isEditable"
+                        (ngModelChange)="addressValueKeyUp$.next(rowIndex)"
+                        (focusout)="onFocusOutAddress(rowIndex)"
+                        (valueChange)="addressValueChange($event, rowIndex)">
+                </textarea>
+            </div>
+
+            <div *ngIf="formErrors[tabPrefix + 'address_' + rowIndex]" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'address_' + rowIndex] }}
+            </div>
+            <div *ngIf="formErrors[tabPrefix + 'address_' + rowIndex + '_custom']" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'address_' + rowIndex + '_custom'] }}
+            </div>
+        </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column field="contactName"
+                    title="{{'label.contactName' | translate}}"
+                    [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CONTACTS, 'contactName')">
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+            <span *ngIf="isViewOnlyRow(rowIndex)" title="{{dataItem.contactName}}">{{dataItem.contactName}}</span>
+            <div [ngClass]="formErrors[tabPrefix + 'contactName_' + rowIndex + '_custom'] ? 'force-invalid' : ''">
+                <input kendoTextBox
+                    *ngIf="!isViewOnlyRow(rowIndex)"
+                    name="{{tabPrefix}}contactName_{{rowIndex}}"
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="dataItem.contactName"
+                    [disabled]="!isEditable"
+                    (focusout)="onFocusOutContactName(rowIndex)"
+                    (ngModelChange)="contactNameValueKeyUp$.next(rowIndex)"
+                    [required]="dataItem.organizationRole !== organizationNameRole.BillingParty && dataItem.organizationRole !== organizationNameRole.Pickup"/>
+            </div>
+            <div *ngIf="formErrors[tabPrefix + 'contactName_' + rowIndex]" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'contactName_' + rowIndex] }}
+            </div>
+            <div *ngIf="formErrors[tabPrefix + 'contactName_' + rowIndex + '_custom']" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'contactName_' + rowIndex + '_custom'] }}
+            </div>
+        </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column field="contactNumber"
+                    title="{{'label.contactPhoneNumber' | translate}}"
+                    [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CONTACTS, 'contactNumber')">
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+            <span *ngIf="isViewOnlyRow(rowIndex)" title="{{dataItem.contactNumber}}">{{dataItem.contactNumber}}</span>
+            <div [ngClass]="formErrors[tabPrefix + 'contactNumber_' + rowIndex + '_maxLength'] ? 'force-invalid' : ''">
+                <input kendoTextBox
+                        *ngIf="!isViewOnlyRow(rowIndex)"
+                        name="{{tabPrefix}}contactNumber_{{rowIndex}}"
+                        type="text"
+                        class="form-control"
+                        (focusout)="onFocusOutContactNumber(dataItem.contactNumber,rowIndex)"
+                        (input)="validateContactNumber($event.target.value, rowIndex)"
+                        [(ngModel)]="dataItem.contactNumber"
+                        [disabled]="!isEditable"/>
+            </div>
+            
+
+            <div *ngIf="formErrors[tabPrefix + 'contactNumber_' + rowIndex + '_maxLength']" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'contactNumber_' + rowIndex + '_maxLength'] }}
+            </div>
+
+            <div *ngIf="formErrors[tabPrefix + 'contactNumber_' + rowIndex]" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'contactNumber_' + rowIndex] }}
+            </div>
+        </ng-template>
+    </kendo-grid-column>
+    
+    <kendo-grid-column field="contactEmail"
+                    title="{{'label.contactEmail' | translate}}"
+                    class="organization-email"
+                    [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CONTACTS, 'contactEmail')">
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+            <a *ngIf="isViewOnlyRow(rowIndex)" breakLine title="{{dataItem.contactEmail}}">{{dataItem.contactEmail}}</a>
+            <div [ngClass]="formErrors[tabPrefix + 'contactEmail_' + rowIndex + '_custom'] || formErrors[tabPrefix + 'contactEmail_' + rowIndex + '_maxLength'] ? 'force-invalid' : ''">
+                <input kendoTextBox
+                    *ngIf="!isViewOnlyRow(rowIndex)"
+                    name="{{tabPrefix}}contactEmail_{{rowIndex}}"
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="dataItem.contactEmail"
+                    [disabled]="!isEditable"
+                    (focusout)="onFocusOutContactEmail(dataItem.contactEmail,rowIndex)"
+                    (input)="validateContactEmail(dataItem.contactEmail,rowIndex)"
+                    [required]="dataItem.organizationRole !== organizationNameRole.BillingParty && dataItem.organizationRole !== organizationNameRole.Pickup"
+                    (ngModelChange)="validateMultiEmailAddresses($event, tabPrefix + 'contactEmail_' + rowIndex)"/>
+            </div>
+            
+            <div *ngIf="formErrors[tabPrefix + 'contactEmail_' + rowIndex + '_maxLength']" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'contactEmail_' + rowIndex + '_maxLength']  }}
+            </div>
+            <div *ngIf="formErrors[tabPrefix + 'contactEmail_' + rowIndex]" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'contactEmail_' + rowIndex] }}
+            </div>
+            <div *ngIf="formErrors[tabPrefix + 'contactEmail_' + rowIndex + '_custom']" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'contactEmail_' + rowIndex + '_custom']  }}
+            </div>
+        </ng-template>
+    </kendo-grid-column>
+
+    <!-- WeChat ID/WhatsApp -->
+    <kendo-grid-column field="weChatOrWhatsApp"
+                    title="{{'label.weChatOrWhatsApp' | translate}}"
+                    [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CONTACTS, 'weChatOrWhatsApp')">
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+            <span *ngIf="isViewOnlyRow(rowIndex)" title="{{dataItem.weChatOrWhatsApp}}">{{dataItem.weChatOrWhatsApp}}</span>
+            <div [ngClass]="formErrors[tabPrefix + 'weChatOrWhatsApp_' + rowIndex + '_maxLength'] ? 'force-invalid' : ''">
+                <input kendoTextBox
+                        *ngIf="!isViewOnlyRow(rowIndex)"
+                        name="{{tabPrefix}}weChatOrWhatsApp_{{rowIndex}}"
+                        type="text"
+                        maxlength="32"
+                        class="form-control"
+                        [(ngModel)]="dataItem.weChatOrWhatsApp"
+                        [disabled]="!isEditable"/>
+            </div>
+
+            <div *ngIf="formErrors[tabPrefix + 'weChatOrWhatsApp_' + rowIndex + '_maxLength']" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'weChatOrWhatsApp_' + rowIndex + '_maxLength']  }}
+            </div>
+
+            <div *ngIf="formErrors[tabPrefix + 'weChatOrWhatsApp_' + rowIndex]" class="k-invalid-msg">
+                {{ formErrors[tabPrefix + 'weChatOrWhatsApp_' + rowIndex]  }}
+            </div>
+        </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-command-column *ngIf="isEditable" title="{{'label.action' | translate}}" [headerStyle]="{'text-align': 'center'}"
+        class="action-column-grid col-action" width="75">
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+            <button *ngIf="!isDisabledRow(rowIndex) && dataItem.organizationRole !== organizationNameRole.Pickup" attr.data-balloon="{{'tooltip.delete' | translate}}"
+                data-balloon-pos="left" type="button" class="btn ml-0 btn-default grid-remove-icon-button"
+                (click)="onDeleteContact(rowIndex)">
+                <i class="ei ei-icon_minus-06"></i>
+            </button>
+        </ng-template>
+    </kendo-grid-command-column>
+</kendo-grid>
+<div class="margin-add-icon-button" *ngIf="isEditable">
+    <button type="button" class="btn prim-button add-more-icon-button"
+        attr.data-balloon="{{'label.addMore' | translate}}" data-balloon-pos="up" (click)="addBlankContact()"
+        id="addMoreBtn">
+        <i class="ei ei-icon_plus"></i>
+    </button>
+</div>

@@ -1,0 +1,208 @@
+@import '../../../../src/styles/variables';
+
+$warning-color : $color-orange-primary;
+$warning-bg-color: $color-orange-light;
+
+.resubmit-btn {
+    margin-left: 0px;
+    margin-top: 10px;
+}
+
+.reject-group {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.reject-info {
+    margin-bottom: 10px;
+}
+
+.chart-container {
+    border: 1px solid #eee;
+    padding: 20px;
+    position: relative;
+    min-height: 300px;
+    background-color: white;
+}
+
+.chart-group {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.table-container {
+    border: 1px solid #eee;
+    padding: 20px;
+    position: relative;
+    background-color: white;
+    min-height: 148px;
+    .no-data-msg {
+        width: 100%;
+    }
+}
+
+.dashboard-header {
+    padding: 15px;
+    margin-left: 15px;
+}
+
+.no-data-msg {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 50%;
+    height: 10%;
+    text-align: center;
+    margin: auto;
+    font-size: 30px;
+    color: #ccc;
+}
+
+.chart-title {
+    font-size: 16px;
+    height: 35px;
+    display: inline;
+}
+
+.chart-content {
+    margin-top: 10px;
+    margin-left: 5px;
+}
+
+.statistics-title {
+    font-size: 16px;
+    height: 35px;
+    display: inline;
+}
+
+.weekly-metric {
+    width: 100%;
+    margin-bottom: 25px;
+}
+
+h2 {
+    font-size: 32px;
+    margin-bottom: .5rem;
+}
+
+sub {
+    font-size: 50%;
+    padding-left: 5px;
+}
+
+.m-b-25 {
+    margin-bottom: 25px;
+}
+
+
+.metric-label {
+    font-size: 14px;
+    font-weight: 400;
+    margin-top: 12px;
+}
+
+.custom-border-grid.k-grid td:not([kendogridfiltercell]) {
+    border-bottom: 0px !important;
+}
+
+.card {
+    border: 1px solid #eee;
+    margin-bottom: 30px;
+    display: block;
+}
+
+.card-wrapper {
+    .no-data-msg {
+        width: 100%;
+    }
+}
+
+.k-i-loading {
+    display: inline-block;
+}
+
+.card-body {
+    min-height: 168px;
+}
+
+.grid-margin {
+    margin-top: 15px;
+}
+
+.card-container {
+    margin-top: 25px;
+}
+
+
+span[kendotooltip]{
+    color: $theme-color;
+}
+
+::ng-deep .k-tooltip {
+    padding: 0;
+}
+
+a {
+    color: $theme-color !important;
+}
+
+::ng-deep .today-update-section a {
+    color: $theme-color !important;
+}
+
+::ng-deep .k-chart.k-chart-pointer g > g:last-child {
+    cursor: pointer !important;
+}
+.custom-filter{
+    float: right;
+}
+
+::ng-deep .custom-filter {
+    width: auto !important;
+    margin-top: -12px;
+    margin-right: -11px;
+    .k-dropdown-wrap{
+        border: none;
+        box-shadow: none !important;
+        .k-input{
+            justify-content:flex-end;
+            color: $color-blue-primary;
+            padding-right: 0;
+        }
+        .k-select{
+            background: none;
+            color: $color-blue-primary;
+        }
+    }
+
+    .k-animation-container {
+        width: 113px !important;
+    }
+}
+
+.updates-of-today-container{
+    background-color:#eef9ff;
+    .survey-name-container{
+        margin-left: 26px;
+        font-size: 14px;
+       
+    }
+    p {
+        font-size: 16px;
+        font-style: italic;
+        span.dismiss {
+            font-size: 14px;
+            color: $color-blue-primary;
+            cursor: pointer;
+        }
+        ::ng-deep .fa-light{
+            font-size: 20px;
+        }
+    }
+}
+
+
+
+

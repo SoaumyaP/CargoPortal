@@ -1,0 +1,85 @@
+<div class="content__header">
+    <div class="container-fluid">
+        <div class="row header-group" *ngIf="isInitDataLoaded">
+            <div class="col-sm">
+                <button attr.data-balloon="{{'tooltip.backToList' | translate}}" data-balloon-pos="up" type="button"
+                    class="btn btn-default back-button" (click)="backToList()">
+                    <i class="ei ei-arrow_left"></i>
+                </button>
+                <label *ngIf="isEditMode" class="form-header">{{(StringHelper.caseIgnoredCompare(model.modeOfTransport,modeOfTransport.Air) ? 'label.hawb':'label.houseBL') | translate}} #{{houseBLNo}}
+                </label>
+            </div>
+        </div>
+        <div class="typing_loader" *ngIf="!isInitDataLoaded"></div>
+
+        <form class="row" #mainForm="ngForm" (ngSubmit)="onSubmit()" *ngIf="isInitDataLoaded">
+            <div class="col-12 panel-group remove-padding-first-panel">
+                <label class="panel-header">{{(StringHelper.caseIgnoredCompare(model.modeOfTransport,modeOfTransport.Air) ? 'label.hawbDetail':'label.BOLDetail') | translate}}</label>
+                <div class="form-row">
+                    <div class="form-group col-md-6" [class.force-invalid]="formErrors['billOfLadingNo'] || getControl('billOfLadingNo')?.errors?.isDuplicated">
+                        <label for="billOfLadingNo" class="required">{{(StringHelper.caseIgnoredCompare(model.modeOfTransport,modeOfTransport.Air) ? 'label.hawbNo':'label.BOLNo') | translate}}</label>
+                        <input
+                            required type="text"
+                            class="form-control"
+                            name="billOfLadingNo"
+                            (input)="checkHouseBLEvent$.next($event.target.value)"
+                            [(ngModel)]="model.billOfLadingNo" />
+                            <div *ngIf="formErrors['billOfLadingNo']" class="k-invalid-msg">
+                                {{ StringHelper.caseIgnoredCompare(model.modeOfTransport,modeOfTransport.Air) ? ('validation.requiredField' | translate: {'fieldName': 'label.hawbNo'| translate}) : formErrors.billOfLadingNo}}
+                            </div>
+
+                            <div *ngIf="getControl('billOfLadingNo')?.errors?.isDuplicated" class="k-invalid-msg">
+                                {{ 'validation.cannotBeDuplicated' | translate: {'fieldName': (StringHelper.caseIgnoredCompare(model.modeOfTransport,modeOfTransport.Air) ? 'label.hawbNo':'label.BOLNo') | translate} }}
+                            </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="jobNumber">{{'label.jobNo' | translate}}</label>
+                        <input type="text" class="form-control" name="jobNumber" [(ngModel)]="model.jobNumber" maxlength="12" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div *ngIf="StringHelper.caseIgnoredCompare(model.modeOfTransport,modeOfTransport.Sea)" class="form-group col-md-6">
+                        <label for="billOfLadingType" class="required">{{'label.billOfLadingType' | translate}}</label>
+                                    <kendo-dropdownlist
+                                        required
+                                        [data]="billOfLadingTypes"
+                                        [textField]="'value'"
+                                        [valueField]="'value'"
+                                        [valuePrimitive]="true"
+                                        name="billOfLadingType"
+                                        class="form-control"
+                                        [(ngModel)]="model.billOfLadingType"
+                                    >
+                                    <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                        {{ dataItem?.label | translate }}
+                                    </ng-template>
+                                    </kendo-dropdownlist>
+
+                                    <div *ngIf="getControl('billOfLadingType')?.errors?.required && getControl('billOfLadingType')?.touched" class="k-invalid-msg">
+                                        {{ 'validation.requiredField' | translate: {'fieldName': 'label.billOfLadingType' | translate} }}
+                                    </div>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="issueDate" class="required">{{'label.issueDates' | translate}}</label>
+                        <kendo-datepicker
+                            required
+                            name="issueDate"
+                            [(ngModel)]="model.issueDate"
+                            class="form-control" >
+                        </kendo-datepicker>
+                        <div *ngIf="formErrors['issueDate']" class="k-invalid-msg">
+                            {{formErrors.issueDate}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 action-bar p-0">
+                <button type="button" class="btn second-button" (click)="cancel()">{{'label.cancel' | translate}}</button>
+                <button type="submit" class="btn prim-button" (click)="save()">{{'label.save' | translate}}</button>
+            </div>
+        </form>
+    </div>
+</div>

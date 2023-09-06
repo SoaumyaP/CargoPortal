@@ -1,0 +1,133 @@
+<kendo-dialog [title]="'label.addConsignment' | translate" *ngIf="consignmentFormDialogOpened" (close)="onFormClosed()"
+    novalidate [width]="824" [height]="710" class="custom-header-dialog max-screen-1280x768">
+    <div class="container">
+        <form #mainForm="ngForm">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="sequence" class="required">{{'label.sequence' | translate}}</label>
+                    <kendo-numerictextbox name="sequence" required [min]="0" [spinners]="false" [format]="'n'"
+                        [autoCorrect]="true" class="form-control" [(ngModel)]="model.sequence">
+                    </kendo-numerictextbox>
+                    <div *ngIf="formErrors['sequence']" class="k-invalid-msg">
+                        {{formErrors.sequence}}
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="consignmentDates" class="required">{{'label.consignmentDates' | translate}}</label>
+                    <kendo-datepicker name="consignmentDate" class="form-control" required
+                        [(ngModel)]="model.consignmentDate">
+                    </kendo-datepicker>
+                    <div *ngIf="formErrors['consignmentDate']" class="k-invalid-msg">
+                        {{formErrors.consignmentDate}}
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="agentReference">{{'label.agentReference' | translate}}</label>
+                    <input type="text" class="form-control" name="agentReference" [(ngModel)]="model.agentReferenceNumber" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="confirmedDates">{{'label.confirmedDates' | translate}}</label>
+                    <kendo-datepicker name="confirmedDates" class="form-control" [(ngModel)]="model.confirmedDate">
+                    </kendo-datepicker>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="consignmentMasterBL">{{'label.consignmentMasterBL' | translate}}</label>
+                    <input type="text" class="form-control" name="consignmentMasterBL" [(ngModel)]="model.consignmentMasterBL" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="consignmentHouseBL">{{'label.consignmentHouseBL' | translate}}</label>
+                    <input type="text" class="form-control" name="consignmentHouseBL" [(ngModel)]="model.consignmentHouseBL" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="modeOfTransport" class="required">{{'label.modeOfTransport' | translate}}</label>
+                    <kendo-dropdownlist name="modeOfTransport" required class="form-control"
+                        [data]="modeOfTransportOptions" [valuePrimitive]="true" [textField]="'label'"
+                        [valueField]="'value'" [(ngModel)]="model.modeOfTransport">
+                        <ng-template kendoDropDownListValueTemplate let-dataItem>
+                            {{ dataItem?.label | translate }}
+                        </ng-template>
+                        <ng-template kendoDropDownListItemTemplate let-dataItem>
+                            {{ dataItem?.label | translate }}
+                        </ng-template>
+                    </kendo-dropdownlist>
+                    <div *ngIf="formErrors['modeOfTransport']" class="k-invalid-msg">
+                        {{formErrors.modeOfTransport}}
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="serviceType">{{'label.serviceType' | translate}}</label>
+                    <input type="text" class="form-control" name="serviceType" [(ngModel)]="model.serviceType" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="consignmentType">{{'label.consignmentType' | translate}}</label>
+                    <input type="text" class="form-control" name="consignmentType"
+                        [(ngModel)]="model.consignmentType" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="executionAgent" class="required">{{'label.executionAgent' | translate}}</label>
+                    <input name="executionAgentId" required type="hidden" [(ngModel)]="model.executionAgentId">
+                    <kendo-autocomplete #executionAgentAutoComplete required name="executionAgent"
+                        (valueChange)="executionAgentValueChange($event)"
+                        (filterChange)="executionAgentFilterChange($event)" [valueField]="'label'"
+                        [readonly]="!currentUser.isInternal" [loading]="executionAgentLoading"
+                        [(ngModel)]="model.executionAgentName" [data]="filteredExecutionAgentOptions" [filterable]="true"
+                        [placeholder]="'placeholder.egThing' | translate: {thing: ('label.executionAgent' | translate)}" class="form-control" [ngClass]="{'read-only': !currentUser.isInternal}">
+                    </kendo-autocomplete>
+                    <div *ngIf="formErrors['executionAgent']" class="k-invalid-msg">
+                        {{ formErrors.executionAgent }}
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="shipFrom">{{'label.shipFrom' | translate}}</label>
+                    <kendo-autocomplete name="shipFrom" (filterChange)="locationFilterChange($event)"
+                        [valueField]="'locationDescription'" [(ngModel)]="model.shipFrom" [data]="filteredLocationOptions"
+                        [filterable]="true" [placeholder]="'Ship From'" class="form-control">
+                    </kendo-autocomplete>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="shipTo">{{'label.shipTo' | translate}}</label>
+                    <kendo-autocomplete name="shipTo" (filterChange)="locationFilterChange($event)"
+                        [valueField]="'locationDescription'" [(ngModel)]="model.shipTo" [data]="filteredLocationOptions"
+                        [filterable]="true" [placeholder]="'Ship To'" class="form-control">
+                    </kendo-autocomplete>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="shipFromETDDate" class="required">{{'label.shipFromETDDates' | translate}}</label>
+                    <kendo-datepicker name="shipFromETDDate" class="form-control" required
+                        [(ngModel)]="model.shipFromETDDate">
+                    </kendo-datepicker>
+                    <div *ngIf="formErrors['shipFromETDDate']" class="k-invalid-msg">
+                        {{formErrors.shipFromETDDate}}
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="shipToETADate" class="required">{{'label.shipToETADates' | translate}}</label>
+                    <kendo-datepicker name="shipToETADate" class="form-control" required
+                        [(ngModel)]="model.shipToETADate">
+                    </kendo-datepicker>
+                    <div *ngIf="formErrors['shipToETADate']" class="k-invalid-msg">
+                        {{formErrors.shipToETADate}}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()"
+            #Cancel>{{'label.cancel' | translate}}</button>
+        <button type="submit" class="btn prim-button dialog-button" (click)="onAddClick()"
+            >{{'label.save' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

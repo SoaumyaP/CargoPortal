@@ -1,0 +1,30 @@
+@import '../../../../styles/variables';
+
+.email-setting-grid {
+    .default-sendTo-label {
+        margin-top: 5px;
+    }
+    .k-checkbox-label {
+        &::before, &::after
+        {
+            font-size: 11px;
+        }
+    }
+    .k-checkbox:checked:focus+.k-checkbox-label::before {
+        border-color: $theme-color;
+        box-shadow: unset;
+    }
+    .k-checkbox:focus+.k-checkbox-label::before {
+        border-width: 0;
+    }
+
+    input.form-control.ng-touched.ng-invalid,
+    input.form-control.ng-dirty.ng-invalid {
+        color: #F31700 !important;
+        border-color: #F31700 !important;
+    }
+
+    ::placeholder {
+        opacity: 0.8;
+    }
+}

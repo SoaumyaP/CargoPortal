@@ -1,0 +1,95 @@
+<div class="user-role-switch-container" *ngIf="!isComponentDisabled">
+
+    <ng-template class="switch-info-tooltip" #switchTooltipTemplate let-anchor>
+        <span>{{'label.viewAs' | translate}} <b>{{ anchor.nativeElement.getAttribute('data-tooltip-roleName') }} </b>{{'label.at'| translate | lowercase}} <b>{{ anchor.nativeElement.getAttribute('data-tooltip-organizationName') }}</b></span>
+    </ng-template>
+
+    <div #switchOffMode class="switch-menu">
+        <span kendoTooltip filter="button" [tooltipTemplate]="switchTooltipTemplate" position="right">
+            <button type="button" class="btn" (click)="openPopupContext()" #anchor [attr.data-tooltip-roleName]="model.roleName" [attr.data-tooltip-organizationName]="model.organizationName">
+                <fa-icon [icon]="faUserFriends" [ngClass]="model.switchOn ? 'active' : ''"></fa-icon>
+            </button>
+        </span>
+    </div>
+
+    <kendo-popup [anchor]="anchor" *ngIf="isPopupOpening">
+        <div class="switch-popup-content">
+            <div class="row">
+                <div class="col-6">
+                    <div class="organization-number-search input-group">
+                        <input #searchTermInput
+                                type="text"
+                                class="form-control"
+                                [(ngModel)]="searchOrganizationName"
+                                (ngModelChange)="searchTermKeyup$.next(searchTermInput.value)"
+                                placeholder="{{'label.enterValueToFilter' | translate}}"
+                                #searchTermInput>
+                        <div class="input-group-append">
+                            <span class="k-i-loading k-icon input-group-text" *ngIf="isSearching;else notSearching"></span>
+                            <ng-template #notSearching>
+                                <span class="k-i-zoom k-icon input-group-text"></span>
+                            </ng-template>
+                        </div>
+                    </div>
+                    <div class="search-result mt-3">
+                        <ul class="selection-list">
+                            <li *ngFor="let item of organizationDataSource" (click)="switchToUserRole(item.roleId, item.id, item.name)">
+                                <span class="item-icon mr-2">
+                                    <fa-icon [icon]="faArrowAltCircleRight"></fa-icon>
+                                </span>
+                                <span class="item-text">{{item.name}}</span>
+                            </li>
+                        </ul>
+                        <ul *ngIf="organizationDataSource === null || organizationDataSource.length === 0">
+                            <li>
+                                <span class="item-text">{{'label.noDataFound' | translate}}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-6 vertical-line">
+                    <div class="row pb-2">
+                        <div class="col">
+                            <h3 class="legend pb-1">{{'label.viewAs' | translate}}</h3>
+                            <ul>
+                                <li>
+                                    <span><b>{{ model.roleName }}</b> {{'label.at'| translate | lowercase}} <b>{{ model.organizationName }}</b></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                   <div class="row">
+                       <div class="col">
+                            <h3 class="legend pb-1">{{'label.recentOrganizations' | translate}}</h3>
+                            <ul class="selection-list">
+                                <li *ngFor="let item of recentOrganizationDataSource" (click)="switchToRecent(item)">
+                                    <span class="item-icon mr-2">
+                                        <fa-icon [icon]="faArrowAltCircleRight"></fa-icon>
+                                    </span>
+                                    <span class="item-text">{{item.split(tilde)[0]}}</span>
+                                </li>
+                            </ul>
+
+                            <ul *ngIf="recentOrganizationDataSource === null || recentOrganizationDataSource.length === 0">
+                                <li>
+                                    <span class="item-text">{{'label.noDataAvailable' | translate}}</span>
+                                </li>
+                            </ul>
+
+                            <ul class="selection-list pt-3" *ngIf="model.roleId !== Roles.System_Admin && model.roleId !== Roles.CSR">
+                                <li class="legend" (click)="switchOffUserRole()">
+                                    <span class="item-icon mr-2">
+                                        <fa-icon [icon]="faArrowAltCircleLeft"></fa-icon>
+                                    </span>
+                                    <h4 class="item-text">{{'label.backToAdmin' | translate}}</h4>
+                                </li>
+                            </ul>
+
+                       </div>
+                   </div>
+                </div>
+            </div>
+
+        </div>
+    </kendo-popup>
+</div>

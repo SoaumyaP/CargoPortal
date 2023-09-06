@@ -1,0 +1,220 @@
+<kendo-dialog [title]="'label.productDetails' | translate" *ngIf="productPopupOpened" (close)="onFormClosed()" novalidate [width]="900" class="custom-header-dialog max-screen-1280x768">
+    <div class="container">
+        <div class="wrapper-form">
+            <div class="row">
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'productCode')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.productCode' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('productCode') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'descriptionOfGoods')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.descriptionOfGoods' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('descriptionOfGoods') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'seasonCode')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.seasonCode' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('seasonCode') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'orderedUnitQty')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.orderedQty' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.orderedUnitQty | number: '0.0-0' | default: defaultValue }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'unitUOM')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.unitUOM' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('unitUOM') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'bookedUnitQty')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.bookedQty' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.bookedUnitQty | number: '0.0-0' | default: defaultValue }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'balanceUnitQty')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.balanceQty' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.balanceUnitQty | number: '0.0-0' | default: defaultValue }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'minOrderQty')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.minOrderQty' | translate}}</div>
+                        <div class="col-6 value-label">{{ (!model.minOrderQty || model.minOrderQty === 0) ? defaultValue : (model.minOrderQty | number: '0.0-0') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'minPackageQty')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.minPackageQty' | translate}}</div>
+                        <div class="col-6 value-label">{{ (!model.minPackageQty || model.minPackageQty === 0) ? defaultValue : (model.minPackageQty | number: '0.0-0') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'volume')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.volumeCBM' | translate}}</div>
+                        <div class="col-6 value-label">{{ (!model.volume || model.volume === 0) ? defaultValue : (model.volume | number: '0.3-3') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'grossWeight')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.grossWeightKGS' | translate}}</div>
+                        <div class="col-6 value-label">{{ (!model.grossWeight || model.grossWeight === 0) ? defaultValue : (model.grossWeight | number: '0.2-2') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'commodity')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.commodity' | translate}}</div>
+                        <div class="col-6 value-label">{{ labelFromEnum(commodityOptions, returnValue('commodity')) | translate}}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'hsCode')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.hsCode' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('hsCode') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'styleNo')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.styleNo' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('styleNo') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'colourCode')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.colourCode' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('colourCode') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'styleName')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.styleName' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('styleName') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'colourName')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.colourName' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('colourName') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'innerQuantity')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.innerQuantity' | translate}}</div>
+                        <div class="col-6 value-label">{{(!model.innerQuantity || model.innerQuantity === 0) ? defaultValue : (model.innerQuantity | number: '0.0-0') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'outerQuantity')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.outerQuantity' | translate}}</div>
+                        <div class="col-6 value-label">{{ (!model.outerQuantity || model.outerQuantity === 0) ? defaultValue : (model.outerQuantity | number: '0.0-0') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'unitPrice')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.unitPrice' | translate}}</div>
+                        <div class="col-6 value-label">{{ model.unitPrice | number | default: defaultValue }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'currencyCode')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.currency' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('currencyCode') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'productFamily')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.productFamily' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('productFamily') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'size')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.size' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('size') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'referenceNumber1')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.referenceNumber' | translate}} 1</div>
+                        <div class="col-6 value-label">{{ returnValue('referenceNumber1') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'supplierProductCode')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.supplierProductCode' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('supplierProductCode') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'shippingMarks')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.shippingMarks' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('shippingMarks') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'referenceNumber2')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.referenceNumber' | translate}} 2</div>
+                        <div class="col-6 value-label">{{ returnValue('referenceNumber2') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'packageUOM')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.packageUOM' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('packageUOM') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'packagingInstruction')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.packagingInstruction' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('packagingInstruction') }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 content-details" [hidden]="isHiddenColumn(ViewSettingModuleIdType.PO_DETAIL_ITEMS,'productRemark')">
+                    <div class="row">
+                        <div class="col-6 text-label">{{'label.productRemark' | translate}}</div>
+                        <div class="col-6 value-label">{{ returnValue('productRemark') }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()" #Cancel>{{'label.close' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

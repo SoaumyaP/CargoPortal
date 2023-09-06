@@ -1,0 +1,22 @@
+@import '../../../../styles/variables';
+
+.button-bar {
+    text-align: center;
+    margin-top: 25px;
+}
+
+.panel-header {
+    font-size: 24px;
+}
+
+.header-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.container {
+    padding: 30px;
+    padding-bottom: 0px;
+    height: 100%;
+    overflow-y: auto;
+}

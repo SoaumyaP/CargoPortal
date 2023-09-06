@@ -1,0 +1,10 @@
+.note-textarea {
+    height: 180px !important;
+}
+
+.note-input {
+    display: contents;
+    ::ng-deep .k-input {
+        height: 40px !important;
+    }
+}

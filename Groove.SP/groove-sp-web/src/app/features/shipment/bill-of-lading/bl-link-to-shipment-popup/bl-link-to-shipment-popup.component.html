@@ -1,0 +1,119 @@
+<kendo-dialog
+    [title]="'label.addShipment'| translate"
+    *ngIf="isOpenLinkToShipmentPopup"
+    (close)="onCancelLinkToShipmentPopup()"
+    novalidate [width]="830" class="custom-header-dialog">
+    <div class="container">
+        <form #mainForm="ngForm">
+                <div class="row">
+                    <div class="col">
+                        <label class="required">{{'label.selectShipment' | translate}}</label>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <kendo-autocomplete
+                                    name="shipmentNo"
+                                    required
+                                    (valueChange)="onChangeShipmentNo($event)"
+                                    (filterChange)="searchShipmentEvent$.next($event)"
+                                    [valueField]="'shipmentNo'"
+                                    [data]="filteredShipments"
+                                    [(ngModel)]="shipmentNo"
+                                    [filterable]="true"
+                                    class="form-control"
+                                    [virtual]="true">
+                                </kendo-autocomplete>
+                                <div class="error-message-container">
+                                    <div *ngIf="getControl('shipmentNo')?.errors?.required && getControl('shipmentNo').touched" class="k-invalid-msg">
+                                        {{'validation.requiredThisField' | translate}}
+                                    </div>
+                                    <div *ngIf="getControl('shipmentNo')?.errors?.isConfirmContainer" class="k-invalid-msg">
+                                        {{'msg.confirmContainerHouseBL' | translate}}
+                                    </div>
+                                    <div *ngIf="getControl('shipmentNo')?.errors?.isConfirmConsolidation" class="k-invalid-msg">
+                                        {{'msg.confirmConsolidationHouseBL' | translate}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="shipment-selection-container">
+                    <ng-container *ngIf="mainForm.valid && shipmentModel?.id">
+                            <h5  class="title-grid mt-0">
+                                {{'label.selectedShipment' | translate}}
+                            </h5>
+                            <hr  class="colored" />
+
+                        <div class="row">
+                            <div class="col content-details">
+                                <div class="row">
+                                    <div class="col-5 text-label">
+                                        {{'label.shipmentNo' | translate}}
+                                    </div>
+                                    <div class="col-7 value-label">{{ shipmentModel.shipmentNo | default:defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-5 text-label">
+                                        {{'label.executionAgent' | translate}}
+                                    </div>
+                                    <div class="col-7 value-label">{{ shipmentModel.executionAgentName | default:defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-5 text-label">
+                                        {{'label.shipper' | translate}}
+                                    </div>
+                                    <div class="col-7 value-label">{{ shipmentModel.shipperName | default:defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-5 text-label">
+                                        {{'label.consignee' | translate}}
+                                    </div>
+                                    <div class="col-7 value-label">{{ shipmentModel.consigneeName | default:defaultValue }}</div>
+                                </div>
+                            </div>
+
+                            <div class="col content-details">
+                                <div class="row">
+                                    <div class="col-5 text-label">
+                                        {{'label.totalPackage' | translate}}
+                                    </div>
+                                    <div class="col-7 value-label">{{ shipmentModel.totalPackage | number:'0.0' | default:defaultValue }} {{ shipmentModel.totalPackageUOM | default: defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-5 text-label">
+                                        {{'label.totalVolume' | translate}}
+                                    </div>
+                                    <div class="col-7 value-label">{{ shipmentModel.totalVolume | number:'0.3' | default:defaultValue }} {{ shipmentModel.totalVolumeUOM | default: defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-5 text-label">
+                                        {{'label.cargoReadyDates' | translate}}
+                                    </div>
+                                    <div class="col-7 value-label">{{ shipmentModel.cargoReadyDate | date: dateFormat  | default:defaultValue }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-5 text-label">
+                                        {{'label.latestMilestone' | translate}}
+                                    </div>
+                                    <div class="col-7 value-label">{{ shipmentModel.lastestActivity | default:defaultValue }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+        </form>
+    </div>
+
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onCancelLinkToShipmentPopup()">
+            {{'label.cancel' | translate}}
+        </button>
+
+        <button
+            type="submit"
+            class="btn prim-button dialog-button"
+            (click)="onSelectShipment()">{{'label.select' | translate}}
+        </button>
+    </kendo-dialog-actions>
+</kendo-dialog>

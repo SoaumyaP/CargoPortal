@@ -1,0 +1,8 @@
+<div class="language-selection">
+    <kendo-dropdownlist [data]="allLanguages" [textField]="'text'" [valueField]="'value'" [value]="currentLanguage" (valueChange)="valueChange($event)"
+        [valuePrimitive]="true" *ngIf="allLanguages">
+        <ng-template kendoDropDownListValueTemplate let-dataItem>
+            {{ dataItem?.text }}
+        </ng-template>
+    </kendo-dropdownlist>
+</div>

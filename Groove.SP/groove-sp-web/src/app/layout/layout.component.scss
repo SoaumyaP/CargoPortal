@@ -1,0 +1,90 @@
+
+
+.header-items ::ng-deep .k-autocomplete .k-input, .k-dateinput-wrap .k-input, .k-dropdown-wrap .k-input, .k-picker-wrap .k-input, .k-multiselect-wrap .k-input, .k-numeric-wrap .k-input{
+    padding: 20px 8px;
+}
+.header-items ::ng-deep .k-space-right .k-icon {
+    right: 10px;
+    top: 15px;
+}
+
+.header-items {
+    margin-top: 10px;
+}
+
+.header-items ::ng-deep .search-wrapper .k-textbox.quicktrack-no {
+    background-color: rgba($color: #fff, $alpha: 0.2);
+    border-width: 0;
+    color: #fff;
+}
+
+.header-items ::ng-deep .k-dropdown-wrap > .k-input {
+    color: #fff;
+}
+
+.header-items ::ng-deep .k-dropdown .k-dropdown-wrap {
+    color:#fff;
+}
+
+.header-items ::ng-deep .k-dropdown .k-dropdown-wrap:hover {
+    color:#fff;
+}
+
+.header-items ::ng-deep .k-dropdown .k-dropdown-wrap:focus {
+    color:#fff;
+}
+
+.header-items ::ng-deep .k-dropdown .k-dropdown-wrap:focus {
+    box-shadow: none;
+}
+
+.header-items ::ng-deep .k-dropdown .k-select {
+    background: none;
+    color: #fff;
+}
+
+.header-items ::ng-deep .k-icon {
+    color: #fff !important;
+}
+
+.divider-column {
+    float: right;
+    position: absolute;
+    right: 80px;
+    margin-top: 9px;
+}
+
+.header-items::ng-deep.k-i-arrow-s {
+    width: 8px;
+    height: 8px;
+    background: url('/assets/images/down-arrow-outline.svg');
+    background-size:cover;
+    margin-top:-4px;
+}
+
+.header-items::ng-deep .k-i-arrow-s.k-icon::before {
+    content: none;
+}
+
+.header-items::ng-deep .k-dropdown .k-dropdown-wrap .k-select {
+    width: 18px !important;
+}
+
+.header-items a:focus {
+    box-shadow: none;
+}
+
+#user__avatar ::ng-deep .k-popup {
+    background: none;
+}
+
+.org-name {
+    font-size: 13px;
+    opacity: 0.9;
+    cursor: pointer;
+    width: 200px;
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+    text-align: center;
+}

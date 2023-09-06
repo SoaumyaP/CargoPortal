@@ -1,0 +1,86 @@
+<kendo-dialog
+    [title]="title | translate" *ngIf="isOpen" (close)="onFormClose()" novalidate [width]="824" class="custom-header-dialog">
+    <div class="container">
+        <form #mainForm="ngForm">
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="losingDate">{{(isCFSMovement ? 'label.cfsClosingDates' : 'label.cyClosingDates') | translate}}</label>
+                        <kendo-datepicker disabled name="cyClosingDate" class="form-control" [(ngModel)]="model.cyClosingDate" *ngIf="!isCFSMovement"></kendo-datepicker>
+                        <kendo-datepicker name="cfsClosingDate" class="form-control" [(ngModel)]="model.cfsClosingDate" *ngIf="isCFSMovement"></kendo-datepicker>
+                        
+                        <p *ngIf="!isCFSMovement && schedulerId" class="text-right mt-2">
+                            <a class="link-code" target="_blank" routerLink="/freight-schedulers/schedule-detail/{{schedulerId}}" routerLinkActive="active">{{'label.changeDates' | translate}}</a>
+                        </p>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="warehouse">{{(isCFSMovement ? 'label.warehouse' : 'label.terminal') | translate}}</label>
+                        <kendo-dropdownlist name="terminal" *ngIf="!isCFSMovement"
+                                [valuePrimitive]="true"
+                                [textField]="'label'"
+                                [valueField]="'value'"
+                                [(ngModel)]="model.cyEmptyPickupTerminalCode"
+                                [data]="terminalDataSource$ | async"
+                                [defaultItem]="defaultDropDownItem"
+                                class="form-control">
+                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                        </kendo-dropdownlist>
+                        <kendo-dropdownlist name="warehouse" *ngIf="isCFSMovement"
+                                [valuePrimitive]="true"
+                                [textField]="'label'"
+                                [valueField]="'value'"
+                                [(ngModel)]="model.cfsWarehouseCode"
+                                [data]="warehouseDataSource$ | async"
+                                [defaultItem]="defaultDropDownItem"
+                                class="form-control">
+                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                    {{ dataItem?.label | translate }}
+                                </ng-template>
+                        </kendo-dropdownlist>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" *ngIf="mode === modeType.Update" (click)="onFormClose()">
+            {{'label.cancel' | translate}}
+        </button>
+
+        <button
+            type="submit"
+            class="btn prim-button dialog-button"
+            *ngIf="mode === modeType.Update"
+            (click)="onSave()"
+            [disabled]="!mainForm.valid">{{'label.save' | translate}}
+        </button>
+
+        <button
+            type="submit"
+            class="btn second-button dialog-button"
+            *ngIf="mode === modeType.Confirm"
+            (click)="onConfirm(true)"
+            [disabled]="!mainForm.valid">{{'label.skipAndConfirm' | translate}}
+        </button>
+
+        <button
+            type="submit"
+            class="btn prim-button dialog-button"
+            *ngIf="mode === modeType.Confirm"
+            (click)="onConfirm(false)"
+            [disabled]="!mainForm.valid">{{'label.saveAndConfirm' | translate}}
+        </button>
+
+    </kendo-dialog-actions>
+</kendo-dialog>

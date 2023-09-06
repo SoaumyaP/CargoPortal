@@ -1,0 +1,29 @@
+.k-panelbar.expanse-panel-style {
+    background-color: $theme-color-blank;
+    &.k-widget {
+        border-width: 0;
+    }
+    > .k-item {
+        > .k-header {
+            &.k-state-focused {
+                box-shadow: none;
+            }
+            &.k-link:hover {
+                background-color: unset;
+            }
+            > .k-icon {
+                font-size: 38px;
+                right: 16px;
+                color: $color-blue-primary;
+            }
+            padding: 20px;
+            color: $theme-color !important;
+            font-size: 13pt;
+            font-weight: bold !important;
+            cursor: pointer;
+        }
+        .k-content {
+            padding: 20px;
+        }
+    }
+}

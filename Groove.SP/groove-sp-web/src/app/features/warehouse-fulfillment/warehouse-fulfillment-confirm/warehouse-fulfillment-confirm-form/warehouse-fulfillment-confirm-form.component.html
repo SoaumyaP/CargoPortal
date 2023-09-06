@@ -1,0 +1,31 @@
+<div class="content__header warehouse-booking-confirm-container">
+    <div class="container-fluid">
+        <div class="header-group">
+            <div class="row">
+                <div class="col-sm-6">
+                    <button attr.data-balloon="{{'tooltip.backToList' | translate}}" data-balloon-pos="up" type="button"
+                        (click)="backToBookingList()"
+                        class="btn btn-default back-button">
+                        <i class="ei ei-arrow_left"></i>
+                    </button>
+                    <label class="form-header">{{'label.confirmBooking' | translate}}</label>
+                </div>
+            </div>
+        </div>
+
+
+        <kendo-panelbar #filterProgressCheck [keepItemContent]="true" class="expanse-panel-style">
+            <kendo-panelbar-item [title]="'label.filterCriteria' | translate" expanded="true">
+                <ng-template kendoPanelBarContent>
+                    <app-warehouse-fulfillment-confirm-filter (search)="onSearchWarehouseBooking($event)" (reset)="onResetFilter()">
+                    </app-warehouse-fulfillment-confirm-filter>
+                </ng-template>
+              </kendo-panelbar-item>
+        </kendo-panelbar>
+
+        <div class="panel-group">
+            <app-warehouse-fulfillment-confirm-list [warehouseBookings]="warehouseBookings">
+            </app-warehouse-fulfillment-confirm-list>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,310 @@
+<kendo-dialog [title]="title | translate" *ngIf="itemDetailPopupOpened" (close)="onFormClosed()" novalidate [width]="824" [height]="710" class="custom-header-dialog cruise-order-item-popup max-screen-1280x768">
+    <div class="container">
+        <form #mainForm="ngForm">
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <label for="items" class="form-label required">{{'label.items' | translate}}</label>
+                    <kendo-multiselect name="items" class="form-control"
+                        [data]="filteredItemOptionsSource"
+                        [(ngModel)]="model.selectedItems"
+                        [autoClose]="false"
+                        [filterable]="true"
+                        (filterChange)="poItemsFilterChange($event)"
+                        #items="ngModel"
+                        required>
+                            <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                <input type="checkbox" class="k-checkbox" [checked]="isItemSelected(dataItem)">
+                                <label class="k-checkbox-label">{{ dataItem }}</label>
+                            </ng-template>
+                            <ng-template kendoMultiSelectTagTemplate let-dataItem>{{ dataItem }}</ng-template>
+                    </kendo-multiselect>
+                    <div *ngIf="items.invalid && (items.dirty || items.touched)" class="k-invalid-msg">
+                        {{ 'validation.requiredField' | translate: {'fieldName': 'label.items' | translate} }}
+                    </div>
+                </div>
+                <div class=" form-group col-sm-6">
+                    <div class="form-group">
+                        <label for="items" class="form-label">{{'label.shipmentNo' | translate}}
+                            <span class="k-i-loading k-icon loading-icon" *ngIf="isShipmentSearching"></span>
+                        </label>
+                        <kendo-combobox name="shipmentId" class="form-control"
+                            [data]="shipmentOptionsSource"
+                            [(ngModel)]="model.shipmentId"
+                            [valuePrimitive]="true"
+                            [filterable]="true"
+                            [textField]="'text'"
+                            [valueField]="'value'"
+                            [placeholder]="'placeHolder.searchingShipmentNumber' | translate"
+                            (filterChange)="shipmentSearchTermKeyUp$.next($event)"
+                            (valueChange)="shipmentValueChange($event)">
+                            <ng-template kendoComboBoxItemTemplate let-dataItem>
+                                {{ dataItem.text }}
+                            </ng-template>
+                            <ng-template kendoAutoCompleteNoDataTemplate>
+                                <h4><span class="k-icon k-i-warning"></span><br /><br />{{'kendo.autocomplete.noDataText' | translate}}</h4>
+                            </ng-template>
+                        </kendo-combobox>
+                        </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="commercialInvoice">{{'label.unitPrice' | translate}}</label>
+                        <kendo-numerictextbox
+                            name="netUnitPrice"
+                            class="form-control"
+                            [(ngModel)]="model.netUnitPrice" [autoCorrect]="true" [format]="'n2'"
+                            [decimals]="2">
+                        </kendo-numerictextbox>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="priority">{{'label.currency' | translate}}</label>
+                        <kendo-dropdownlist
+                            name="currencyCode"
+                            [valuePrimitive]="true"
+                            [textField]="'label'"
+                            [valueField]="'value'"
+                            [(ngModel)]="model.currencyCode"
+                            [data]="currencyOptions"
+                            class="form-control"
+                            [defaultItem]="defaultDropDownListOption">
+                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                {{ dataItem?.value | translate }}
+                                </ng-template>
+                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                {{ dataItem?.label | translate }}
+                                </ng-template>
+                        </kendo-dropdownlist>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="sub1">{{'label.sub1' | translate}}</label>
+                        <input kendoTextBox
+                            name="sub1"
+                            maxlength="100"
+                            type="text"
+                            class="form-control"
+                            [(ngModel)]="model.sub1"
+                        />
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <label for="sub2">{{'label.sub2' | translate}}</label>
+                    <input kendoTextBox
+                        name="sub2"
+                        maxlength="100"
+                        type="text"
+                        class="form-control"
+                        [(ngModel)]="model.sub2"
+                    />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="commercialInvoice">{{'label.commercialInvoice' | translate}}</label>
+                        <div class="radio-wrapper" #anchor>
+                            <input id="commercialInvoice_yes" type="radio" class="k-radio" name="commercialInvoice_yes"
+                                [value]="true" [(ngModel)]="model.commercialInvoice" />
+                            <label class="k-radio-label" for="commercialInvoice_yes">{{'label.yes' | translate}}</label>
+                            <input id="commercialInvoice_no" type="radio" class="k-radio" name="commercialInvoice_no"
+                                [value]="false" [(ngModel)]="model.commercialInvoice" />
+                            <label class="k-radio-label" for="commercialInvoice_no">{{'label.no' | translate}}</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="priority">{{'label.priority' | translate}}</label>
+                        <kendo-dropdownlist
+                            name="priority"
+                            [valuePrimitive]="true"
+                            [textField]="'label'"
+                            [valueField]="'value'"
+                            [(ngModel)]="model.priority"
+                            [data]="priorityOptions"
+                            class="form-control"
+                            [defaultItem]="defaultDropDownListOption">
+                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                {{ dataItem?.value | translate }}
+                                </ng-template>
+                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                {{ dataItem?.label | translate }}
+                                </ng-template>
+                        </kendo-dropdownlist>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="contract">{{'label.contract' | translate}}</label>
+                        <div class="radio-wrapper" #anchor>
+                            <input id="contractCCL_yes" type="radio" class="k-radio" name="contractCCL_yes"
+                                [value]="'CCL'" [(ngModel)]="model.contract" />
+                            <label class="k-radio-label" for="contractCCL_yes">{{'label.ccl' | translate}}</label>
+                            <input id="contractCCL_no" type="radio" class="k-radio" name="contractCCL_no"
+                                [value]="'Forwarder Contract'" [(ngModel)]="model.contract" />
+                            <label class="k-radio-label"
+                                for="contractCCL_no">{{'label.forwarderContract' | translate}}</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="origin">{{'label.origin' | translate}}</label>
+                        <kendo-autocomplete name="origin" (filterChange)="portFilterChange($event)"
+                            [maxlength]='500' [valueField]="'locationDescription'" [(ngModel)]="model.origin"
+                            [data]="filteredPortOptions" [filterable]="true"
+                            [placeholder]="'label.location' | translate "
+                            class="form-control">
+                        </kendo-autocomplete>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="quotedCost">{{'label.quotedCost' | translate}}</label>
+                        <kendo-numerictextbox name="quotedCost" class="form-control" [(ngModel)]="model.quotedCost"
+                            [autoCorrect]="true" [format]="'n2'" [decimals]="2">
+                        </kendo-numerictextbox>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="quotedCostCurrency">{{'label.currency' | translate}}</label>
+                        <kendo-dropdownlist
+                            name="quotedCostCurrency"
+                            [valuePrimitive]="true"
+                            [textField]="'label'"
+                            [valueField]="'value'"
+                            [(ngModel)]="model.quotedCostCurrency"
+                            [data]="currencyOptions"
+                            class="form-control"
+                            [defaultItem]="defaultDropDownListOption">
+                                <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                {{ dataItem?.value | translate }}
+                                </ng-template>
+                                <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                {{ dataItem?.label | translate }}
+                                </ng-template>
+                        </kendo-dropdownlist>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="shipboardLoadingLocation">{{'label.shipboardLoadingLocation' | translate}}</label>
+                        <input type="text" class="form-control" name="shipboardLoadingLocation" name="shipboardLoadingLocation"
+                            [(ngModel)]="model.shipboardLoadingLocation" maxlength='100' />
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="delayCause">{{'label.delayCause' | translate}}</label>
+                        <input type="text" class="form-control" name="delayCause" [(ngModel)]="model.delayCause" name="delayCause"
+                            maxlength='500' />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="readyDate">{{'label.estReadyDates' | translate}}</label>
+                        <kendo-datepicker name="readyDate" class="form-control" [(ngModel)]="model.readyDate"></kendo-datepicker>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="reqOnboardDate">{{'label.reqOnboardDates' | translate}}</label>
+                        <kendo-datepicker name="reqOnboardDate" class="form-control" [(ngModel)]="model.reqOnboardDate"></kendo-datepicker>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="deliveryPort">{{'label.deliveryPort' | translate}}</label>
+                        <kendo-autocomplete name="deliveryPort" (filterChange)="portFilterChange($event)"
+                            [maxlength]='100' [valueField]="'locationDescription'" [(ngModel)]="model.deliveryPort"
+                            [data]="filteredPortOptions" [filterable]="true"
+                            [placeholder]="'label.portOrLocation' | translate " class="form-control" name="deliveryPort">
+                        </kendo-autocomplete>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="deliveryTicket">{{'label.deliveryTicket' | translate}}</label>
+                        <input type="text" class="form-control" name="deliveryTicket" [(ngModel)]="model.deliveryTicket"
+                            maxlength='100' />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="destination">{{'label.destination' | translate}}</label>
+                        <kendo-autocomplete name="destination" (filterChange)="portFilterChange($event)"
+                            [maxlength]='100' [valueField]="'locationDescription'" [(ngModel)]="model.destination"
+                            [data]="filteredPortOptions" [filterable]="true"
+                            [placeholder]="'label.location' | translate " (valueChange)="destinationValueChange($event)"
+                            class="form-control"
+                            name="destination">
+                        </kendo-autocomplete>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="destinationCountry">{{'label.destinationCountry' | translate}}</label>
+                        <kendo-autocomplete name="destinationCountry"
+                            (filterChange)="destinationCountryFilterChange($event)" [maxlength]='100'
+                            [valueField]="'name'" [(ngModel)]="model.destinationCountry"
+                            [data]="destinationCountryOptions" [filterable]="true"
+                            [placeholder]="'label.country' | translate " class="form-control" name="destinationCountry">
+                        </kendo-autocomplete>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="approvedBy">{{'label.approvedBy' | translate}}</label>
+                        <input type="text" class="form-control" name="approvedBy" [(ngModel)]="model.approvedBy" maxlength='100' />
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="approvedDate">{{'label.approvedDates' | translate}}</label>
+                        <kendo-datepicker name="approvedDate" class="form-control" [(ngModel)]="model.approvedDate"></kendo-datepicker>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()">{{'label.close' | translate}}</button>
+        <button type="button" class="btn btn prim-button dialog-button" (click)="onFormClosed(true)">{{'label.save' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

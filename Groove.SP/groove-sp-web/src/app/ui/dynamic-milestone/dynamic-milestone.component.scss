@@ -1,0 +1,143 @@
+@import "../../../styles/variables";
+
+
+.milestone-item .icon::before{
+    width: 60px;
+    height: 70px;
+    display: block;
+}
+
+.milestone-item .icon {
+    display: inline-block;
+}
+
+.milestone-item {
+    padding-left: 19px;
+    padding-right: 19px;
+}
+
+.milestone-content {
+    display: flex;
+    justify-content: center;
+    background: url('/assets/images/milestone/sea.png') repeat-x 0 30px;
+}
+
+.milestone-content .milestone-item {
+    text-align: center;
+    position: relative;
+    width: calc(100% / 5);
+}
+
+.milestone-title {
+    font-size: 14px;
+    font-weight: normal;
+    color: $color-grey-dark-2;
+    margin-top: 5px;
+}
+
+.milestone-datetime {
+    font-size: 14px;
+    color: $color-grey-dark-2;
+    margin-top: 10px;
+}
+
+.active .milestone-title {
+    color: $color-grey-dark-3;
+    font-weight: bold;
+}
+
+//n-released
+.n-released::before {
+    content: '';
+    background: url('/assets/images/milestone/po_stages_sprites.png') no-repeat -10px -150px;
+}
+.active .n-released::before {
+    background: url('/assets/images/milestone/po_stages_sprites.png') no-repeat -10px -610px;
+}
+.current .n-released::before {
+    background: url('/assets/images/milestone/po_stages_sprites.png') no-repeat -10px -1150px;
+}
+
+//n-drafting
+.n-draft::before {
+    content: '';
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -10px;
+}
+.active .n-draft::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -360px;
+}
+.current .n-draft::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -810px;
+}
+
+//n-rateAccepted
+.n-rateAccepted::before {
+    content: '';
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -150px;
+}
+.active .n-rateAccepted::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -540px;
+}
+.current .n-rateAccepted::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -990px;
+}
+
+//n-rateConfirmed
+.n-rateConfirmed::before {
+    content: '';
+    background: url('/assets/images/milestone/po_stages_sprites.png') no-repeat -10px -220px;
+}
+.active .n-rateConfirmed::before {
+    background: url('/assets/images/milestone/po_stages_sprites.png') no-repeat -10px -700px;
+}
+.current .n-rateConfirmed::before {
+    background: url('/assets/images/milestone/po_stages_sprites.png') no-repeat -10px -1240px;
+}
+
+//n-forwarderBookingRequest
+.n-forwarderBookingRequest::before {
+    content: '';
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -150px;
+}
+.active .n-forwarderBookingRequest::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -540px;
+}
+.current .n-forwarderBookingRequest::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -990px;
+}
+
+//n-forwarderBookingConfirmed
+.n-forwarderBookingConfirmed::before {
+    content: '';
+    background: url('/assets/images/milestone/po_stages_sprites.png') no-repeat -10px -220px;
+}
+.active .n-forwarderBookingConfirmed::before {
+    background: url('/assets/images/milestone/po_stages_sprites.png') no-repeat -10px -700px;
+}
+.current .n-forwarderBookingConfirmed::before {
+    background: url('/assets/images/milestone/po_stages_sprites.png') no-repeat -10px -1240px;
+}
+
+//n-shipmentDispatch
+.n-shipmentDispatch::before {
+    content: '';
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -220px;
+}
+.active .n-shipmentDispatch::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -630px;
+}
+.current .n-shipmentDispatch::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -1170px;
+}
+
+//n-closed
+.n-closed::before {
+    content: '';
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -290px;
+}
+.active .n-closed::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -720px;
+}
+.current .n-closed::before {
+    background: url('/assets/images/milestone/po_fulfillment_stages_sprites.png') no-repeat -10px -1080px;
+}

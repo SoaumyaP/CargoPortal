@@ -1,0 +1,147 @@
+@import '../../../../styles/variables';
+
+.activity-wrapper {
+    &.panel-group {
+        padding: 30px;
+    }
+    .date-filter {
+        height: 36px;
+        padding-right: 15px;
+        ::ng-deep .k-dateinput-wrap {
+            .k-input {
+                height: unset;
+            }
+        }
+    }
+
+    .form-inline-control.filter-by-control {
+        > .form-label {
+            width: 20%;
+        }
+        > .form-control {
+            width: 40%;
+        }
+    }
+
+    .form-inline-control.filter-date-control {
+        > .form-label {
+            width: 26%;
+        }
+        > .form-control {
+            width: 37%;
+        }
+    }
+
+    .activity-list {
+        width: 100%;
+
+        .date-group {
+            padding-left: 50px;
+            padding-top: 35px;
+            position: relative;
+
+            &:first-child {
+                padding-top: 0;
+            }
+
+            &::after {
+                content: '';
+                position: absolute;
+                z-index: 0;
+                top: 0;
+                bottom: 0;
+                left: 297px;
+                border-left: 2px dashed #E1E1E1;
+            }
+
+            .date-title {
+                background-color: #ECF4EB;
+                color: #3CB43C;
+                font-size: 14px;
+                font-weight: bold;
+                text-align: center;
+                width: 110px;
+                height: 34px;
+                padding: 6px 9px;
+                margin-left: 195px;
+                margin-bottom: 15px;
+                position: relative;
+                z-index: 1;
+            }
+
+            .activity-item {
+                padding-top: 20px;
+                display: flex;
+                align-items: center;
+
+                .remark{
+                    word-wrap: break-word;
+                }
+                
+                .added-circle {
+                    width: 16px;
+                    height: 16px;
+                    background-color: white;
+                    border: 1px solid $color-grey-dark-2;
+                    position: relative;
+                    z-index: 1;
+                }
+
+                .added-info {
+                    margin-left: 20px;
+                    margin-right: 20px;
+                    z-index: 1;
+                }
+
+                .milestone{
+                    display: flex;
+                    align-items: center;
+                    padding-left: 10px;
+                    background-color: #C7EAFF;
+                    width: 220px;
+                    height: 37px;
+                    font-weight: bold;
+                    color: #333333;
+                    text-transform: uppercase;
+                }
+
+                .activity-info {
+                    width: 600px;
+                    background-color: #F8F8F8;
+                    margin-top: 10px;
+                    padding: 10px 20px;
+
+                    &.milestone-event {
+                        background-color: #C7EAFF;
+                    }
+
+                    .activity-code {
+                        font-weight: bold;
+                        color: #333333;
+                    }
+
+                    .activity-location {
+                        margin-top: 10px;
+                        font-style: italic;
+                    }
+                }
+            }
+        }
+    }
+
+    .clear_activity_filter_btn {
+        cursor: pointer;
+        margin-left: 5px;
+        text-decoration: underline;
+        color: $color-blue-primary;
+    }
+
+    .un_clickable__number {
+        font-weight: bold;
+        color: $color-grey-dark-3;
+    }
+}
+
+.k-link {
+    color: #007bff;
+}

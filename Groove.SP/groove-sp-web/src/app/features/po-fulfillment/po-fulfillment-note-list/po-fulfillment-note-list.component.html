@@ -1,0 +1,66 @@
+<div class="activity-wrapper">
+    <div class="title-grid mt-0 float-right">
+        <button class="btn header-button add-new-button" type="button" *ngIf="canAddNote"
+            (click)="onAddNoteClick()">
+            <div class="icon-circle">
+                <fa-icon [icon]="faPlus"></fa-icon>
+            </div>
+            <span class="icon-circle-label">{{'label.addNew' | translate}}</span>
+        </button>
+    </div>
+    <div class="clearfix"></div>
+    <kendo-grid #grid="kendoGrid" [data]="noteList | orderBy: '-createdDate'" [scrollable]="'vertical'" [selectable]="false" class="custom-edit-grid"
+        [sortable]="true" [sort]="[{field: 'createdDate', dir: 'desc'}]">
+        <kendo-grid-column width="160" field="createdDate" title="{{'label.messageDates' | translate}}" format="{0:{{DATE_FORMAT}}}"
+            [headerClass]="'multiline-header'">
+        </kendo-grid-column>
+
+        <kendo-grid-column width="200" field="owner" title="{{'label.from' | translate}}" [headerClass]="'multiline-header'">
+        </kendo-grid-column>
+
+        <kendo-grid-column width="120" field="category" title="{{'label.category' | translate}}" [headerClass]="'multiline-header'">
+        </kendo-grid-column>
+
+        <kendo-grid-column width="250" field="poItems" title="{{'label.item' | translate}}#" [headerClass]="'multiline-header'">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                {{ displayPOItemText(dataItem.poItems) }}
+            </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column field="noteText" title="{{'label.message' | translate}}" [headerClass]="'multiline-header'">
+        </kendo-grid-column>
+
+        <kendo-grid-column width="30" [hidden]="!canEditAllNotes">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                <div *ngIf="canEditNote(dataItem.createdBy) && !dataItem.isMasterNote">
+                    <div kendoTooltip #tooltip="kendoTooltip" [tooltipTemplate]="actionMenuTooltip" filter="button"
+                        showOn="click" position="left" offset="-20" showAfter="200">
+                        <button #noteButton type="button" class="btn">
+                            <fa-icon [icon]="faEllipsisV"></fa-icon>
+                        </button>
+                    </div>
+
+                    <ng-template #actionMenuTooltip let-anchor>
+                        <div class="row action-button" (click)="onEditNoteClick(dataItem); tooltip.toggle(noteButton)">
+                            <button type="button" class="btn">
+                                <fa-icon [icon]="faPencilAlt" class="action-grid-icon">
+                                </fa-icon>
+                                <span class="action-grid-label">{{'label.edit' | translate}}</span>
+                            </button>
+                        </div>
+                        <div class="row action-button" (click)="onDeleteNoteClick(dataItem.id); tooltip.toggle(noteButton)">
+                            <button type="button" class="btn">
+                                <fa-icon [icon]="faTrashAlt" class="action-grid-icon"></fa-icon>
+                                <span class="action-grid-label">{{'tooltip.delete' | translate}}</span>
+                            </button>
+                        </div>
+                    </ng-template>
+                </div>
+            </ng-template>
+        </kendo-grid-column>
+    </kendo-grid>
+
+    <app-po-fulfillment-note-popup [popupOpened]="notePopupOpened" [poItemOptions]="poItemOptions" [formMode]="noteFormMode"
+        [model]="noteDetails" (add)="onNoteAdded($event)" (edit)="onNoteEdited($event)" (close)="onNotePopupClosed()">
+    </app-po-fulfillment-note-popup>
+</div>

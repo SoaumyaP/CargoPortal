@@ -1,0 +1,78 @@
+//------------milestone-----------------//
+.milestone-item .icon::before{
+    width: 60px;
+    height: 70px;
+    display: block;
+}
+
+.milestone-item .icon {
+    display: inline-block;
+}
+
+.milestone-content {
+    display: flex;
+    justify-content: center;
+    background: url('/assets/images/milestone/sea.png') repeat-x 0 30px;
+}
+
+.milestone-content .milestone-item {
+    text-align: center;
+    position: relative;
+    width: calc(100% / 5);
+}
+
+.milestone-title {
+    font-size: 14px;
+    font-weight: normal;
+    color: #666666;
+    margin-top: 5px;
+}
+
+.milestone-item {
+    padding-left: 19px;
+    padding-right: 19px;
+}
+
+.milestone-datetime {
+    font-size: 14px;
+    color: #666666;
+    margin-top: 10px;
+}
+
+.active .milestone-title {
+    color: #333333;
+    font-weight: bold;
+}
+
+.content-tabs {
+    margin-top: 15px;
+}
+
+.container-fluid {
+    padding-right: 0px;
+    padding-left: 0px;
+}
+
+.tab-container {
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.k-link {
+    color: #007bff;
+}
+
+.no-record-msg {
+    position: absolute;
+    width: 220px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    &-bell {
+        font-size: 25px;
+    }
+}
+
+.min-height-120{
+    min-height: 120px;
+}

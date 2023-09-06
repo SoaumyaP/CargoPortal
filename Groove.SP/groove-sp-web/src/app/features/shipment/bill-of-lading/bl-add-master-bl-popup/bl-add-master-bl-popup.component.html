@@ -1,0 +1,169 @@
+<kendo-dialog [title]="'label.assignMasterBL' | translate" *ngIf="isFormOpened" (close)="onFormClosed()"
+    novalidate [width]="832" class="custom-header-dialog bl-add-master-bl-dialog ">
+    <div class="container">
+        <form #mainForm="ngForm">
+            <div>
+                <label class="required">{{'label.searchMasterBLNo' | translate}}</label>
+                <div class="form-row">
+                    <div class="form-group col-md-8">
+                        <kendo-autocomplete name="masterBLNumber"
+                            #masterBLAutoComplete
+                            required
+                            [virtual]="true"
+                            (valueChange)="onMasterBLValueChange($event)"
+                            (filterChange)="masterBLKeyUp$.next($event)"
+                            [valueField]="'masterBillOfLadingNo'"
+                            [data]="masterBLDataSource"
+                            [filterable]="true" class="form-control"
+                            [disabled]="isDisabledMasterBL"
+                            [(ngModel)]="selectedMasterBLNumber"
+                            [loading]="isMasterBLLoading">
+                        </kendo-autocomplete>
+                        <div *ngIf="getControl('masterBLNumber')?.errors?.required && getControl('masterBLNumber').touched" class="k-invalid-msg">
+                            {{'validation.requiredThisField' | translate}}
+                        </div>
+                    </div>
+                    <div class="form-group col-md-4 text-right pr-0">
+                        <button type="button" class="btn btn-header-secondary" (click)="onBtnResetClick()"
+                            [disabled]="isSelectedMasterBLNumberBlank && !isAddingNewMasterBL">
+                            {{ 'label.reset' | translate}}
+                        </button>
+                        <button type="button" class="btn btn-header-warning" (click)="onBtnAddNewClick()"
+                            [disabled]="!isSelectedMasterBLNumberBlank || isAddingNewMasterBL">
+                            {{ 'label.newMasterBL' | translate}}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="master-bl-info">
+                    <ng-container *ngIf="!isSelectedMasterBLBlank && !isAddingNewMasterBL">
+                        <h5 class="title-grid mt-0">
+                            {{'label.selectedMasterBL' | translate}}
+                        </h5>
+                        <hr class="colored" />
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <label class="col-md-5 text-label pl-0">{{'label.masterBLNo' | translate}}</label>
+                                <label class="col-md-7 value-label">{{model.masterBillOfLadingNo | default: defaultValue}}</label>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="col-md-5 text-label pl-0">{{'label.carrier' | translate}}</label>
+                                <label class="col-md-7 value-label">{{model.carrierName | default: defaultValue}}</label>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <label class="col-md-5 text-label pl-0">{{'label.contractNo' | translate}}</label>
+                                <label class="col-md-7 value-label">{{model.carrierContractNo| default: defaultValue}}</label>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="col-md-5 text-label pl-0">{{'label.onBoardDates' | translate}}</label>
+                                <label class="col-md-7 value-label">{{model.onBoardDate | date:DATE_FORMAT | default: defaultValue}}</label>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <label class="col-md-5 text-label pl-0">{{'label.placeOfIssue' | translate}}</label>
+                                <label class="col-md-7 value-label">{{model.placeOfIssue| default: defaultValue}}</label>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="col-md-5 text-label pl-0">{{'label.issueDates' | translate}}</label>
+                                <label class="col-md-7 value-label">{{model.issueDate | date:DATE_FORMAT | default: defaultValue}}</label>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="isAddingNewMasterBL">
+                        <h5 class="title-grid mt-0">
+                            {{'label.newMasterBL' | translate}}
+                        </h5>
+                        <hr class="colored" />
+                        <div class="form-row">
+                            <div class="form-group col-md-6" [class.force-invalid]="formErrors.masterBillOfLadingNo">
+                                <label for="masterBillOfLadingNo" class="required">{{'label.masterBLNo' | translate}}</label>
+                                <input required type="text" class="form-control" name="masterBillOfLadingNo" [(ngModel)]="model.masterBillOfLadingNo" />
+                                <div *ngIf="formErrors.masterBillOfLadingNo" class="k-invalid-msg">
+                                    {{formErrors.masterBillOfLadingNo}}
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="carrierName" class="form-label required">{{'label.carrier' | translate}}</label>
+                                <kendo-dropdownlist
+                                    name="carrierName"
+                                    [valuePrimitive]="true"
+                                    [textField]="'label'"
+                                    [valueField]="'value'"
+                                    [(ngModel)]="model.scac"
+                                    [data]="carrierDataSource"
+                                    class="form-control"
+                                    (valueChange)="onCarrierValueChange($event)">
+                                    <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                        {{ dataItem?.label | translate }}
+                                    </ng-template>
+                                    <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                        {{ dataItem?.label | translate }}
+                                    </ng-template>
+                                </kendo-dropdownlist>
+                                <div *ngIf="formErrors.carrierName" class="k-invalid-msg">{{formErrors.carrierName}}</div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6" [class.force-invalid]="formErrors.carrierContractNo">
+                                <label for="carrierContractNo" class="required">{{'label.contractNo' | translate}}</label>
+                                <kendo-combobox name="carrierContractNo" class="form-control"
+                                    #carrierContractNoComboBox
+                                    [data]="carrierContractNoDataSource"
+                                    [(ngModel)]="model.carrierContractNo"
+                                    [valuePrimitive]="true"
+                                    [filterable]="true"
+                                    [textField]="'text'"
+                                    [valueField]="'value'"
+                                    (filterChange)="carrierContractNoKeyUp$.next($event)"
+                                    [loading]="isCarrierContractNoLoading"
+                                    [virtual]="true"
+                                    required >
+                                    <ng-template kendoComboBoxItemTemplate let-dataItem>
+                                        {{ dataItem.text }}
+                                    </ng-template>
+                                    <ng-template kendoAutoCompleteNoDataTemplate>
+                                        <h4><span class="k-icon k-i-warning"></span><br /><br />{{'kendo.autocomplete.noDataText' | translate}}</h4>
+                                    </ng-template>
+                                </kendo-combobox>
+                                <div *ngIf="formErrors.carrierContractNo" class="k-invalid-msg">{{formErrors.carrierContractNo}}</div>
+                            </div>
+                            <div class="form-group col-md-6" [class.force-invalid]="formErrors.onBoardDate">
+                                <label for="onBoardDate" class="required">{{'label.onBoardDates' | translate}}</label>
+                                <kendo-datepicker required name="onBoardDate" class="form-control" [(ngModel)]="model.onBoardDate" (valueChange)="onBoardDateValueChanged($event)">
+                                </kendo-datepicker>
+                                <div *ngIf="formErrors.onBoardDate" class="k-invalid-msg">{{formErrors.onBoardDate}}</div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="placeOfIssue" class="required">{{'label.placeOfIssue' | translate}}</label>
+                                <kendo-autocomplete name="placeOfIssue" (filterChange)="placeOfIssueFilterChange($event)"
+                                    [(ngModel)]="model.placeOfIssue" [data]="locationDataSource" required
+                                    [filterable]="true" [placeholder]="'label.location' | translate" class="form-control">
+                                </kendo-autocomplete>
+                                <div *ngIf="formErrors.placeOfIssue" class="k-invalid-msg">{{formErrors.placeOfIssue}}</div>
+                            </div>
+                            <div class="form-group col-md-6" [class.force-invalid]="formErrors.issueDate">
+                                <label for="issueDate" class="required">{{'label.issueDates' | translate}}</label>
+                                <kendo-datepicker required name="issueDate" class="form-control" [(ngModel)]="model.issueDate" (valueChange)="issueDateValueChanged($event)">
+                                </kendo-datepicker>
+                                <div *ngIf="formErrors.issueDate" class="k-invalid-msg">{{formErrors.issueDate}}</div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </form>
+    </div>
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onFormClosed()"
+            #Cancel>{{'label.cancel' | translate}}</button>
+        <button type="submit" class="btn prim-button dialog-button" *ngIf="!isAddingNewMasterBL"
+            (click)="onBtnSelectClick()" [disabled]="">{{'label.select' | translate}}</button>
+        <button type="submit" class="btn prim-button dialog-button" *ngIf="isAddingNewMasterBL" (click)="onBtnSaveClick()"
+            >{{'label.save' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

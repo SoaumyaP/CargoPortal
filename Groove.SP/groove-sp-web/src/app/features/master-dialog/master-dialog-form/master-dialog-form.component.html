@@ -1,0 +1,209 @@
+<div class="content__header" *ngIf="isInitDataLoaded">
+    <div class="container-fluid">
+        <div class="header-group">
+            <div class="row">
+                <div class="col-sm-6">
+                    <button attr.data-balloon="{{'tooltip.backToList' | translate}}" data-balloon-pos="up" type="button"
+                        class="btn btn-default back-button" (click)="backToList()">
+                        <i class="ei ei-arrow_left"></i>
+                    </button>
+                    <label *ngIf="isAddMode" class="form-header">{{('label.addNewMasterDialog' | translate)}}</label>
+                    <label *ngIf="isEditMode" class="form-header">{{('label.editMessage' | translate)}}</label>
+                    <label *ngIf="isViewMode" class="form-header">{{('label.messageDetail' | translate)}}</label>
+                </div>
+                <div class="col-sm-6 text-right">
+                    <button attr.data-balloon="{{'label.edit' | translate}}" data-balloon-pos="up" type="button" class="btn edit-icon-button"
+                        routerLink="/master-dialogs/edit/{{model.id}}"
+                        (click)="onEditMasterDialog()"
+                        [hidden]="!isViewMode">
+                            <fa-icon [icon]="faPencilAlt"></fa-icon>
+                    </button>
+                    <button attr.data-balloon="{{'tooltip.delete' | translate}}" data-balloon-pos="up" type="button" class="btn remove-icon-button"
+                        [hidden]="!isViewMode"
+                        (click)="onDeleteClicked()">
+                        <i class="ei ei-icon_minus-06"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <form class="" #mainForm="ngForm" novalidate (ngSubmit)="onSubmit()" >
+            <div class="row form-container pt-4 pb-4 pl-2 pr-2">
+                <div class="left-container col">
+                    <div class="form-row">
+                        <div class="form-group col">
+                            <label for="displayOn" class="form-label required">{{'label.dialogMessageLevel' | translate}}</label>
+                                <kendo-dropdownlist class="form-control" name="displayOn"
+                                    required
+                                    [data]="messageOnPageDropdown"
+                                    [(ngModel)]="model.displayOn"
+                                    (valueChange)="onChangeMessageOnPage()"
+                                    [disabled]="isViewMode || isEditMode"
+                                    [textField]="'label'"
+                                    [valueField]="'value'"
+                                    [valuePrimitive]="true">
+
+                                    <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                        {{ dataItem?.label | translate }}
+                                    </ng-template>
+                                    <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                        {{ dataItem?.label | translate }}
+                                    </ng-template>
+                                </kendo-dropdownlist>
+                                <div *ngIf="formErrors['displayOn']" class="k-invalid-msg">
+                                    {{ 'validation.requiredField' | translate: {'fieldName': validationRules.displayOn.required | translate } }}
+                                </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row mt-1">
+                        <div class="form-group col">
+                            <label for="filterCriteria" class="form-label required">{{ searchByLabel }}</label>
+                                <kendo-dropdownlist class="form-control" name="filterCriteria"
+                                    required
+                                    [data]="filterCriteriaDropdown"
+                                    [(ngModel)]="model.filterCriteria"
+                                    (valueChange)="onFilterCriteriaValueChanged()"
+                                    [disabled]="isDisabledFilterCriteria || isViewMode || isEditMode"
+                                    [textField]="'label'"
+                                    [valueField]="'value'"
+                                    [valuePrimitive]="true"
+                                >
+
+                                    <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                        {{ dataItem?.label | translate }}
+                                    </ng-template>
+                                    <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                        {{ dataItem?.label | translate }}
+                                    </ng-template>
+                                </kendo-dropdownlist>
+
+                                <div *ngIf="formErrors['filterCriteria']" class="k-invalid-msg">
+                                    {{ 'validation.requiredField' | translate: {'fieldName': validationRules.filterCriteria.required | translate } }}
+                                </div>
+                        </div>
+
+                        <div class="form-group col">
+                            <label for="filterValue" class="form-label required">{{ dialogApplyToLabel }}
+                            </label>
+                            <span class="k-i-loading k-icon loading-icon ml-1" *ngIf="isFilterValueSearching"></span>
+                            <kendo-multiselect
+                                    name="filterValue"
+                                    [data]="filterValueOptionSource"
+                                    required
+                                    [textField]="'text'"
+                                    [valueField]="'value'"
+                                    [virtual]="true"
+                                    [readonly]="!model.filterCriteria || isViewMode || isEditMode"
+                                    [(ngModel)]="model.filterValue"
+                                    [autoClose]="false"
+                                    [filterable]="true"
+                                    (open)="onFilterValueOpened($event)"
+                                    (filterChange)="filterValueSearchTermKeyUp$.next($event)"
+                                    (valueChange)="onFilterValueChanged($event)"
+                                    class="form-control filter-value-container">
+
+                                    <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                                        <input type="checkbox" class="k-checkbox"
+                                            [checked]="isFilterValueSelected(dataItem.value)">
+                                        <label class="k-checkbox-label">{{ dataItem?.text | translate }}</label>
+                                    </ng-template>
+                                    <ng-template kendoMultiSelectTagTemplate let-dataItem>
+                                        {{ dataItem?.text | translate }}
+                                    </ng-template>
+                                    <ng-template kendoAutoCompleteNoDataTemplate>
+                                        <h4><span class="k-icon k-i-warning"></span><br /><br />{{'kendo.autocomplete.noDataText' | translate}}</h4>
+                                    </ng-template>
+                            </kendo-multiselect>
+                            <div *ngIf="formErrors['filterValue']" class="k-invalid-msg">
+                                {{ 'validation.requiredField' | translate: {'fieldName': validationRules.filterValue.required | translate } }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row mt-1 list-po-container">
+                        <div class="form-group col">
+                            <fieldset class="border fieldset-container pl-4 pr-4">
+                                <legend  class="w-auto form-label">{{'label.dialogApplyToItemLevel' | translate}} </legend>
+                                <input type="text" class="form-control" [disabled]="!(model?.filterValue?.length > 0)" [(ngModel)]="model.poNumber" name="poNumber" (input)="onSearchPONumber($event.target.value)" placeholder="{{('label.enterPONumberToSearch') | translate}}"/>
+
+                                <div class="loading-icon-container" *ngIf="isLoadingListOfPo">
+                                    <span class="k-i-loading k-icon loading"></span>
+                                </div>
+
+                                <p *ngIf="listOfPOItemFiltered.length === 0 && !isLoadingListOfPo" class="no-data-msg">
+                                    No data found
+                                </p>
+
+                                <div *ngIf="listOfPOItemFilteredWithPaging.length > 0" class="po-tree-container mt-3">
+                                    <div *ngFor="let parentItem of listOfPOItemFilteredWithPaging" class="mt-3">
+                                        <input type="checkbox" class="k-checkbox" [checked]="parentItem.isChecked"  [disabled]="parentItem.isDisabled"/>
+                                        <label class="k-checkbox-label" (click)="onCheckParentItem(parentItem)">{{ parentItem.text }}</label>
+                                        <div *ngFor="let childItem of (parentItem.childrenItems || [])" class="childrenItem-container mt-1">
+                                            <input type="checkbox" class="k-checkbox" [checked]="childItem.isChecked" [disabled]="childItem.isDisabled"/>
+                                            <label class="k-checkbox-label" (click)="onCheckChildrenItem(parentItem, childItem)">{{ childItem.text }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button
+                                    *ngIf="listOfPOItemFilteredWithPaging.length < listOfPOItemFilteredWithPaging[0]?.recordCount"
+                                    [disabled]="isLoadingListOfPo"
+                                    (click)="onLoadMoreItems()"
+                                    class="btn btn-link load-more-text mx-auto">{{'msg.loadMoreItems' | translate}}
+                                </button>
+
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-container col">
+                    <div class="form-row">
+                        <div class="form-group col">
+                            <label for="category" class="form-label required">{{'label.category' | translate}}</label>
+                                <kendo-dropdownlist class="form-control" name="category"
+                                    [data]="categoryDropdown"
+                                    [disabled]="isViewMode"
+                                    [(ngModel)]="model.category"
+                                    [textField]="'label'"
+                                    [valueField]="'value'"
+                                    [valuePrimitive]="true">
+
+                                    <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                        {{ dataItem?.label | translate }}
+                                    </ng-template>
+                                    <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                        {{ dataItem?.label | translate }}
+                                    </ng-template>
+                                </kendo-dropdownlist>
+
+                                <div *ngIf="formErrors['category']" class="k-invalid-msg">
+                                    {{ 'validation.requiredField' | translate: {'fieldName': validationRules.category.required | translate } }}
+                                </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row mt-1 message-container">
+                        <div [class.force-invalid]="formErrors['message']" class="form-group col">
+                            <label for="message" class="form-label required">{{'label.message' | translate}}</label>
+                            <textarea  class="form-control" name="message" required [(ngModel)]="model.message" [disabled]="isViewMode"></textarea>
+                            <div *ngIf="formErrors['message']" class="k-invalid-msg">
+                                {{ 'validation.requiredField' | translate: {'fieldName': validationRules.message.required | translate } }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 action-bar" *ngIf="!isViewMode">
+                <button type="button" class="btn second-button" (click)="onCancelMassage()">{{'label.cancel' | translate}}</button>
+                <button type="submit" class="btn prim-button">{{'label.save' | translate}}
+                    <ng-template *appSpinner="isSubmittingMasterDialog"></ng-template>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="typing_loader" *ngIf="!isInitDataLoaded"></div>

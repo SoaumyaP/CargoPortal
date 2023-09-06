@@ -1,0 +1,128 @@
+<kendo-dialog [title]="'label.copyFromBooking' | translate | uppercase" *ngIf="isOpen" (close)="onClosePopup()"  novalidate [width]="1000" [height]="710" class="po-fulfillment-copy-popup-dialog custom-header-dialog max-screen-1280x768">
+    <div class="container">
+        <form #mainForm="ngForm" (ngSubmit)="onSubmit()">
+            <div class="row form-group">
+                <div class="col-4">
+                    <div class="form-inline-control">
+                        <label class="form-label">{{'label.fulfillmentNumber' | translate}}</label>
+                        <input name="number"
+                                type="text"
+                                class="form-control"
+                                [(ngModel)]="model.poFulfillmentNumber"/>
+                    </div>
+                </div>
+                <div class="col-5">
+                    <div class="form-inline-control">
+                        <label class="form-label">{{'label.bookingCargoReadyDates' | translate}}</label>
+                        <kendo-datepicker name="cargoReadyDate"
+                                    class="form-control"
+                                    [(ngModel)]="model.cargoReadyDate">
+                        </kendo-datepicker>
+                    </div>
+                </div>
+                <div class="col-3">
+        
+                </div>
+            </div>
+    
+            <div class="row form-group">
+                <div class="col-4">
+                    <div class="form-inline-control">
+                        <label class="form-label">{{'label.shipFrom' | translate}}</label>
+                        <input name="shipFromName"
+                            type="text"
+                            class="form-control"
+                            [(ngModel)]="model.shipFrom"/>
+                    </div>
+                </div>
+                <div class="col-5">
+                    <div class="form-inline-control">
+                        <label class="form-label">{{'label.shipTo' | translate}}</label>
+                        <input name="shipToName"
+                            type="text"
+                            class="form-control"
+                            [(ngModel)]="model.shipTo"/>
+                    </div>
+                </div>
+                <div class="col-3" style="display: flex;
+                                        justify-content: flex-end;
+                                        align-items: end;">
+                    <button type="submit" class="btn header-button btn-color-orange" [disabled]="gridLoading">
+                        <fa-icon [icon]="faSearch" class=""></fa-icon>  {{'label.search' | translate}}
+                    </button>
+                    <button type="button" class="btn header-button btn-color-grey" (click)="resetForm()">
+                        <fa-icon [icon]="faRedo" class=""></fa-icon> {{'label.reset' | translate}}
+                    </button>
+                </div>
+            </div>
+            
+            <div class="grid-container">
+                <kendo-grid #grid="kendoGrid" [data]="gridData"
+                            [pageable]="true"
+                            [pageSize]="gridState.take"
+                            [skip]="gridState.skip"
+                            [sortable]="true"
+                            [sort]="gridState.sort"
+                            (pageChange)="gridPageChange($event)"
+                            (sortChange)="gridSortChange($event)"
+                            (dataStateChange)="gridStateChange($event)"
+                            class="custom-border-grid mt-5"
+                            [class.hiddenPagerWrap]="!gridData.data || gridData.data.length == 0">
+    
+                    <kendo-grid-column field="number" [width]="18" title="{{'label.fulfillmentNumber' | translate}}" [sortable]="true">
+                    </kendo-grid-column>
+    
+                    <kendo-grid-column field="shipFromName" [width]="18" title="{{'label.shipFrom' | translate}}" [filterable]="true" [sortable]="true">
+                    </kendo-grid-column>
+    
+                    <kendo-grid-column field="shipToName" [width]="18" title="{{'label.shipTo' | translate}}" [filterable]="true" [sortable]="true">
+                    </kendo-grid-column>
+    
+                    <kendo-grid-column field="bookingDate" [width]="18" title="{{'label.bookingDates' | translate}}" filter="date" format="{0:{{DATE_FORMAT}}}" [filterable]="true" [sortable]="true" width="150">
+                    </kendo-grid-column>
+    
+                    <kendo-grid-column field="cargoReadyDate" [width]="18" title="{{'label.bookingCargoReadyDates' | translate}}" filter="date" format="{0:{{DATE_FORMAT}}}" [filterable]="true" [sortable]="true" width="150">
+                    </kendo-grid-column>
+    
+                    <kendo-grid-column [width]="10" title="{{'label.action' | translate}}" headerClass="action-header" [headerClass]="'multiline-header'">
+                        <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                            <a class="k-link" routerLinkActive="active" routerLink="/bulk-fulfillments/add/0" [queryParams]="{formType:formType.Copy , isAddNew:true, copyfrom: dataItem.id}">{{'label.select' | translate}}</a>
+                        </ng-template>
+                    </kendo-grid-column>
+    
+                    <!-- Custom kendo pager -->
+                    <ng-template kendoPagerTemplate>
+                        <div class="k-pager-wrap k-pager-wrap__custom" *ngIf="gridData.data && gridData.data.length > 0">
+                            <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+    
+                            <kendo-pager-input *ngIf="pagerType === 'input'"></kendo-pager-input>
+                            <kendo-pager-numeric-buttons *ngIf="pagerType === 'numeric'" [buttonCount]="buttonCount"></kendo-pager-numeric-buttons>
+    
+                            <kendo-pager-next-buttons></kendo-pager-next-buttons>
+    
+                            <kendo-pager-info></kendo-pager-info>
+    
+                            <span class="k-pager-sizes k-label refresh-grid">
+                                <div class="k-label">{{'label.showRows' | translate}}</div>
+                                <kendo-dropdownlist [data]="pageSizes" [value]="gridState.take" (valueChange)="pageSizeChange($event)">
+                                </kendo-dropdownlist>
+    
+                                <button attr.data-balloon="{{'tooltip.refresh' | translate}}" data-balloon-pos="up"
+                                        type="button"
+                                        class="k-pager-refresh k-link pull-right btn refresh-icon-button"
+                                        (click)="fetchGridData()">
+                                    <i class="ei ei-icon_refresh"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </ng-template>
+                </kendo-grid>
+                <div *ngIf="gridLoading" class="k-i-loading"></div>
+            </div>
+        </form>
+    </div>
+    
+    <kendo-dialog-actions>
+        <button type="button" class="btn second-button dialog-button" (click)="onClosePopup()" #Cancel>{{'label.cancel' | translate}}</button>
+    </kendo-dialog-actions>
+</kendo-dialog>
