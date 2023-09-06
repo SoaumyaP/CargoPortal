@@ -8,7 +8,7 @@ on:
     branches:
       - Production
     paths:
-      - 'Groove.SP/grrove-sp-web'
+      - 'Groove.SP/groove-sp-web'
   workflow_dispatch:
 
 jobs:
@@ -25,7 +25,7 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-          npm install Groove.SP/grrove-sp-web
+          npm install Groove.SP/groove-sp-web
           npm run build -- --prod
           npm run test --if-present
       
