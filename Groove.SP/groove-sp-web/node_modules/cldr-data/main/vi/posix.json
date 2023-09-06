@@ -1,0 +1,19 @@
+{
+  "main": {
+    "vi": {
+      "identity": {
+        "version": {
+          "_number": "$Revision: 14365 $",
+          "_cldrVersion": "34"
+        },
+        "language": "vi"
+      },
+      "posix": {
+        "messages": {
+          "yesstr": "có:c",
+          "nostr": "không:k"
+        }
+      }
+    }
+  }
+}

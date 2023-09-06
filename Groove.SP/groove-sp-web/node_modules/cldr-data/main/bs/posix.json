@@ -1,0 +1,19 @@
+{
+  "main": {
+    "bs": {
+      "identity": {
+        "version": {
+          "_number": "$Revision: 14488 $",
+          "_cldrVersion": "34"
+        },
+        "language": "bs"
+      },
+      "posix": {
+        "messages": {
+          "yesstr": "da:d",
+          "nostr": "ne:n"
+        }
+      }
+    }
+  }
+}

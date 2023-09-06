@@ -1,0 +1,29 @@
+@include exports("scrollview/theme") {
+
+    // refactor when https://github.com/telerik/kendo-angular-scrollview/issues/130 is done
+    kendo-scrollview.k-scrollview-wrap,
+    div.k-scrollview {
+
+        .k-scrollview-pageable,
+        .k-scrollview-nav {
+            margin-left: $carousel-control-width;
+            margin-right: $carousel-control-width;
+            width: auto;
+            left: 0;
+            right: 0;
+
+            > li {
+                background-color: $scrollview-pagebutton-bg;
+                margin-right: $carousel-indicator-spacer;
+                margin-left: $carousel-indicator-spacer;
+                padding: 0;
+                max-width: $carousel-indicator-width;
+                height: $carousel-indicator-height;
+                border-width: 0;
+                border-radius: 0;
+                flex: 1 0 auto;
+                position: relative;
+            }
+        }
+    }
+}

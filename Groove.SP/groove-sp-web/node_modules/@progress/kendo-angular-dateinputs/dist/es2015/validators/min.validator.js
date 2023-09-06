@@ -1,0 +1,21 @@
+/**-----------------------------------------------------------------------------------------
+* Copyright © 2020 Progress Software Corporation. All rights reserved.
+* Licensed under commercial license. See LICENSE.md in the project root for more information
+*-------------------------------------------------------------------------------------------*/
+/**
+ * @hidden
+ */
+export const minValidator = (minValue) => {
+    return (control) => {
+        const err = {
+            minError: {
+                minValue: minValue,
+                value: control.value
+            }
+        };
+        if (!minValue || !control.value) {
+            return null;
+        }
+        return control.value < minValue ? err : null;
+    };
+};

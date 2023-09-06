@@ -1,0 +1,36 @@
+@import "../../modules/@progress/kendo-theme-default/scss/tabstrip/theme";
+
+
+@include exports("tabstrip/theme/bootstrap") {
+
+    // Tabstrip variants
+    .k-tabstrip-top {
+
+        .k-tabstrip-items .k-item.k-state-hover,
+        .k-tabstrip-items .k-item.k-state-active {
+            border-bottom-color: transparent;
+        }
+    }
+    .k-tabstrip-bottom {
+
+        .k-tabstrip-items .k-item.k-state-hover,
+        .k-tabstrip-items .k-item.k-state-active {
+            border-top-color: transparent;
+        }
+    }
+    .k-tabstrip-left {
+
+        .k-tabstrip-items .k-item.k-state-hover,
+        .k-tabstrip-items .k-item.k-state-active {
+            border-right-color: transparent;
+        }
+    }
+    .k-tabstrip-right {
+
+        .k-tabstrip-items .k-item.k-state-hover,
+        .k-tabstrip-items .k-item.k-state-active {
+            border-left-color: transparent;
+        }
+    }
+
+}

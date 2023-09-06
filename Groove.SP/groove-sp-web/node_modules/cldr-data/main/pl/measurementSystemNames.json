@@ -1,0 +1,20 @@
+{
+  "main": {
+    "pl": {
+      "identity": {
+        "version": {
+          "_number": "$Revision: 14350 $",
+          "_cldrVersion": "34"
+        },
+        "language": "pl"
+      },
+      "localeDisplayNames": {
+        "measurementSystemNames": {
+          "metric": "metryczny",
+          "UK": "brytyjski",
+          "US": "amerykański"
+        }
+      }
+    }
+  }
+}

@@ -1,8 +1,0 @@
-<div class="col milestone-content">
-    <div class="milestone-item"
-        *ngFor="let item of stages"
-            [ngClass]="{'active': item.active, 'current': item.current}">
-            <span class="icon" [ngClass]="item.class"></span>
-            <h5 class="milestone-title">{{ item.title | translate}}</h5>
-    </div>
-</div>

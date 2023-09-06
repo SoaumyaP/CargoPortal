@@ -1,0 +1,19 @@
+{
+  "main": {
+    "km": {
+      "identity": {
+        "version": {
+          "_number": "$Revision: 14488 $",
+          "_cldrVersion": "34"
+        },
+        "language": "km"
+      },
+      "delimiters": {
+        "quotationStart": "“",
+        "quotationEnd": "”",
+        "alternateQuotationStart": "‘",
+        "alternateQuotationEnd": "’"
+      }
+    }
+  }
+}

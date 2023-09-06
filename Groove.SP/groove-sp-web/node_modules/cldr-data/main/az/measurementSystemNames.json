@@ -1,0 +1,20 @@
+{
+  "main": {
+    "az": {
+      "identity": {
+        "version": {
+          "_number": "$Revision: 14453 $",
+          "_cldrVersion": "34"
+        },
+        "language": "az"
+      },
+      "localeDisplayNames": {
+        "measurementSystemNames": {
+          "metric": "Metrik",
+          "UK": "Britaniya",
+          "US": "ABŞ"
+        }
+      }
+    }
+  }
+}

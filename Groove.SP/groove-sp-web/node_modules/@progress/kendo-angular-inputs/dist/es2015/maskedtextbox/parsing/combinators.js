@@ -1,0 +1,31 @@
+/**-----------------------------------------------------------------------------------------
+* Copyright © 2020 Progress Software Corporation. All rights reserved.
+* Licensed under commercial license. See LICENSE.md in the project root for more information
+*-------------------------------------------------------------------------------------------*/
+import { Parser } from './parsers';
+import { Result } from './result';
+/**
+ * @hidden
+ */
+const always = value => new Parser(stream => new Result(value, stream));
+const ɵ0 = always;
+/**
+ * @hidden
+ */
+const append = (p1, p2) => p1.chain(vs => p2.map(v => vs.concat([v])));
+const ɵ1 = append;
+/**
+ * @hidden
+ */
+export const sequence = list => list.reduce((acc, parser) => append(acc, parser), always([]));
+/**
+ * @hidden
+ */
+export const greedy = parser => new Parser(stream => {
+    let result = new Result([], stream);
+    while (!stream.eof()) {
+        result = result.concat(parser.run(stream));
+    }
+    return result;
+});
+export { ɵ0, ɵ1 };

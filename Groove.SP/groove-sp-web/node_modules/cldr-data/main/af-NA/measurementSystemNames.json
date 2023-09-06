@@ -1,0 +1,21 @@
+{
+  "main": {
+    "af-NA": {
+      "identity": {
+        "version": {
+          "_number": "$Revision: 13869 $",
+          "_cldrVersion": "34"
+        },
+        "language": "af",
+        "territory": "NA"
+      },
+      "localeDisplayNames": {
+        "measurementSystemNames": {
+          "metric": "Metrieke stelsel",
+          "UK": "VK",
+          "US": "VSA"
+        }
+      }
+    }
+  }
+}

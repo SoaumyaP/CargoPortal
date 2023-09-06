@@ -1,0 +1,20 @@
+{
+  "main": {
+    "sk": {
+      "identity": {
+        "version": {
+          "_number": "$Revision: 14365 $",
+          "_cldrVersion": "34"
+        },
+        "language": "sk"
+      },
+      "localeDisplayNames": {
+        "measurementSystemNames": {
+          "metric": "metrický",
+          "UK": "britský",
+          "US": "americký"
+        }
+      }
+    }
+  }
+}

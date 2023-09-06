@@ -1,0 +1,100 @@
+@include exports("input/theme") {
+
+    .k-textbox,
+    .k-textarea,
+    .k-input.k-textbox {
+        @include appearance( "input" );
+        @include use-background-clip();
+
+        // Hovered
+        &:hover,
+        &.k-state-hover {
+            border-color: $input-hovered-border;
+        }
+
+        // Focused
+        &:focus,
+        &.k-state-focus {
+            color: $input-focused-text;
+            border-color: $input-focused-border;
+        }
+
+        // Invalid
+        &.k-invalid,
+        &.k-state-invalid,
+        &.ng-invalid.ng-touched,
+        &.ng-invalid.ng-dirty {
+            color: $error;
+            border-color: $invalid-border;
+        }
+
+        // Selection
+        &::selection {
+            background-color: $accent;
+            color: $accent-contrast;
+        }
+    }
+
+    .k-textbox,
+    .k-input,
+    .k-textarea {
+        &::selection {
+            background-color: $accent;
+            color: $accent-contrast;
+        }
+
+        .k-state-disabled & {
+            &::selection {
+                color: $input-text;
+                background-color: transparent;
+            }
+        }
+    }
+
+    .k-textbox,
+    .k-input,
+    .k-input.k-textbox,
+    .k-textarea {
+        &::placeholder {
+            color: rgba($input-text, .5);
+        }
+    }
+}
+
+
+
+
+@include exports("input/theme/form-styles") {
+
+    fieldset {
+        border-color: $input-border;
+    }
+
+    fieldset legend {
+        color: $header-text;
+    }
+
+    .k-form,
+    .k-form-inline {
+        color: $text-color;
+
+        fieldset {
+            legend {
+                color: $form-fieldset-legend-text;
+            }
+        }
+
+        .k-field-info {
+            color: lighten($text-color, 33%);
+        }
+
+        .k-alert-error {
+            color: $error;
+        }
+    }
+
+    .k-required,
+    .k-required.k-field-info {
+        color: $accent;
+    }
+}

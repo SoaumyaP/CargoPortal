@@ -1,0 +1,25 @@
+{
+  "main": {
+    "fi": {
+      "identity": {
+        "version": {
+          "_number": "$Revision: 14491 $",
+          "_cldrVersion": "34"
+        },
+        "language": "fi"
+      },
+      "contextTransforms": {
+        "languages": {
+          "uiListOrMenu": "titlecase-firstword"
+        },
+        "relative": {
+          "stand-alone": "titlecase-firstword"
+        },
+        "typographicNames": {
+          "stand-alone": "titlecase-firstword",
+          "uiListOrMenu": "titlecase-firstword"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "main": {
+    "ko": {
+      "identity": {
+        "version": {
+          "_number": "$Revision: 14491 $",
+          "_cldrVersion": "34"
+        },
+        "language": "ko"
+      },
+      "posix": {
+        "messages": {
+          "yesstr": "예",
+          "nostr": "아니요"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+/**-----------------------------------------------------------------------------------------
+* Copyright © 2020 Progress Software Corporation. All rights reserved.
+* Licensed under commercial license. See LICENSE.md in the project root for more information
+*-------------------------------------------------------------------------------------------*/
+import { Renderer2 } from '@angular/core';
+/**
+ * @hidden
+ */
+export declare abstract class SliderModelBase {
+    protected props: any;
+    protected wrapper: HTMLElement;
+    protected track: HTMLElement;
+    protected renderer: Renderer2;
+    protected tickSizes: number[];
+    constructor(props: any, wrapper: HTMLElement, track: HTMLElement, renderer: Renderer2);
+    protected abstract positionHandle(dragHandle: HTMLElement): void;
+    protected abstract positionSelection(dragHandle: HTMLElement, selection: HTMLElement): void;
+    resizeTrack(): void;
+    resizeTicks(ticksContainer: HTMLElement, ticks: HTMLElement[]): void;
+    resizeWrapper(): void;
+    protected trackWidth(): number;
+    protected getTickSizes(): any[];
+    private adjustPadding;
+    private elementOffset;
+    private elementSize;
+}

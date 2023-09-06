@@ -1,0 +1,24 @@
+@import "../../modules/@progress/kendo-theme-default/scss/treeview/layout";
+
+
+@include exports( "treeview/layout/bootstrap" ) {
+
+    // Base
+    .k-treeview {
+
+        .k-top,
+        .k-mid,
+        .k-bot {
+            padding-top: 2px;
+            padding-bottom: 2px;
+        }
+
+
+        // Item
+        .k-in {
+            transition: $transition;
+        }
+
+    }
+
+}

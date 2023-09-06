@@ -1,0 +1,21 @@
+{
+  "main": {
+    "en-AU": {
+      "identity": {
+        "version": {
+          "_number": "$Revision: 14418 $",
+          "_cldrVersion": "34"
+        },
+        "language": "en",
+        "territory": "AU"
+      },
+      "localeDisplayNames": {
+        "measurementSystemNames": {
+          "metric": "Metric",
+          "UK": "UK",
+          "US": "US"
+        }
+      }
+    }
+  }
+}
