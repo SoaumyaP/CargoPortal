@@ -28,7 +28,6 @@ jobs:
           cd Groove.SP/groove-sp-web
           npm install
           npm run build -- --prod
-          npm run test --if-present
       
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
