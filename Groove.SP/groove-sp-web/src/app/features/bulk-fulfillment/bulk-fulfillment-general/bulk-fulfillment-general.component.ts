@@ -125,7 +125,6 @@ export class BulkFulfillmentGeneralComponent implements OnInit, OnChanges, OnDes
     ) { }
 
     ngOnInit(): void {
-
         this.commonService.searchRealActiveVessels("").subscribe(
             r => {
                 this.vesselsSource = r;

@@ -348,7 +348,6 @@ export class PurchaseOrderListComponent extends ListComponent implements OnInit,
 
     selectPOsPopupClosedHandler(data: { selectedPOIds: Array<number>, selectedPrincipalId, isAllowMissingPO: boolean }) {
         this.selectPOsFormOpened = false;
-
         if (data) {
             let queryParams = {};
             let navigateUrl = '/po-fulfillments/add/0';

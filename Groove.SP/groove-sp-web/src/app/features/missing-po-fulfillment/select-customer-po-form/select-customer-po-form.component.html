@@ -97,8 +97,32 @@
                         <div *ngIf="!isSelectedDrag" class="k-invalid-msg">
                             {{'validation.requiredThisField' | translate}}
                         </div>
-                        
-                        <div *ngIf="isSelectedDrag" class="customer-po-container">
+
+                        <!-- 12-09-2023 changes for addition of Multiple po's -->
+                        <div [ngClass]="'drag-result-container'" (dragover)="allowDrop($event)" (drop)="onDrop($event)">
+                            <div *ngIf="selectedPOs && selectedPOs.length == 0 && !ifEditMode && isSelectedDrag" class="drag-result-content">
+                                <img src="/assets/images/po-fulfillment/drag-empty.png" class="drop-image" />
+                                <span class="drop-text"><i>{{'label.dragAndDrop' | translate}}</i></span>
+                            </div>
+                            <div class="drag-result-content" *ngIf="selectedPOs && selectedPOs.length > 0 && !ifEditMode && isSelectedDrag">
+                                <div class="form-group">
+                                    <div class="row" *ngFor="let item of selectedPOs; index as no;">
+                                        <div class="col-12">
+                                            <div class="form-group">
+                                                <span class="po-remove" [title]="'label.unselectCurrentPO' | translate" (click)="unselectPO(item)">
+                                                    <fa-icon [icon]="faTimes" class="child-icon"></fa-icon>
+                                                </span>
+                                                <span class="parent-text">{{no + 1}}. {{item.customerPONumber}} - {{item.productCode}}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 12-09-2023 changes for addition of Multiple po's -->
+                        <!-- 12-09-2023 ifEditMode is added  -->
+                        <div *ngIf="isSelectedDrag && ifEditMode" class="customer-po-container">
                             <div class="close-button-container hidden-in-view-maximum" (click)="closeSelect()">
                                 <span class="k-icon close-button"></span>
                                 <img src="/assets/images/import-popup/icon-close-popup.png" class="close-image" />

@@ -392,24 +392,12 @@
             </div>
 
             <div class="col-md-6 form-group" [hidden]="isViewMode && formHelper.isHiddenColumn(visibleColumns, viewSettingModuleIdType.BULKBOOKING_DETAIL,'remarks')">
-                <div class="form-group">
-                    <label class="form-label">{{'label.remarks' | translate}}</label>
-                    <textarea kendoTextArea rows="3" name="remarks" [(ngModel)]="model.remarks"
-                        class="form-control note-textarea" [readonly]="isGeneralTabEditable" maxlength="500"
-                        [ngClass]="{'read-only': isViewMode}">
-                    </textarea>
-                </div>
+                <label class="form-label">{{'label.remarks' | translate}}</label>
+                <textarea kendoTextArea rows="3" name="remarks" [(ngModel)]="model.remarks"
+                    class="form-control note-textarea" [readonly]="isGeneralTabEditable" maxlength="500"
+                    [ngClass]="{'read-only': isViewMode}">
+                </textarea>
             </div>
-            <div class="col-md-6 form-group" [hidden]="isViewMode && formHelper.isHiddenColumn(visibleColumns, viewSettingModuleIdType.BULKBOOKING_DETAIL,'poRemark')">
-                <div class="form-group">
-                    <label class="form-label">{{'label.poRemark' | translate}}</label>
-                    <textarea kendoTextArea rows="3" name="poRemark" [(ngModel)]="model.poRemark"
-                        class="form-control note-textarea" [readonly]="isGeneralTabEditable" maxlength="500"
-                        [ngClass]="{'read-only': isViewMode}">
-                    </textarea>
-                    </div>
-            </div>
-
         </div>
     </div>
 </fieldset>

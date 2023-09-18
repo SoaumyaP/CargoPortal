@@ -34,7 +34,6 @@ export class BulkFulfillmentModel extends ModelBase {
     @DataType(LocalDateTime)
     expectedDeliveryDate: LocalDateTime = null;
     remarks: string = null;
-    poRemark: string =null;
     currentOrganization: any = null;
     isContainDangerousGoods: boolean = false;
     isCIQOrFumigation: boolean = false;
