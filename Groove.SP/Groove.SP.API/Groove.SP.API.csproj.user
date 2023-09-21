@@ -9,7 +9,7 @@
     <WebStackScaffolding_IsReferencingScriptLibrariesSelected>True</WebStackScaffolding_IsReferencingScriptLibrariesSelected>
     <WebStackScaffolding_LayoutPageFile />
     <WebStackScaffolding_IsAsyncSelected>False</WebStackScaffolding_IsAsyncSelected>
-    <NameOfLastUsedPublishProfile>C:\Users\anshu\source\repos\ltldevelopers-groove-sp-a111ed0da295\Groove.SP\Groove.SP.API\Properties\PublishProfiles\w-sp - Web Deploy.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>C:\Users\anshu\Source\Repos\CargoPortal\.github\workflows\w-sp.yml</NameOfLastUsedPublishProfile>
     <ActiveDebugProfile>IIS_CSPortalAPI</ActiveDebugProfile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

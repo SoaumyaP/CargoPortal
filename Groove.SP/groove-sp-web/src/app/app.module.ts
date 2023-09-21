@@ -19,7 +19,6 @@ import { ChartsModule } from '@progress/kendo-angular-charts';
 import 'hammerjs';
 
 
-
 export function loadConfig(oidcConfigService: OidcConfigService) {
     return () => oidcConfigService.load_using_stsServer(environment.identityUrl);
 }
@@ -27,7 +26,6 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 @NgModule({
     declarations: [
         AppComponent,
-       
     ],
     imports: [
         BrowserModule,

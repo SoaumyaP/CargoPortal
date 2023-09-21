@@ -161,6 +161,7 @@
                 </section>
 
                 <!-- Customer PO -->
+                <!-- (clickEditPo)="getIsEditPoVal($event)" added to get value for bulk edit is click r not /CR/ -->
                 <section class="panel-group" id="customerPO" #customerPO [hidden]="isReloadMode || hiddenCustomerPOTab || !tabDisplay['customerPO']">
                     <label class="panel-header fs-14 float-left">{{'label.customerPO' | translate}}</label>
                     <app-po-fulfillment-customer
@@ -170,6 +171,7 @@
                         [isViewMode]="isViewMode"
                         [isAddMode]="isAddMode"
                         (contactsChanged)="onContactsChanged($event)"
+                        (clickEditPo)="getIsEditPoVal($event)"
                         [parentIntegration$]='integration$'>
                     </app-po-fulfillment-customer>
                 </section>
@@ -399,7 +401,7 @@
 
             <div class="col-12 action-bar">
                 <button type="button" class="btn second-button" *ngIf="!isViewMode" (click)="onCancel()">{{'label.cancel' | translate}}</button>
-                <button type="submit" class="btn prim-button submit-btn" *ngIf="!isViewMode" [disabled]="!isReadyForSubmit">{{(!isReloadMode ? 'label.save' : 'label.submit') | translate}}
+                <button type="submit" class="btn prim-button submit-btn" *ngIf="!isViewMode" [disabled]="!isReadyForSubmit || isBulkEditClick">{{(!isReloadMode ? 'label.save' : 'label.submit') | translate}} 
                     <ng-template *appSpinner="!isReadyForSubmit"></ng-template>
                 </button>
             </div>

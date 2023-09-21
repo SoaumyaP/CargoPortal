@@ -85,6 +85,56 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
 
     viewSettingModuleIdType = ViewSettingModuleIdType
 
+    //buttons bulk edit /CR/ 14/9/23
+    editMode: boolean = false;
+    cancelEdit: boolean = false;
+    packageUOMTypeOptions = DropDowns.PackageUOMStringType;
+    selectedDragItem = null;
+    searchTerm = '';
+    bulkEditPO: Boolean = false;
+    @Output() clickEditPo: EventEmitter<object> = new EventEmitter();
+    productVerificationSetting: any = {
+        commodityVerification: VerificationSetting.AsPerPO
+    };
+    errors: string[] = [];
+    oldData:any;
+    productCodeErrors:string[]=[];
+    fulfillmentUnitQtyErrors:string[]=[];
+    bookedPackageErrors:string[]=[];
+    packageUOMErrors:string[]=[];
+    volumeErrors:string[]=[];
+    grossWeightErrors:string[]=[];
+    hsCodeErrors:string[]=[];
+    validationRules = {
+        'fulfillmentUnitQty': {
+            'required': 'label.bookedQty',
+            'greaterThan': 'label.zero'
+        },
+        'productCode': {
+            'required': 'label.productCode'
+        },
+        'bookedPackage': {
+            'required': 'label.bookedPackage',
+            'greaterThan': 'label.zero'
+        },
+        'netWeight': {
+            'mustNotGreaterThan': 'label.grossWeight'
+        },
+        'grossWeight': {
+            'greaterThan': 'label.zero'
+        },
+        'volumeCBM': {
+            'greaterThan': 'label.zero'
+        },
+        'hsCode': {
+            'required': 'label.hsCode',
+            'numericMaxlength': 'validation.numericMaxlengthHsCode',
+            'separatedSymbol': 'validation.separatedSymbolHsCode'
+        },
+        'packageUOM': {}
+    };
+    //buttons bulk edit CR 14/9/23
+
     constructor(
         public service: POFulfillmentFormService,
         activatedRoute: ActivatedRoute,
@@ -122,10 +172,19 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         this._registerCustomerPOsRefreshedHandler();
         this._registerPOTypeChangedHandler();
         this._registerOnBuyerComplianceDataLoadedHandler();
-    }
+        // 15-09-2023 /CR/
+        this.service._buyerComplianceData$.subscribe(x=>{
+            this.productVerificationSetting = x ? x[0].productVerificationSetting : null;
+            if (this.productVerificationSetting && this.productVerificationSetting.isRequireGrossWeight) {
+                this.validationRules['grossWeight']['required'] = 'label.grossWeight';
+            }
+
+            if (this.productVerificationSetting && this.productVerificationSetting.isRequireVolume) {
+                this.validationRules['volumeCBM']['required'] = 'label.volume';
+            }        })    }
 
     _registerPOTypeChangedHandler() {
-         // Handler for value changing on poType
+        // Handler for value changing on poType
         const sub = this.parentIntegration$.pipe(
             filter((eventContent: IntegrationData) =>
                 eventContent.name === '[po-fulfillment-form]poTypeChanged'
@@ -319,149 +378,149 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         };
         this.parentIntegration$.next(emitValue);
 
-            // General tab
-            if (this.model.buyerCompliance.purchaseOrderVerificationSetting.shipFromLocationVerification
-                === this.verificationSetting.AsPerPO) {
-                this.model.shipFrom = firstPO.shipFromId;
+        // General tab
+        if (this.model.buyerCompliance.purchaseOrderVerificationSetting.shipFromLocationVerification
+            === this.verificationSetting.AsPerPO) {
+            this.model.shipFrom = firstPO.shipFromId;
+            if (this.isReceiptPortInheritShipFrom) {
+                this.model.receiptPortId = this.model.shipFrom;
+            }
+
+            this.service.getLocation(this.model.shipFrom).subscribe(location => {
+                this.model.shipFromName = location.locationDescription;
+                if (this.model.agentAssignmentMode === AgentAssignmentMode.Default) {
+                    this.shipFromPortValueChangeEmitter();
+                }
+
                 if (this.isReceiptPortInheritShipFrom) {
-                    this.model.receiptPortId = this.model.shipFrom;
+                    this.model.receiptPort = this.model.shipFromName;
                 }
-
-                this.service.getLocation(this.model.shipFrom).subscribe(location => {
-                    this.model.shipFromName = location.locationDescription;
-                    if (this.model.agentAssignmentMode === AgentAssignmentMode.Default) {
-                        this.shipFromPortValueChangeEmitter();
-                    }
-
-                    if (this.isReceiptPortInheritShipFrom) {
-                        this.model.receiptPort = this.model.shipFromName;
-                    }
-                });
-            }
-            if (this.model.buyerCompliance.purchaseOrderVerificationSetting.shipToLocationVerification
-                === this.verificationSetting.AsPerPO) {
-                this.model.shipTo = firstPO.shipToId;
-                if (this.isDeliveryPortInheritShipTo) {
-                    this.model.deliveryPortId = this.model.shipTo;
-                }
-                this.service.getLocation(this.model.shipTo).subscribe(location => {
-                    this.model.shipToName = location.locationDescription;
-                    if (this.model.agentAssignmentMode === AgentAssignmentMode.Default) {
-                        this.shipToPortValueChangeEmitter();
-                    }
-
-                    if (this.isDeliveryPortInheritShipTo) {
-                        this.model.deliveryPort = this.model.shipToName;
-                    }
-                });
-            }
-            if (this.model.buyerCompliance.purchaseOrderVerificationSetting.modeOfTransportVerification
-                === this.verificationSetting.AsPerPO) {
-                this.model.modeOfTransport = firstPO.modeOfTransport;
-            }
-            if (this.model.buyerCompliance.purchaseOrderVerificationSetting.incotermVerification
-                === this.verificationSetting.AsPerPO) {
-                    this.model.incoterm = firstPO.incoterm;
-            }
-
-            if (this.model.buyerCompliance.purchaseOrderVerificationSetting.preferredCarrierVerification
-                === this.verificationSetting.AsPerPO) {
-                this.service.getCarrier(firstPO.carrierCode).subscribe(carrier => {
-                    if (carrier && carrier.length > 0) {
-                        this.model.preferredCarrier = carrier[0].id;
-                        this.model.carrier = carrier[0].name;
-                    }
-                });
-            }
-
-            if (this.model.buyerCompliance.purchaseOrderVerificationSetting.expectedShipDateVerification
-                === this.verificationSetting.AsPerPO 
-                || this.model.buyerCompliance.purchaseOrderVerificationSetting.expectedShipDateVerification
-                === this.verificationSetting.AsPerPODefault) {
-                this.model.expectedShipDate = firstPO.expectedShipDate;
-            }
-
-            if (this.model.buyerCompliance.purchaseOrderVerificationSetting.expectedDeliveryDateVerification
-                === this.verificationSetting.AsPerPO
-                || this.model.buyerCompliance.purchaseOrderVerificationSetting.expectedDeliveryDateVerification
-                === this.verificationSetting.AsPerPODefault) {
-                this.model.expectedDeliveryDate = firstPO.expectedDeliveryDate;
-            }
-
-            // Contact tab
-            const newContacts = [];
-            if (this.model.buyerCompliance.purchaseOrderVerificationSetting.shipperVerification
-                === this.verificationSetting.AsPerPO) {
-                const shipper = firstPO.contacts.find(c => c.organizationRole === OrganizationNameRole.Shipper);
-                if (shipper) {
-                    // remove existing Shipper
-                    const existingShipperIndex = this.model.contacts.findIndex(c => c.organizationRole === OrganizationNameRole.Shipper);
-                    if (existingShipperIndex >= 0) {
-                        this.contactsChanged.emit({
-                            action: 'remove',
-                            rowIndex: existingShipperIndex
-                        });
-                    }
-                    shipper.contactSequence = RoleSequence.Shipper;
-                    newContacts.push(shipper);
-                }
-            }
-            if (this.model.buyerCompliance.purchaseOrderVerificationSetting.consigneeVerification
-                === this.verificationSetting.AsPerPO) {
-                const consignee = firstPO.contacts.find(c => c.organizationRole === OrganizationNameRole.Consignee);
-                if (consignee) {
-                    // remove existing Consignee
-                    const existingConsigneeIndex = this.model.contacts.findIndex(c => c.organizationRole === OrganizationNameRole.Consignee);
-                    if (existingConsigneeIndex >= 0) {
-                        this.contactsChanged.emit({
-                            action: 'remove',
-                            rowIndex: existingConsigneeIndex
-                        });
-                    }
-                    consignee.contactSequence = RoleSequence.Consignee;
-                    newContacts.push(consignee);
-
-                    if (this.model.isNotifyPartyAsConsignee) {
-                        // remove existing Notify-Party
-                        const existingNotifyPartyIndex = this.model.contacts.findIndex(c => c.organizationRole === OrganizationNameRole.NotifyParty
-                            && (StringHelper.isNullOrEmpty(c.removed) || !c.removed));
-                        if (existingNotifyPartyIndex >= 0) {
-                            this.contactsChanged.emit({
-                                action: 'remove',
-                                rowIndex: existingNotifyPartyIndex
-                            });
-                        }
-                        newContacts.push({
-                            organizationId: consignee.organizationId,
-                            organizationRole: OrganizationNameRole.NotifyParty,
-                            companyName: consignee.companyName,
-                            contactName: consignee.contactName,
-                            contactNumber: consignee.contactNumber,
-                            contactEmail: consignee.contactEmail,
-                            contactSequence: RoleSequence.NotifyParty,
-                            address: consignee.addressLine1
-                        });
-                    }
-                }
-            }
-
-            newContacts.forEach(i => {
-                this.model.contacts.push({
-                    organizationId: i.organizationId,
-                    organizationRole: i.organizationRole,
-                    organizationCode: i.organizationCode,
-                    companyName: i.companyName,
-                    contactName: i.contactName,
-                    contactNumber: i.contactNumber,
-                    contactEmail: i.contactEmail,
-                    contactSequence: i.contactSequence,
-                    address: i.addressLine1,
-                });
-                this.contactsChanged.emit({action: 'add'});
             });
+        }
+        if (this.model.buyerCompliance.purchaseOrderVerificationSetting.shipToLocationVerification
+            === this.verificationSetting.AsPerPO) {
+            this.model.shipTo = firstPO.shipToId;
+            if (this.isDeliveryPortInheritShipTo) {
+                this.model.deliveryPortId = this.model.shipTo;
+            }
+            this.service.getLocation(this.model.shipTo).subscribe(location => {
+                this.model.shipToName = location.locationDescription;
+                if (this.model.agentAssignmentMode === AgentAssignmentMode.Default) {
+                    this.shipToPortValueChangeEmitter();
+                }
+
+                if (this.isDeliveryPortInheritShipTo) {
+                    this.model.deliveryPort = this.model.shipToName;
+                }
+            });
+        }
+        if (this.model.buyerCompliance.purchaseOrderVerificationSetting.modeOfTransportVerification
+            === this.verificationSetting.AsPerPO) {
+            this.model.modeOfTransport = firstPO.modeOfTransport;
+        }
+        if (this.model.buyerCompliance.purchaseOrderVerificationSetting.incotermVerification
+            === this.verificationSetting.AsPerPO) {
+            this.model.incoterm = firstPO.incoterm;
+        }
+
+        if (this.model.buyerCompliance.purchaseOrderVerificationSetting.preferredCarrierVerification
+            === this.verificationSetting.AsPerPO) {
+            this.service.getCarrier(firstPO.carrierCode).subscribe(carrier => {
+                if (carrier && carrier.length > 0) {
+                    this.model.preferredCarrier = carrier[0].id;
+                    this.model.carrier = carrier[0].name;
+                }
+            });
+        }
+
+        if (this.model.buyerCompliance.purchaseOrderVerificationSetting.expectedShipDateVerification
+            === this.verificationSetting.AsPerPO
+            || this.model.buyerCompliance.purchaseOrderVerificationSetting.expectedShipDateVerification
+            === this.verificationSetting.AsPerPODefault) {
+            this.model.expectedShipDate = firstPO.expectedShipDate;
+        }
+
+        if (this.model.buyerCompliance.purchaseOrderVerificationSetting.expectedDeliveryDateVerification
+            === this.verificationSetting.AsPerPO
+            || this.model.buyerCompliance.purchaseOrderVerificationSetting.expectedDeliveryDateVerification
+            === this.verificationSetting.AsPerPODefault) {
+            this.model.expectedDeliveryDate = firstPO.expectedDeliveryDate;
+        }
+
+        // Contact tab
+        const newContacts = [];
+        if (this.model.buyerCompliance.purchaseOrderVerificationSetting.shipperVerification
+            === this.verificationSetting.AsPerPO) {
+            const shipper = firstPO.contacts.find(c => c.organizationRole === OrganizationNameRole.Shipper);
+            if (shipper) {
+                // remove existing Shipper
+                const existingShipperIndex = this.model.contacts.findIndex(c => c.organizationRole === OrganizationNameRole.Shipper);
+                if (existingShipperIndex >= 0) {
+                    this.contactsChanged.emit({
+                        action: 'remove',
+                        rowIndex: existingShipperIndex
+                    });
+                }
+                shipper.contactSequence = RoleSequence.Shipper;
+                newContacts.push(shipper);
+            }
+        }
+        if (this.model.buyerCompliance.purchaseOrderVerificationSetting.consigneeVerification
+            === this.verificationSetting.AsPerPO) {
+            const consignee = firstPO.contacts.find(c => c.organizationRole === OrganizationNameRole.Consignee);
+            if (consignee) {
+                // remove existing Consignee
+                const existingConsigneeIndex = this.model.contacts.findIndex(c => c.organizationRole === OrganizationNameRole.Consignee);
+                if (existingConsigneeIndex >= 0) {
+                    this.contactsChanged.emit({
+                        action: 'remove',
+                        rowIndex: existingConsigneeIndex
+                    });
+                }
+                consignee.contactSequence = RoleSequence.Consignee;
+                newContacts.push(consignee);
+
+                if (this.model.isNotifyPartyAsConsignee) {
+                    // remove existing Notify-Party
+                    const existingNotifyPartyIndex = this.model.contacts.findIndex(c => c.organizationRole === OrganizationNameRole.NotifyParty
+                        && (StringHelper.isNullOrEmpty(c.removed) || !c.removed));
+                    if (existingNotifyPartyIndex >= 0) {
+                        this.contactsChanged.emit({
+                            action: 'remove',
+                            rowIndex: existingNotifyPartyIndex
+                        });
+                    }
+                    newContacts.push({
+                        organizationId: consignee.organizationId,
+                        organizationRole: OrganizationNameRole.NotifyParty,
+                        companyName: consignee.companyName,
+                        contactName: consignee.contactName,
+                        contactNumber: consignee.contactNumber,
+                        contactEmail: consignee.contactEmail,
+                        contactSequence: RoleSequence.NotifyParty,
+                        address: consignee.addressLine1
+                    });
+                }
+            }
+        }
+
+        newContacts.forEach(i => {
+            this.model.contacts.push({
+                organizationId: i.organizationId,
+                organizationRole: i.organizationRole,
+                organizationCode: i.organizationCode,
+                companyName: i.companyName,
+                contactName: i.contactName,
+                contactNumber: i.contactNumber,
+                contactEmail: i.contactEmail,
+                contactSequence: i.contactSequence,
+                address: i.addressLine1,
+            });
+            this.contactsChanged.emit({ action: 'add' });
+        });
     }
 
-    async addCustomerPO () {
+    async addCustomerPO() {
         if (this.model.stage === POFulfillmentStageType.Draft) {
             await this.model.orders.forEach(o => {
                 const purchaseOrder = this.availablePOsList.find(x => x.id === o.purchaseOrderId);
@@ -472,7 +531,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
 
                 // Must update value from the service also
                 // Because there is cloneDeep on ngOnInit: this.availablePOsList = cloneDeep(customerPOs);
-                const originPurchaseOrder =  this.service.currentCustomerPOs().find(x => x.id === o.purchaseOrderId);
+                const originPurchaseOrder = this.service.currentCustomerPOs().find(x => x.id === o.purchaseOrderId);
                 const originSelectedLineItem = originPurchaseOrder.lineItems.find(x => x.id === o.poLineItemId);
                 if (!StringHelper.isNullOrEmpty(originSelectedLineItem)) {
                     originSelectedLineItem.balanceUnitQty = (selectedLineItem.orderedUnitQty - selectedLineItem.bookedUnitQty) - o.fulfillmentUnitQty;
@@ -513,30 +572,62 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
 
     /**Handle action after new customer po added to the grid */
     customerAddHandler(modelPopup) {
-        modelPopup.poContainerType = this.availablePOsList.find(x => x.id === modelPopup.purchaseOrderId).containerType;
+        //14-09-2023 changes for addition of Multiple po's /CR/
+        // modelPopup.poContainerType = this.availablePOsList.find(x => x.id === modelPopup.purchaseOrderId).containerType;
+        modelPopup = modelPopup.map(item => {
+            const foundItem = this.availablePOsList.find(x => x.id === item.purchaseOrderId);
+            if (foundItem) {
+                return { ...item, containerType: foundItem.containerType };
+            } else {
+                return item;
+            }
+        });
         modelPopup.isShowBookedPackageWarning = this.isShowBookedPackageWarning(modelPopup);
-        this.model.orders.push(modelPopup);
+        //14-09-2023 changes for addition of Multiple po's /CR/
+        // this.model.orders.push(modelPopup);
+        for (let i = 0; i < modelPopup.length; i++) {
+            this.model.orders.push(modelPopup[i]);
+        }
         this.customerFormMode = this.CustomerPOFormModeType.add;
         this.customerFormOpened = false;
 
-        this.availablePOsList.forEach(el => {
+        //14-09-2023 changes for addition of Multiple po's /CR/
+        // this.availablePOsList.forEach(el => {
+        //     el.lineItems.forEach(e => {
+        //         if (e.id === modelPopup.poLineItemId) {
+        //             e.balanceUnitQty = modelPopup.balanceUnitQty;
+        //         }
+        //     });
+        // });
+        modelPopup.forEach(modelItem => {
+            this.availablePOsList.forEach(el => {
+                el.lineItems.forEach(e => {
+                    if (e.id === modelItem.poLineItemId) {
+                        e.balanceUnitQty = modelItem.balanceUnitQty;
+                    }
+                });
+            });
+        });
+
+        //14-09-2023 changes for addition of Multiple po's
+        // Must update value from the service also
+        // Because there is cloneDeep on ngOnInit: this.availablePOsList = cloneDeep(customerPOs);
+        // this.service.currentCustomerPOs().forEach(el => {
+        //     el.lineItems.forEach(e => {
+        //         if (e.id === modelPopup.poLineItemId) {
+        //             e.balanceUnitQty = modelPopup.balanceUnitQty;
+        //         }
+        //     });
+        // });
+        this.service.currentCustomerPOs().forEach(el => {
             el.lineItems.forEach(e => {
-                if (e.id === modelPopup.poLineItemId) {
-                    e.balanceUnitQty = modelPopup.balanceUnitQty;
+                const matchingModelItem = modelPopup.find(modelItem => modelItem.poLineItemId === e.id);
+                if (matchingModelItem) {
+                    e.balanceUnitQty = matchingModelItem.balanceUnitQty;
                 }
             });
         });
 
-        // Must update value from the service also
-        // Because there is cloneDeep on ngOnInit: this.availablePOsList = cloneDeep(customerPOs);
-        this.service.currentCustomerPOs().forEach(el => {
-            el.lineItems.forEach(e => {
-                if (e.id === modelPopup.poLineItemId) {
-                    e.balanceUnitQty = modelPopup.balanceUnitQty;
-                }
-            });
-        });
-        
         // If it is the first PO added into the grid
         if (this.model.orders.length === 1) {
             let emitValue: IntegrationData;
@@ -831,7 +922,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
 
                 // Must update value from the service also
                 // Because there is cloneDeep on ngOnInit: this.availablePOsList = cloneDeep(customerPOs);
-                const originPurchaseOrder =  this.service.currentCustomerPOs().find(x => x.id === o.purchaseOrderId);
+                const originPurchaseOrder = this.service.currentCustomerPOs().find(x => x.id === o.purchaseOrderId);
                 const originSelectedLineItem = originPurchaseOrder.lineItems.find(x => x.id === o.poLineItemId);
                 if (!StringHelper.isNullOrEmpty(originSelectedLineItem)) {
                     originSelectedLineItem.balanceUnitQty = (selectedLineItem.orderedUnitQty - selectedLineItem.bookedUnitQty) - o.fulfillmentUnitQty;
@@ -904,7 +995,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
             // packageUOM
             if (this.isRequirePackageUOM
                 && (StringHelper.isNullOrWhiteSpace(order.packageUOM)
-                || !PackageUOMType[order.packageUOM])) {
+                    || !PackageUOMType[order.packageUOM])) {
                 if (!this.gridMissingFields.includes(this.translateService.instant('label.packageUOM'))) {
                     this.gridMissingFields.push(this.translateService.instant('label.packageUOM'));
                 }
@@ -932,7 +1023,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         if (this.allowMixedCarton) {
             let totalBookedPackage = 0;
             this.model.orders?.forEach(o => totalBookedPackage += (o.bookedPackage ?? 0));
-            if (totalBookedPackage <= 0)
+            if (totalBookedPackage <= 0) 
             {
                 result.status = false;
                 //Total quantity of Booked Package must be greater than 0.
@@ -1020,9 +1111,9 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
             const result = new ValidationData(ValidationDataType.Input, true);
             result.status = false;
             result.message = this.translateService.instant('validation.highlightedRowsWithError',
-            {
-                fieldList: this.gridMissingFields.join(', ')
-            });
+                {
+                    fieldList: this.gridMissingFields.join(', ')
+                });
             this._validationResults.unshift(result);
         }
 
@@ -1068,7 +1159,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         if (!this.buyerCompliance?.shippingCompliance?.allowMultiplePOPerFulfillment) {
 
             if (this.model.orders?.length > 0) {
-                let customerPOIds =  [...new Set(this.model.orders.map(x => x.purchaseOrderId))];
+                let customerPOIds = [...new Set(this.model.orders.map(x => x.purchaseOrderId))];
 
                 for (let index = 0; index < customerPOIds.length; index++) {
                     const el = customerPOIds[index];
@@ -1097,11 +1188,145 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         if (!this.isViewMode) { // apply for view mode only
             return true;
         }
-        
+
         return !FormHelper.isHiddenColumn(this.model.viewSettings, moduleId, fieldId);
     }
 
     ngOnDestroy(): void {
         this._subscriptions.map(x => x.unsubscribe());
     }
+
+    //14/9/23 added for grid edit functionality /CR/
+
+    clickBulkEdit(datastore) {
+        this.oldData = cloneDeep(datastore);
+        this.bulkEditPO = true;
+        this.editMode = true;
+        // to populate data in input field fail 14/9/23
+        // this.editCustomerPO;
+        this.emitclickEditPo(this.editMode);
+    }
+    cancelBulkEdit() {
+        this.clearAllError();
+        this.editMode = false;
+        this.bulkEditPO = false;
+        this.cancelEdit = false;
+        this.model.orders = cloneDeep(this.oldData);
+        this.emitclickEditPo(this.editMode);
+    }
+    bulkEditDataStore(datastore) {
+        if(!(this.productVerificationSetting.productCodeVerification === this.verificationSetting.AsPerPO)){this.checkproductCode();}
+        if(!(this.allowMixedCarton)){this.checkBookedPackage();}
+        if(this.isRequirePackageUOM){this.checkPackageUOM();}
+        if(this.productVerificationSetting.isRequireVolume){this.checkvolume();}
+        if(this.isRequireHsCode){this.checkhsCode();}
+        if(this.productVerificationSetting.isRequireGrossWeight){this.checkgrossWeight();}
+        this.checkfulfillmentUnitQty();
+        if(this.productCodeErrors.length==0 && this.errors.length==0 && this.fulfillmentUnitQtyErrors.length==0 && this.bookedPackageErrors.length==0 && this.packageUOMErrors.length==0
+            && this.volumeErrors.length==0 && this.grossWeightErrors.length==0 && this.hsCodeErrors.length==0){
+        this.oldData = cloneDeep(datastore);
+        this.bulkEditPO = false;
+        this.editMode = false;
+        this.emitclickEditPo(this.editMode);
+        this.onSave();
+        }
+    }
+    onSave() {
+        this.clearAllError();
+        if (length >= 1) {
+            this.resetForm();
+            this.add.emit(this.model);
+        }
+    }
+    resetForm() {
+        this.selectedDragItem = null;
+        this.isSelectedDrag = false;
+        this.searchTerm = '';
+    }
+    emitclickEditPo(value){
+        this.clickEditPo.emit(value);
+    }
+    validateInputForHsCode(event,index: number): void {
+        this.errors=[];
+        const inputValue = this.model.orders[index].hsCode.replace(/[.\s]/g, '');
+    
+        // Add your validation logic here
+        if (!(/^\b([a-zA-Z0-9,])+$/g.test(inputValue) && /^(?:\d{4},?|\d{6},?|\d{8},?|\d{10},?|\d{13},?)$/g.test(inputValue))) {
+            this.errors[index] = 'Invalid Type'; // Clear the error
+        }
+      }
+      checkproductCode(){
+        this.productCodeErrors=[];
+        this.model.orders.forEach((product,index)=>{
+            if(!product.productCode){
+                this.productCodeErrors[index] = 'Product Code is required';
+            }
+        })
+      }
+      checkfulfillmentUnitQty(){
+        this.fulfillmentUnitQtyErrors=[];
+        this.model.orders.forEach((product,index)=>{
+            if(product.fulfillmentUnitQty<=0){
+                this.fulfillmentUnitQtyErrors[index] = 'Value must be greater than zero'
+            }else if(!product.fulfillmentUnitQty){
+                this.fulfillmentUnitQtyErrors[index] = 'fulfillment Unit Qty is required';
+            }
+        })
+      }
+      checkBookedPackage(){
+        this.bookedPackageErrors=[];
+        this.model.orders.forEach((product,index)=>{
+            if(product.bookedPackage<=0){
+                this.bookedPackageErrors[index] = 'Value must be greater than zero'
+            }else if(!product.bookedPackage){
+                this.bookedPackageErrors[index] = 'booked Package is required';
+            }
+        })
+      }
+      checkPackageUOM(){
+        this.packageUOMErrors=[];
+        this.model.orders.forEach((product,index)=>{
+            if(!product.packageUOM){
+                this.packageUOMErrors[index] = 'packageUOM is required';
+            }
+        })
+      }
+      checkvolume(){
+        this.volumeErrors=[];
+        this.model.orders.forEach((product,index)=>{
+            if(product.volume<=0){
+                this.volumeErrors[index] = 'Value must be greater than zero'
+            }else if(!product.volume){
+                this.volumeErrors[index] = 'volume is required';
+            }
+        })
+      }
+      checkgrossWeight(){
+        this.grossWeightErrors=[];
+        this.model.orders.forEach((product,index)=>{
+            if(product.grossWeight<=0){
+                this.grossWeightErrors[index] = 'Value must be greater than zero'
+            }else if(!product.grossWeight){
+                this.grossWeightErrors[index] = 'grossWeight is required';
+            }
+        })
+      }
+      checkhsCode(){
+        this.hsCodeErrors=[];
+        this.model.orders.forEach((product,index)=>{
+            if(!product.hsCode){
+                this.hsCodeErrors[index] = 'hsCode is required';
+            }
+        })
+      }
+      clearAllError(){
+        this.productCodeErrors=[];
+        this.fulfillmentUnitQtyErrors=[];
+        this.errors=[];
+        this.bookedPackageErrors=[];
+        this.packageUOMErrors=[];
+        this.volumeErrors=[];
+        this.grossWeightErrors=[];
+        this.hsCodeErrors=[];
+      }
 }

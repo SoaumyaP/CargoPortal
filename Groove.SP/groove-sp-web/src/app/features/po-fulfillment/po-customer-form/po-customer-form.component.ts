@@ -4,12 +4,20 @@ import { FormComponent, UserContextService, DropDowns, StringHelper, Verificatio
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationPopup } from 'src/app/ui/notification-popup/notification-popup';
 import { POFulfillmentFormService } from '../po-fulfillment-form/po-fulfillment-form.service';
-import { faPlus, faEllipsisV, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faEllipsisV, faInfoCircle ,faTimes} from '@fortawesome/free-solid-svg-icons';
 import { of, Subscription, Subject } from 'rxjs';
 import { MathHelper } from 'src/app/core/helpers/math.helper';
 import { debounceTime, tap } from 'rxjs/operators';
 import { OrganizationPreferenceService } from '../../organization-preference/Organization-preference.service';
 
+//14-09-2023 changes for addition of Multiple po's /CR/
+interface SelectPurchaseOrderModel {
+    id: number;
+    poNumber: string;
+    poKey: string;
+    itemsCount: number;
+    poLineItemId:number
+}
 @Component({
     selector: 'app-po-customer-form',
     templateUrl: './po-customer-form.component.html',
@@ -123,6 +131,11 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
     // Store all subscriptions, then should un-subscribe at the end
     private _subscriptions: Array<Subscription> = [];
 
+    //14-09-2023 changes for addition of Multiple po's /CR/
+    selectedPOs: Array<SelectPurchaseOrderModel> = [];
+    existingPo= [];
+    faTimes = faTimes;
+
     get ifEditMode(): boolean {
         return this.formMode === this.CustomerPOFormModeType.edit;
     }
@@ -191,6 +204,11 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
         if (this.isRequirePackageUOM) {
             this.validationRules['packageUOM']['required'] = 'label.packageUOM';
         }
+        
+        // 15-09-2023 /CR/
+        this.service.buyerCompliance$.subscribe(x => {
+            this.service._buyerComplianceData$.next(x);
+        });
     }
 
     // need statements to drop work
@@ -249,17 +267,32 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
     onDrop() {
         // notice: handle after user drop new line-item into the right
         this.resetTree();
-        // Reset data for selected node first
-        if (this.model) {
-            const currentSelectedNode = this.findCurrentNodeInTree(this.model.purchaseOrderId,
-                this.model.poLineItemId);
-            currentSelectedNode.isSelected = false;
-            currentSelectedNode.balanceUnitQty = this.model.fulfillmentUnitQty + this.model.balanceUnitQty;
+        
+        //14-09-2023 changes for addition of Multiple po's  /CR/
+        this.selectedPOs.push(this.selectedDragItem);
+        let selectedpoLineItemId = this.selectedPOs.map(item => item.poLineItemId);
 
-            const currentSelectedPO = this.findCurrentPO(this.model.purchaseOrderId, this.model.poLineItemId);
-            currentSelectedPO.isSelected = false;
-            currentSelectedPO.balanceUnitQty = this.model.fulfillmentUnitQty + this.model.balanceUnitQty;
-        }
+        this.treeData.forEach(item => {
+            item.items.forEach(subitem => {
+              if (selectedpoLineItemId.includes(subitem.poLineItemId)) {
+                subitem.isSelected = true;
+                console.log(subitem);
+              }
+            });
+          });
+
+        //14-09-2023 changes for addition of Multiple po's 
+        // Reset data for selected node first
+        // if (this.model) {
+        //     const currentSelectedNode = this.findCurrentNodeInTree(this.model.purchaseOrderId,
+        //         this.model.poLineItemId);
+        //     currentSelectedNode.isSelected = false;
+        //     currentSelectedNode.balanceUnitQty = this.model.fulfillmentUnitQty + this.model.balanceUnitQty;
+
+        //     const currentSelectedPO = this.findCurrentPO(this.model.purchaseOrderId, this.model.poLineItemId);
+        //     currentSelectedPO.isSelected = false;
+        //     currentSelectedPO.balanceUnitQty = this.model.fulfillmentUnitQty + this.model.balanceUnitQty;
+        // }
 
         this.selectedDragItem.id = 0;
         const newSelectedNode = this.findCurrentNodeInTree(this.selectedDragItem.purchaseOrderId, this.selectedDragItem.poLineItemId);
@@ -662,6 +695,8 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
         this.resetForm();
         this.resetCurrentForm();
         this.close.emit();
+        //14-09-2023 changes for addition of Multiple po's /CR/
+        this.selectedPOs = [];
     }
 
     resetForm() {
@@ -680,16 +715,34 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
             this.resetForm();
             switch (this.formMode) {
                 case this.CustomerPOFormModeType.add:
-                    this.add.emit(this.model);
+                    //14-09-2023 changes for addition of Multiple po's /CR/
+                    this.add.emit(this.selectedPOs);
+                    // this.add.emit(this.model);
                     break;
                 case this.CustomerPOFormModeType.edit:
                     this.edit.emit(this.model);
                     break;
             }
         }
+        //14-09-2023 changes for addition of Multiple po's /CR/
+        this.selectedPOs = [];
     }
 
     ngOnDestroy() {
         this._subscriptions.map(x => x.unsubscribe());
+    }
+     //14-09-2023 changes for addition of Multiple po's /CR/
+     unselectPO(data){
+        this.treeData.forEach(item => {
+            item.items.forEach(subitem => {
+              if (data.poLineItemId == subitem.poLineItemId) {
+                subitem.isSelected = undefined;
+                subitem.balanceUnitQty = data.fulfillmentUnitQty + data.balanceUnitQty
+              }
+            });
+          });
+        this.selectedPOs = this.selectedPOs.filter(item=> item.poLineItemId !== data.poLineItemId);
+        if(this.selectedPOs.length == 0){this.isSelectedDrag = false;}
+
     }
 }

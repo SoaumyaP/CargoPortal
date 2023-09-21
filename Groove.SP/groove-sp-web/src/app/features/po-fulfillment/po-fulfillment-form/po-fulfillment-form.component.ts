@@ -433,6 +433,9 @@ export class POFulfillmentFormComponent extends FormComponent implements OnDestr
     saveBookingFailed = false;
     saveBookingErrors: Array<string> = [];
 
+    //15-09-2023 getIsEditPoVal added to get value for bulk edit is click r not /CR/
+    isBulkEditClick:any;
+
     constructor(
         protected route: ActivatedRoute,
         public notification: NotificationPopup,
@@ -3155,5 +3158,9 @@ export class POFulfillmentFormComponent extends FormComponent implements OnDestr
     ngOnDestroy(): void {
         this.service.resetCustomerPOs();
         this._subscriptions.map(x => x.unsubscribe());
+    }
+    //15-09-2023 getIsEditPoVal added to get value for bulk edit is click r not /CR/
+    getIsEditPoVal(val){
+        this.isBulkEditClick = val;
     }
 }

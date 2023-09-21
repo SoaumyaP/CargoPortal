@@ -4,12 +4,20 @@ import { FormComponent, UserContextService, DropDowns, StringHelper, Verificatio
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationPopup } from 'src/app/ui/notification-popup/notification-popup';
 import { MissingPOFulfillmentFormService } from '../missing-po-fulfillment-form/missing-po-fulfillment-form.service';
-import { faPlus, faEllipsisV, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faEllipsisV, faInfoCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { of, Subscription, Subject } from 'rxjs';
 import { MathHelper } from 'src/app/core/helpers/math.helper';
 import { debounceTime, tap } from 'rxjs/operators';
 import { OrganizationPreferenceService } from '../../organization-preference/Organization-preference.service';
 
+//12-09-2023 changes for addition of Multiple po's /CR/
+interface SelectPurchaseOrderModel {
+    id: number;
+    poNumber: string;
+    poKey: string;
+    itemsCount: number;
+    poLineItemId:number
+}
 @Component({
     selector: 'app-select-customer-po-form',
     templateUrl: './select-customer-po-form.component.html',
@@ -123,6 +131,12 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
     // Store all subscriptions, then should un-subscribe at the end
     private _subscriptions: Array<Subscription> = [];
 
+    //12-09-2023 changes for addition of Multiple po's /CR/
+    selectedPOs: Array<SelectPurchaseOrderModel> = [];
+    existingPo= [];
+    faTimes = faTimes;
+    //12-09-2023 changes for addition of Multiple po's 
+
     get ifEditMode(): boolean {
         return this.formMode === this.CustomerPOFormModeType.edit;
     }
@@ -169,6 +183,7 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
     }
 
     ngOnInit() {
+        
         let sub = this.service.getCountries().subscribe(countries => {
             this.countryOptions = countries;
         });
@@ -191,6 +206,10 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
         if (this.isRequirePackageUOM) {
             this.validationRules['packageUOM']['required'] = 'label.packageUOM';
         }
+        // 15-09-2023 /CR/
+        this.service.buyerCompliance$.subscribe(x => {
+            this.service._buyerComplianceData$.next(x);
+        });
     }
 
     // need statements to drop work
@@ -249,18 +268,31 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
     onDrop() {
         // notice: handle after user drop new line-item into the right
         this.resetTree();
+        //12-09-2023 changes for addition of Multiple po's /CR/
+        this.selectedPOs.push(this.selectedDragItem);
+        let selectedpoLineItemId = this.selectedPOs.map(item => item.poLineItemId);
+
+        this.treeData.forEach(item => {
+            item.items.forEach(subitem => {
+              if (selectedpoLineItemId.includes(subitem.poLineItemId)) {
+                subitem.isSelected = true;
+                console.log(subitem);
+              }
+            });
+          });
+          
+        //12-09-2023 changes for addition of Multiple po's
         // Reset data for selected node first
-        if (this.model) {
-            const currentSelectedNode = this.findCurrentNodeInTree(this.model.purchaseOrderId,
-                this.model.poLineItemId);
-            currentSelectedNode.isSelected = false;
-            currentSelectedNode.balanceUnitQty = this.model.fulfillmentUnitQty + this.model.balanceUnitQty;
+        // if (this.model) {
+        //     const currentSelectedNode = this.findCurrentNodeInTree(this.model.purchaseOrderId,
+        //         this.model.poLineItemId);
+        //     currentSelectedNode.isSelected = false;
+        //     currentSelectedNode.balanceUnitQty = this.model.fulfillmentUnitQty + this.model.balanceUnitQty;
 
-            const currentSelectedPO = this.findCurrentPO(this.model.purchaseOrderId, this.model.poLineItemId);
-            currentSelectedPO.isSelected = false;
-            currentSelectedPO.balanceUnitQty = this.model.fulfillmentUnitQty + this.model.balanceUnitQty;
-        }
-
+        //     const currentSelectedPO = this.findCurrentPO(this.model.purchaseOrderId, this.model.poLineItemId);
+        //     currentSelectedPO.isSelected = false;
+        //     currentSelectedPO.balanceUnitQty = this.model.fulfillmentUnitQty + this.model.balanceUnitQty;
+        // }
         this.selectedDragItem.id = 0;
         const newSelectedNode = this.findCurrentNodeInTree(this.selectedDragItem.purchaseOrderId, this.selectedDragItem.poLineItemId);
         newSelectedNode.isSelected = true;
@@ -521,8 +553,10 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
 
     /**Access the cache to store new data
      * Otherwise, load data from cache.
+     * /CR/
     */
     private _integrateWithTreeDataCache(treeData: Array<any>) {
+        this.existingPo.push(treeData);
         for (let index = 0; index < treeData.length; index++) {
             const nodeData = treeData[index];
             const existed = this.treeDataCache.find(x => x.purchaseOrderId === nodeData.purchaseOrderId);
@@ -662,6 +696,8 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
         this.resetForm();
         this.resetCurrentForm();
         this.close.emit();
+        //12-09-2023 changes for addition of Multiple po's /CR/
+        this.selectedPOs = [];
     }
 
     resetForm() {
@@ -680,16 +716,34 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
             this.resetForm();
             switch (this.formMode) {
                 case this.CustomerPOFormModeType.add:
-                    this.add.emit(this.model);
+                    //12-09-2023 changes for addition of Multiple po's /CR/
+                    this.add.emit(this.selectedPOs);
+                    // this.add.emit(this.model);
                     break;
                 case this.CustomerPOFormModeType.edit:
                     this.edit.emit(this.model);
                     break;
             }
         }
+        //12-09-2023 changes for addition of Multiple po's /CR/
+        this.selectedPOs = [];
     }
 
     ngOnDestroy() {
         this._subscriptions.map(x => x.unsubscribe());
+    }
+     //12-09-2023 changes for addition of Multiple po's /CR/
+    unselectPO(data){
+        this.treeData.forEach(item => {
+            item.items.forEach(subitem => {
+              if (data.poLineItemId == subitem.poLineItemId) {
+                subitem.isSelected = undefined;
+                subitem.balanceUnitQty = data.fulfillmentUnitQty + data.balanceUnitQty
+              }
+            });
+          });
+        this.selectedPOs = this.selectedPOs.filter(item=> item.poLineItemId !== data.poLineItemId);
+        if(this.selectedPOs.length == 0){this.isSelectedDrag = false;}
+
     }
 }
