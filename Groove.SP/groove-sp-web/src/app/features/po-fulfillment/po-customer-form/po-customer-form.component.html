@@ -98,7 +98,7 @@
                             {{'validation.requiredThisField' | translate}}
                         </div>
 
-                         <!-- 14-09-2023 changes for addition of Multiple po's -->
+                         <!-- 14-09-2023 changes for addition of Multiple po's /CR/ -->
                          <div [ngClass]="'drag-result-container'" (dragover)="allowDrop($event)" (drop)="onDrop($event)">
                             <div *ngIf="selectedPOs && selectedPOs.length == 0 && !ifEditMode && isSelectedDrag" class="drag-result-content">
                                 <img src="/assets/images/po-fulfillment/drag-empty.png" class="drop-image" />

@@ -10,7 +10,7 @@ import { MathHelper } from 'src/app/core/helpers/math.helper';
 import { debounceTime, tap } from 'rxjs/operators';
 import { OrganizationPreferenceService } from '../../organization-preference/Organization-preference.service';
 
-//14-09-2023 changes for addition of Multiple po's 
+//14-09-2023 changes for addition of Multiple po's /CR/
 interface SelectPurchaseOrderModel {
     id: number;
     poNumber: string;
@@ -131,7 +131,7 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
     // Store all subscriptions, then should un-subscribe at the end
     private _subscriptions: Array<Subscription> = [];
 
-    //14-09-2023 changes for addition of Multiple po's 
+    //14-09-2023 changes for addition of Multiple po's /CR/
     selectedPOs: Array<SelectPurchaseOrderModel> = [];
     existingPo= [];
     faTimes = faTimes;
@@ -205,7 +205,7 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
             this.validationRules['packageUOM']['required'] = 'label.packageUOM';
         }
         
-        // 15-09-2023
+        // 15-09-2023 /CR/
         this.service.buyerCompliance$.subscribe(x => {
             this.service._buyerComplianceData$.next(x);
         });
@@ -268,7 +268,7 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
         // notice: handle after user drop new line-item into the right
         this.resetTree();
         
-        //14-09-2023 changes for addition of Multiple po's 
+        //14-09-2023 changes for addition of Multiple po's  /CR/
         this.selectedPOs.push(this.selectedDragItem);
         let selectedpoLineItemId = this.selectedPOs.map(item => item.poLineItemId);
 
@@ -695,7 +695,7 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
         this.resetForm();
         this.resetCurrentForm();
         this.close.emit();
-        //14-09-2023 changes for addition of Multiple po's
+        //14-09-2023 changes for addition of Multiple po's /CR/
         this.selectedPOs = [];
     }
 
@@ -715,7 +715,7 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
             this.resetForm();
             switch (this.formMode) {
                 case this.CustomerPOFormModeType.add:
-                    //14-09-2023 changes for addition of Multiple po's
+                    //14-09-2023 changes for addition of Multiple po's /CR/
                     this.add.emit(this.selectedPOs);
                     // this.add.emit(this.model);
                     break;
@@ -724,14 +724,14 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
                     break;
             }
         }
-        //14-09-2023 changes for addition of Multiple po's
+        //14-09-2023 changes for addition of Multiple po's /CR/
         this.selectedPOs = [];
     }
 
     ngOnDestroy() {
         this._subscriptions.map(x => x.unsubscribe());
     }
-     //14-09-2023 changes for addition of Multiple po's
+     //14-09-2023 changes for addition of Multiple po's /CR/
      unselectPO(data){
         this.treeData.forEach(item => {
             item.items.forEach(subitem => {

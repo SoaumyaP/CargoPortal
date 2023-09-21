@@ -4,7 +4,7 @@ export const environment = {
     hubUrl: 'https://w-sp.azurewebsites.net/hub',
     apiUrl: 'https://w-sp.azurewebsites.net/api',
     commonApiUrl: 'https://w-common.azurewebsites.net/api',
-    identityUrl: 'https://w-identitiy.azurewebsites.net',
+    identityUrl: 'https://w-identity.azurewebsites.net',
     marketingUrl: 'http://www.cargofe.com',
     userTrackTraceInterval: 0,
     version: require('../../package.json').version,

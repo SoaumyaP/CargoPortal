@@ -10,7 +10,7 @@ import { MathHelper } from 'src/app/core/helpers/math.helper';
 import { debounceTime, tap } from 'rxjs/operators';
 import { OrganizationPreferenceService } from '../../organization-preference/Organization-preference.service';
 
-//12-09-2023 changes for addition of Multiple po's 
+//12-09-2023 changes for addition of Multiple po's /CR/
 interface SelectPurchaseOrderModel {
     id: number;
     poNumber: string;
@@ -131,7 +131,7 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
     // Store all subscriptions, then should un-subscribe at the end
     private _subscriptions: Array<Subscription> = [];
 
-    //12-09-2023 changes for addition of Multiple po's 
+    //12-09-2023 changes for addition of Multiple po's /CR/
     selectedPOs: Array<SelectPurchaseOrderModel> = [];
     existingPo= [];
     faTimes = faTimes;
@@ -206,7 +206,7 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
         if (this.isRequirePackageUOM) {
             this.validationRules['packageUOM']['required'] = 'label.packageUOM';
         }
-        // 15-09-2023
+        // 15-09-2023 /CR/
         this.service.buyerCompliance$.subscribe(x => {
             this.service._buyerComplianceData$.next(x);
         });
@@ -268,7 +268,7 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
     onDrop() {
         // notice: handle after user drop new line-item into the right
         this.resetTree();
-        //12-09-2023 changes for addition of Multiple po's 
+        //12-09-2023 changes for addition of Multiple po's /CR/
         this.selectedPOs.push(this.selectedDragItem);
         let selectedpoLineItemId = this.selectedPOs.map(item => item.poLineItemId);
 
@@ -553,6 +553,7 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
 
     /**Access the cache to store new data
      * Otherwise, load data from cache.
+     * /CR/
     */
     private _integrateWithTreeDataCache(treeData: Array<any>) {
         this.existingPo.push(treeData);
@@ -695,7 +696,7 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
         this.resetForm();
         this.resetCurrentForm();
         this.close.emit();
-        //12-09-2023 changes for addition of Multiple po's
+        //12-09-2023 changes for addition of Multiple po's /CR/
         this.selectedPOs = [];
     }
 
@@ -715,7 +716,7 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
             this.resetForm();
             switch (this.formMode) {
                 case this.CustomerPOFormModeType.add:
-                    //12-09-2023 changes for addition of Multiple po's
+                    //12-09-2023 changes for addition of Multiple po's /CR/
                     this.add.emit(this.selectedPOs);
                     // this.add.emit(this.model);
                     break;
@@ -724,14 +725,14 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
                     break;
             }
         }
-        //12-09-2023 changes for addition of Multiple po's
+        //12-09-2023 changes for addition of Multiple po's /CR/
         this.selectedPOs = [];
     }
 
     ngOnDestroy() {
         this._subscriptions.map(x => x.unsubscribe());
     }
-     //12-09-2023 changes for addition of Multiple po's
+     //12-09-2023 changes for addition of Multiple po's /CR/
     unselectPO(data){
         this.treeData.forEach(item => {
             item.items.forEach(subitem => {

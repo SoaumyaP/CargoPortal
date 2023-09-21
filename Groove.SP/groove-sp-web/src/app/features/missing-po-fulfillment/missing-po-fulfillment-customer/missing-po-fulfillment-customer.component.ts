@@ -92,7 +92,7 @@ export class MissingPOFulfillmentCustomerComponent implements OnInit, OnDestroy 
 
     viewSettingModuleIdType = ViewSettingModuleIdType;
 
-    //buttons bulk edit CR 12/9/23
+    //buttons bulk edit /CR/ 12/9/23
     editMode: boolean = false;
     cancelEdit: boolean = false;
     packageUOMTypeOptions = DropDowns.PackageUOMStringType;

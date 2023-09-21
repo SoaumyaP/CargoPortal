@@ -85,7 +85,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
 
     viewSettingModuleIdType = ViewSettingModuleIdType
 
-    //buttons bulk edit CR 14/9/23
+    //buttons bulk edit /CR/ 14/9/23
     editMode: boolean = false;
     cancelEdit: boolean = false;
     packageUOMTypeOptions = DropDowns.PackageUOMStringType;
@@ -172,7 +172,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         this._registerCustomerPOsRefreshedHandler();
         this._registerPOTypeChangedHandler();
         this._registerOnBuyerComplianceDataLoadedHandler();
-        // 15-09-2023
+        // 15-09-2023 /CR/
         this.service._buyerComplianceData$.subscribe(x=>{
             this.productVerificationSetting = x ? x[0].productVerificationSetting : null;
             if (this.productVerificationSetting && this.productVerificationSetting.isRequireGrossWeight) {
@@ -572,7 +572,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
 
     /**Handle action after new customer po added to the grid */
     customerAddHandler(modelPopup) {
-        //14-09-2023 changes for addition of Multiple po's
+        //14-09-2023 changes for addition of Multiple po's /CR/
         // modelPopup.poContainerType = this.availablePOsList.find(x => x.id === modelPopup.purchaseOrderId).containerType;
         modelPopup = modelPopup.map(item => {
             const foundItem = this.availablePOsList.find(x => x.id === item.purchaseOrderId);
@@ -583,7 +583,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
             }
         });
         modelPopup.isShowBookedPackageWarning = this.isShowBookedPackageWarning(modelPopup);
-        //14-09-2023 changes for addition of Multiple po's
+        //14-09-2023 changes for addition of Multiple po's /CR/
         // this.model.orders.push(modelPopup);
         for (let i = 0; i < modelPopup.length; i++) {
             this.model.orders.push(modelPopup[i]);
@@ -591,7 +591,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         this.customerFormMode = this.CustomerPOFormModeType.add;
         this.customerFormOpened = false;
 
-        //14-09-2023 changes for addition of Multiple po's
+        //14-09-2023 changes for addition of Multiple po's /CR/
         // this.availablePOsList.forEach(el => {
         //     el.lineItems.forEach(e => {
         //         if (e.id === modelPopup.poLineItemId) {
@@ -1023,7 +1023,8 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         if (this.allowMixedCarton) {
             let totalBookedPackage = 0;
             this.model.orders?.forEach(o => totalBookedPackage += (o.bookedPackage ?? 0));
-            if (totalBookedPackage <= 0) {
+            if (totalBookedPackage <= 0) 
+            {
                 result.status = false;
                 //Total quantity of Booked Package must be greater than 0.
                 result.message = this.translateService.instant('validation.totalBookedPackageMustGreaterThanZero');
@@ -1195,7 +1196,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         this._subscriptions.map(x => x.unsubscribe());
     }
 
-    //14/9/23 added for grid edit functionality
+    //14/9/23 added for grid edit functionality /CR/
 
     clickBulkEdit(datastore) {
         this.oldData = cloneDeep(datastore);

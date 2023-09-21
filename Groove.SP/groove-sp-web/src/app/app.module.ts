@@ -25,7 +25,7 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
 
 @NgModule({
     declarations: [
-        AppComponent
+        AppComponent,
     ],
     imports: [
         BrowserModule,
