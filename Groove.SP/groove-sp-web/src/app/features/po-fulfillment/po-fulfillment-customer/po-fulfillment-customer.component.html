@@ -249,10 +249,10 @@
         <p *ngIf="!editMode">{{dataItem.hsCode}}</p>
         <p *ngIf="editMode; else cancelEdit">
             <input name="hsCode" type="text" [required]="isRequireHsCode" class="form-control"
-                [(ngModel)]="dataItem.hsCode"
-                [disabled]="productVerificationSetting.hsCodeVerification === verificationSetting.AsPerPO"
-                (ngModelChange)="validateInputForHsCode($event, rowIndex);"/>
-        </p>
+            [(ngModel)]="dataItem.hsCode" [ngModelOptions]="{standalone: true}"
+            [disabled]="productVerificationSetting.hsCodeVerification === verificationSetting.AsPerPO"
+            (ngModelChange)="validateInputForHsCode($event, rowIndex);"/>
+            </p>
         <div *ngIf="errors[rowIndex]" class="k-invalid-msg">
             {{errors[rowIndex]}}
         </div>

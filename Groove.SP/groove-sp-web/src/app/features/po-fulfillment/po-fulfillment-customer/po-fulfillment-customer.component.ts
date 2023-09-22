@@ -1229,6 +1229,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         this.editMode = false;
         this.emitclickEditPo(this.editMode);
         this.onSave();
+        this.clearAllError();
         }
     }
     onSave() {
@@ -1247,13 +1248,23 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         this.clickEditPo.emit(value);
     }
     validateInputForHsCode(event,index: number): void {
-        this.errors=[];
         const inputValue = this.model.orders[index].hsCode.replace(/[.\s]/g, '');
     
         // Add your validation logic here
         if (!(/^\b([a-zA-Z0-9,])+$/g.test(inputValue) && /^(?:\d{4},?|\d{6},?|\d{8},?|\d{10},?|\d{13},?)$/g.test(inputValue))) {
             this.errors[index] = 'Invalid Type'; // Clear the error
+        }else{
+            this.errors[index] = null;
         }
+        const newErrors = [];
+        this.errors.forEach((error, i) => {
+         if (error !== null) {
+        newErrors[i] = error;
+        }
+        });
+        // Update this.errors to the new array
+        this.errors = newErrors;
+        console.log(this.errors);
       }
       checkproductCode(){
         this.productCodeErrors=[];
