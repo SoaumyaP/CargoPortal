@@ -5,7 +5,7 @@
         <span class="icon-circle-label">{{'label.askForPO' | translate}}</span>
     </button>
 
-    <button  type="button" class="btn header-button small-button" *ngIf="!buyerCompliance.isAllowMissingPO"
+    <button type="button" class="btn header-button small-button" *ngIf="!buyerCompliance.isAllowMissingPO"
         (click)="addCustomerPO()" [disabled]="isDisableAddCustomerPO">
         <div class="icon-circle">
             <fa-icon [icon]="faPlus"></fa-icon>
@@ -57,8 +57,7 @@
         </ng-template>
     </kendo-grid-column> -->
 
-    <kendo-grid-column field="productCode" class="organization-email"
-        [headerClass]="'multiline-header'"
+    <kendo-grid-column field="productCode" class="organization-email" [headerClass]="'multiline-header'"
         [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'productCode')">
         <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
             <label class="required" style="margin-bottom: unset;">{{'label.productCode' | translate}}</label>
@@ -94,8 +93,8 @@
         </ng-template>
     </kendo-grid-column> -->
 
-    <kendo-grid-column field="fulfillmentUnitQty"
-        [headerClass]="'multiline-header'"
+    <!-- 27/9/2023 -->
+    <kendo-grid-column field="fulfillmentUnitQty" [headerClass]="'multiline-header'"
         [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'fulfillmentUnitQty')">
         <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
             <label class="required" style="margin-bottom: unset;">{{'label.bookedQty' | translate}}</label>
@@ -106,9 +105,13 @@
             <p *ngIf="editMode; else cancelEdit">
                 <kendo-numerictextbox #fulfillmentUnitQtyElement name="fulfillmentUnitQty" class="form-control"
                     [(ngModel)]="dataItem.fulfillmentUnitQty" [format]="'n0'" [decimals]="0" [min]='0'
-                    [autoCorrect]='true' required appGreaterThan='0' [ngModelOptions]="{standalone: true}">
+                    [autoCorrect]='true' (ngModelChange)="onBookedQtyChanged(dataItem,rowIndex);" required appGreaterThan='0'
+                    [ngModelOptions]="{standalone: true}">
                 </kendo-numerictextbox>
             </p>
+            <div *ngIf="bookedQuantityErrorMessage[rowIndex]" class="k-invalid-msg" style="font-size: 13px;">
+                {{bookedQuantityErrorMessage[rowIndex]}}
+            </div>
             <div *ngIf="fulfillmentUnitQtyErrors[rowIndex]" class="k-invalid-msg" style="font-size: 13px;">
                 {{fulfillmentUnitQtyErrors[rowIndex]}}
             </div>
@@ -117,9 +120,12 @@
     <kendo-grid-column field="balanceUnitQty" title="{{'label.balanceQty' | translate}}"
         [headerClass]="'multiline-header'"
         [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'balanceUnitQty')">
-        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
-            {{dataItem.balanceUnitQty | number:0}}
-        </ng-template>
+        <!--  27/9/2023 -->
+        <p>
+            <input name="balanceUnitQty" type="text" [disabled]="true" [(ngModel)]="model.balanceUnitQty" />
+        </p>
+        <!--  27/9/2023 -->
+
     </kendo-grid-column>
     <!-- <kendo-grid-column field="bookedPackage"
                         title="{{'label.bookedPackage' | translate}}"
@@ -141,11 +147,11 @@
         </ng-template>
     </kendo-grid-column> -->
 
-    <kendo-grid-column field="bookedPackage"
-        [headerClass]="'multiline-header'"
+    <kendo-grid-column field="bookedPackage" [headerClass]="'multiline-header'"
         [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'bookedPackage')">
         <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
-            <label [ngClass]="!allowMixedCarton ? 'required' : ''" style="margin-bottom: unset;">{{'label.bookedPackage' | translate}}</label>
+            <label [ngClass]="!allowMixedCarton ? 'required' : ''" style="margin-bottom: unset;">{{'label.bookedPackage'
+                | translate}}</label>
         </ng-template>
         <ng-template #infoTooltipTemplate let-anchor>
             <span class="tooltip-warning">{{ anchor.nativeElement.getAttribute('data-tooltip') }}</span>
@@ -172,7 +178,8 @@
     <kendo-grid-column field="UOM" [headerClass]="'multiline-header'"
         [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'packageUOM')">
         <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
-            <label [ngClass]="isRequirePackageUOM ? 'required' : ''" style="margin-bottom: unset;">{{'label.packageUOM' | translate}}</label>
+            <label [ngClass]="isRequirePackageUOM ? 'required' : ''" style="margin-bottom: unset;">{{'label.packageUOM'
+                | translate}}</label>
         </ng-template>
         <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
             <!-- input type set so after clicking we can edit 12/9/23 -->
@@ -199,7 +206,8 @@
     <kendo-grid-column field="volume" [headerClass]="'multiline-header'"
         [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'volume')">
         <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
-            <label [ngClass]="this.productVerificationSetting.isRequireVolume ? 'required' : ''" style="margin-bottom: unset;">{{'label.volumeCBM' | translate}}</label>
+            <label [ngClass]="this.productVerificationSetting.isRequireVolume ? 'required' : ''"
+                style="margin-bottom: unset;">{{'label.volumeCBM' | translate}}</label>
         </ng-template>
         <!-- no tooltip for volume 15/9/2023 -->
         <!-- <ng-template #infoTooltipTemplate let-anchor>
@@ -211,7 +219,7 @@
             <p *ngIf="!editMode">{{dataItem.volume | number:'0.3-3'}}</p>
             <p *ngIf="editMode; else cancelEdit">
                 <kendo-numerictextbox #volume name="volume" class="form-control" [(ngModel)]="dataItem.volume"
-                    [autoCorrect]="true" [ngModelOptions]="{standalone: true}"[decimals]="3" [format]="'n3'" [min]="0"
+                    [autoCorrect]="true" [ngModelOptions]="{standalone: true}" [decimals]="3" [format]="'n3'" [min]="0"
                     [required]="this.productVerificationSetting.isRequireVolume">
                 </kendo-numerictextbox>
             </p>
@@ -221,11 +229,11 @@
             <!-- </span> -->
         </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="grossWeight"
-        [headerClass]="'multiline-header'"
+    <kendo-grid-column field="grossWeight" [headerClass]="'multiline-header'"
         [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'grossWeight')">
         <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
-            <label [ngClass]="this.productVerificationSetting.isRequireGrossWeight ? 'required' : ''" style="margin-bottom: unset;">{{'label.grossWeightKGS' | translate}}</label>
+            <label [ngClass]="this.productVerificationSetting.isRequireGrossWeight ? 'required' : ''"
+                style="margin-bottom: unset;">{{'label.grossWeightKGS' | translate}}</label>
         </ng-template>
         <!-- no tooltip for volume 15/9/2023 -->
         <!-- <ng-template #infoTooltipTemplate let-anchor>
@@ -237,8 +245,8 @@
             <p *ngIf="!editMode">{{dataItem.grossWeight | number:'0.2-2'}}</p>
             <p *ngIf="editMode; else cancelEdit">
                 <kendo-numerictextbox #grossWeight name="grossWeight" class="form-control"
-                    [(ngModel)]="dataItem.grossWeight" [autoCorrect]="true"
-                    [decimals]="2" [min]="0" [ngModelOptions]="{standalone: true}"
+                    [(ngModel)]="dataItem.grossWeight" [autoCorrect]="true" [decimals]="2" [min]="0"
+                    [ngModelOptions]="{standalone: true}"
                     [required]="this.productVerificationSetting.isRequireGrossWeight">
                 </kendo-numerictextbox>
             </p>
@@ -251,7 +259,8 @@
     <kendo-grid-column field="hsCode" [headerClass]="'multiline-header'"
         [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'hsCode')">
         <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
-            <label [ngClass]="isRequireHsCode ? 'required' : ''" style="margin-bottom: unset;">{{'label.hsCode' | translate}}</label>
+            <label [ngClass]="isRequireHsCode ? 'required' : ''" style="margin-bottom: unset;">{{'label.hsCode' |
+                translate}}</label>
         </ng-template>
         <!-- no tooltip for volume 15/9/2023 -->
         <!-- <ng-template #infoTooltipTemplate let-anchor>
@@ -263,10 +272,10 @@
             <p *ngIf="!editMode">{{dataItem.hsCode}}</p>
             <p *ngIf="editMode; else cancelEdit">
                 <input #hsCode name="hsCode" type="text" [required]="isRequireHsCode" class="form-control"
-                [(ngModel)]="dataItem.hsCode" [ngModelOptions]="{standalone: true}"
-                [disabled]="productVerificationSetting.hsCodeVerification === verificationSetting.AsPerPO"
-                (ngModelChange)="validateInputForHsCode($event, rowIndex);"/>
-        </p>
+                    [(ngModel)]="dataItem.hsCode" [ngModelOptions]="{standalone: true}"
+                    [disabled]="productVerificationSetting.hsCodeVerification === verificationSetting.AsPerPO"
+                    (ngModelChange)="validateInputForHsCode($event, rowIndex);" />
+            </p>
             <div *ngIf="errors[rowIndex]" class="k-invalid-msg">
                 {{errors[rowIndex]}}
             </div>

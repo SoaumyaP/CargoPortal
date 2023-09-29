@@ -85,6 +85,11 @@
             padding-top: 10px;
             padding-left: 10px;
         }
+        
+        .node-parent-selected{
+            cursor: inherit;
+            background-color: #F8F9FC;
+        }
 
         .node-item-child {
             margin-left: -38px;
@@ -199,7 +204,7 @@
     cursor: pointer;
     padding: 5px 8px;
     .child-icon {
-        color: red;
+        color: red !important;
         font-size: 15px !important;
     }
 }
