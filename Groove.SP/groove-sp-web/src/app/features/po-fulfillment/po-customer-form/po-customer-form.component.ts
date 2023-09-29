@@ -4,19 +4,19 @@ import { FormComponent, UserContextService, DropDowns, StringHelper, Verificatio
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationPopup } from 'src/app/ui/notification-popup/notification-popup';
 import { POFulfillmentFormService } from '../po-fulfillment-form/po-fulfillment-form.service';
-import { faPlus, faEllipsisV, faInfoCircle ,faTimes} from '@fortawesome/free-solid-svg-icons';
-import { of, Subscription, Subject } from 'rxjs';
+import { faPlus, faEllipsisV, faInfoCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { of, Subscription, Subject, Observable } from 'rxjs';
 import { MathHelper } from 'src/app/core/helpers/math.helper';
 import { debounceTime, tap } from 'rxjs/operators';
 import { OrganizationPreferenceService } from '../../organization-preference/Organization-preference.service';
 
-//14-09-2023 changes for addition of Multiple po's /CR/
+//14-09-2023 changes for addition of Multiple po's 
 interface SelectPurchaseOrderModel {
     id: number;
     poNumber: string;
     poKey: string;
     itemsCount: number;
-    poLineItemId:number
+    poLineItemId: number
 }
 @Component({
     selector: 'app-po-customer-form',
@@ -131,10 +131,15 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
     // Store all subscriptions, then should un-subscribe at the end
     private _subscriptions: Array<Subscription> = [];
 
-    //14-09-2023 changes for addition of Multiple po's /CR/
-    selectedPOs: Array<SelectPurchaseOrderModel> = [];
-    existingPo= [];
+    //14-09-2023 changes for addition of Multiple po's 
+    selectedPOs: Array<any> = [];
+    existingPo = [];
     faTimes = faTimes;
+    public expandedKeysForMultiple: any[];
+    wholePo: any;
+    bookedQuantityErrorMessage="";
+    buyerCompliance: any = {};
+
 
     get ifEditMode(): boolean {
         return this.formMode === this.CustomerPOFormModeType.edit;
@@ -218,7 +223,63 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
     }
 
     clickItem(purchaseOrderId, poLineItemId) {
-        this.selectedDragItem = Object.assign({}, this.findCurrentPO(purchaseOrderId, poLineItemId));
+        this.wholePo = false;
+        const selectedDragItem = Object.assign({}, this.findCurrentPO(purchaseOrderId, poLineItemId));
+        selectedDragItem.fulfillmentUnitQty = selectedDragItem.balanceUnitQty;
+        selectedDragItem.bookedPackage = Math.ceil(!selectedDragItem.outerQuantity || selectedDragItem.outerQuantity <= 0 ? 0 : selectedDragItem.fulfillmentUnitQty / selectedDragItem.outerQuantity);
+        const volume = MathHelper.calculateCBM(selectedDragItem.outerDepth, selectedDragItem.outerWidth, selectedDragItem.outerHeight) * selectedDragItem.bookedPackage;
+        selectedDragItem.volume = isNaN(volume) || volume === 0 ? null : MathHelper.roundToThreeDecimals(volume);
+        const grossWeight = selectedDragItem.outerGrossWeight * selectedDragItem.bookedPackage;
+        selectedDragItem.grossWeight = isNaN(grossWeight) || grossWeight === 0 ? null : grossWeight;
+        selectedDragItem.status = 1;
+        const result: { customerPONumber?: number, lineItem?: {}[] } = {};
+        // Iterate through the input data
+        result.customerPONumber = selectedDragItem.customerPONumber;
+        result.lineItem = [];
+        result.lineItem.push(selectedDragItem);
+        this.selectedDragItem = null;
+        this.selectedDragItem = result;
+        console.log(this.selectedDragItem, 'cust po and line item');
+    }
+
+    // 25-09-2023 
+    clickItemWholePO(selectedPO) {
+        this.selectedDragItem = selectedPO.items;
+        const newArray = [];
+        // Loop through the arrays to find and copy the selected items
+        for (let i = 0; i < this.selectedDragItem.length; i++) {
+            const purchaseOrderId = this.selectedDragItem[i].purchaseOrderId;
+            const poLineItemId = this.selectedDragItem[i].poLineItemId;
+            // Find and copy the selected item for each combination of purchaseOrderId and poLineItemId
+            const selectedDragItem = Object.assign({}, this.findCurrentPO(purchaseOrderId, poLineItemId));
+            if (!selectedDragItem.isSelected) {
+                selectedDragItem.fulfillmentUnitQty = selectedDragItem.balanceUnitQty;
+                selectedDragItem.bookedPackage = Math.ceil(!selectedDragItem.outerQuantity || selectedDragItem.outerQuantity <= 0 ? 0 : selectedDragItem.fulfillmentUnitQty / selectedDragItem.outerQuantity);
+                const volume = MathHelper.calculateCBM(selectedDragItem.outerDepth, selectedDragItem.outerWidth, selectedDragItem.outerHeight) * selectedDragItem.bookedPackage;
+                selectedDragItem.volume = isNaN(volume) || volume === 0 ? null : MathHelper.roundToThreeDecimals(volume);
+                const grossWeight = selectedDragItem.outerGrossWeight * selectedDragItem.bookedPackage;
+                selectedDragItem.grossWeight = isNaN(grossWeight) || grossWeight === 0 ? null : grossWeight;
+                selectedDragItem.status = 1;
+                // Push the selected item into the array
+                newArray.push(selectedDragItem);
+            }
+        }
+        console.log(newArray, "new");
+        // Initialize the result object
+        const result: { customerPONumber?: number, lineItem?: {}[] } = {};
+
+        // Iterate through the input data
+        for (const item of newArray) {
+            if (!result.customerPONumber) {
+                result.customerPONumber = item.customerPONumber;
+                result.lineItem = [];
+            }
+            result.lineItem.push(item);
+        }
+        this.selectedDragItem = null;
+        this.selectedDragItem = result;
+        console.log(this.selectedDragItem, 'cust po and line item');
+        this.wholePo = true;
     }
 
     /**Find line-item information for current node
@@ -242,8 +303,8 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
 
         // When add Customer PO
         // Need get more expectedShipDate/expectedDeliveryDate to update expectedShipDate/expectedDeliveryDate in general booking tab 
-        result.expectedShipDate =  purchaseOrder.expectedShipDate;
-        result.expectedDeliveryDate =  purchaseOrder.expectedDeliveryDate;
+        result.expectedShipDate = purchaseOrder.expectedShipDate;
+        result.expectedDeliveryDate = purchaseOrder.expectedDeliveryDate;
 
         return result;
     }
@@ -267,20 +328,50 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
     onDrop() {
         // notice: handle after user drop new line-item into the right
         this.resetTree();
-        
-        //14-09-2023 changes for addition of Multiple po's  /CR/
-        this.selectedPOs.push(this.selectedDragItem);
-        let selectedpoLineItemId = this.selectedPOs.map(item => item.poLineItemId);
-
+        this.isSelectedDrag = true;
+        //14-09-2023 changes for addition of Multiple po's 
+        let found = false; // Use a flag to check if a match is found
+        if (this.selectedPOs.length > 0) {
+            if (this.wholePo) {
+                for (let i = 0; i < this.selectedPOs.length; i++) {
+                    if (this.selectedPOs[i].customerPONumber === this.selectedDragItem.customerPONumber) {
+                        // Replace the existing object with selectedDragItem
+                        this.selectedPOs[i] = this.selectedDragItem;
+                        found = true;
+                        break; // Exit the loop since we found a match
+                    }
+                }
+            }
+            else {
+                found = true;
+                const matchingPO = this.selectedPOs.find(po => po.customerPONumber === this.selectedDragItem.customerPONumber);
+                if (matchingPO) {
+                    matchingPO.lineItem.push(this.selectedDragItem.lineItem[0]);
+                } else {
+                    // If no matchingPO is found, create a new one
+                    this.selectedPOs.push(this.selectedDragItem);
+                }
+            }
+        }
+        // if match is found also selectedPOs is having values
+        if (!found) {
+            this.selectedPOs.push(this.selectedDragItem);
+        }
+        const selectedpoLineItemId = [];
+        this.selectedPOs.forEach(po => {
+            po.lineItem.forEach(item => {
+                selectedpoLineItemId.push(item.id);
+            });
+        });
         this.treeData.forEach(item => {
             item.items.forEach(subitem => {
-              if (selectedpoLineItemId.includes(subitem.poLineItemId)) {
-                subitem.isSelected = true;
-                console.log(subitem);
-              }
+                if (selectedpoLineItemId.includes(subitem.poLineItemId)) {
+                    subitem.isSelected = true;
+                    subitem.balanceUnitQty = 0;
+                    console.log(subitem);
+                }
             });
-          });
-
+        });
         //14-09-2023 changes for addition of Multiple po's 
         // Reset data for selected node first
         // if (this.model) {
@@ -295,14 +386,13 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
         // }
 
         this.selectedDragItem.id = 0;
-        const newSelectedNode = this.findCurrentNodeInTree(this.selectedDragItem.purchaseOrderId, this.selectedDragItem.poLineItemId);
-        newSelectedNode.isSelected = true;
-        newSelectedNode.balanceUnitQty = 0;
-        this.bindingData(this.selectedDragItem);
-        this.isSelectedDrag = true;
-        setTimeout(() => {
-            this.validateHsCode(this.model.hsCode, true);
-        }, 1);
+        // const newSelectedNode = this.findCurrentNodeInTree(this.selectedDragItem.purchaseOrderId, this.selectedDragItem.poLineItemId);
+        // newSelectedNode.isSelected = true;
+        // newSelectedNode.balanceUnitQty = 0;
+        // this.bindingData(this.selectedDragItem);
+        // setTimeout(() => {
+        //     this.validateHsCode(this.model.hsCode, true);
+        // }, 1);
     }
 
     onDragStart(event) {
@@ -366,7 +456,7 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
         this.model.grossWeight = isNaN(grossWeight) || grossWeight === 0 ? null : grossWeight;
     }
 
-    onFulfillmentUnitQtyChanged() {
+    onFulfillmentUnitQtyChanged(val) {
         const bookedQty = StringHelper.isNullOrEmpty(this.model.fulfillmentUnitQty) ? 0 : this.model.fulfillmentUnitQty;
 
         this.model.balanceUnitQty = this.originBalance - bookedQty + this.originFulfillmentUnitQty;
@@ -377,6 +467,7 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
         const currentNode = this.findCurrentNodeInTree(this.model.purchaseOrderId, this.model.poLineItemId);
         currentNode.balanceUnitQty = this.model.balanceUnitQty;
         currentNode.isSelected = currentNode.balanceUnitQty < 0 || currentNode.isSelected;
+        this.checkMinMaxBookedQuantity(this.model);
     }
 
     onBookedPackageChanged() {
@@ -507,6 +598,8 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
         this.searchBy = 'C';
         this.searchTerm = '';
         this.expandedKeys = [];
+        // 26-09-2023
+        this.expandedKeysForMultiple = [];
         this.treeData = [];
         this.selectPOList = [];
         this.treeDataCache = [];
@@ -520,7 +613,8 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
                 text: customerPO.poNumber,
                 items: [],
                 type: this.searchByType.customerPO,
-                purchaseOrderId: data[i].id
+                purchaseOrderId: data[i].id,
+                disabled: true
             };
             for (let j = 0; j < customerPO.lineItems.length; j++) {
                 const poLine = customerPO.lineItems[j];
@@ -537,11 +631,17 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
                         */
                         isShown: true
                     });
+                    // If any child item is not selected, mark the parent node as not disabled
+                    if (!poLine.isSelected) {
+                        menu.disabled = false;
+                    }
                 }
             }
             this.treeData.push(menu);
         }
         this.expandedKeys = [];
+        // 26-09-2023
+        this.expandedKeysForMultiple = [];
 
         this._integrateWithTreeDataCache(this.treeData);
 
@@ -706,6 +806,11 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
     }
 
     onSave() {
+        if (this.selectedPOs) {
+            if (this.selectedPOs.length > 0) {
+                this.isSelectedDrag = true;
+            }
+        }
         this.validateAllFields(false);
         if (!this.mainForm.valid || !this.isSelectedDrag) {
             return;
@@ -715,8 +820,16 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
             this.resetForm();
             switch (this.formMode) {
                 case this.CustomerPOFormModeType.add:
-                    //14-09-2023 changes for addition of Multiple po's /CR/
-                    this.add.emit(this.selectedPOs);
+                    //14-09-2023 changes for addition of Multiple po's
+                    // Initialize an empty array to store the line items
+                    const allLineItems = [];
+                    // Loop through selectedPOs and extract line items
+                    this.selectedPOs.forEach(po => {
+                        // Iterate through line items and set balanceQuantity to 0
+                        const modifiedLineItems = po.lineItem.map(lineItem => ({ ...lineItem, balanceUnitQty: 0 }));
+                        allLineItems.push(...modifiedLineItems);
+                    });
+                    this.add.emit(allLineItems);
                     // this.add.emit(this.model);
                     break;
                 case this.CustomerPOFormModeType.edit:
@@ -731,18 +844,100 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
     ngOnDestroy() {
         this._subscriptions.map(x => x.unsubscribe());
     }
-     //14-09-2023 changes for addition of Multiple po's /CR/
-     unselectPO(data){
+    //14-09-2023 changes for addition of Multiple po's
+    // remove line items
+    unselectPOLineItem(data) {
         this.treeData.forEach(item => {
             item.items.forEach(subitem => {
-              if (data.poLineItemId == subitem.poLineItemId) {
-                subitem.isSelected = undefined;
-                subitem.balanceUnitQty = data.fulfillmentUnitQty + data.balanceUnitQty
-              }
+                if (data.poLineItemId == subitem.poLineItemId) {
+                    subitem.isSelected = undefined;
+                    subitem.balanceUnitQty = data.balanceUnitQty
+                }
             });
-          });
-        this.selectedPOs = this.selectedPOs.filter(item=> item.poLineItemId !== data.poLineItemId);
-        if(this.selectedPOs.length == 0){this.isSelectedDrag = false;}
+        });
+        // this.selectedPOs = this.selectedPOs.filter(item => item.poLineItemId !== data.poLineItemId);
+        // Remove lineItem items based on data.poLineItemId
+        this.selectedPOs.forEach(po => {
+            po.lineItem = po.lineItem.filter(item => item.poLineItemId !== data.poLineItemId);
+        });
+        // Remove objects with no lineItem
+        this.selectedPOs = this.selectedPOs.filter(po => po.lineItem.length > 0);
+        if (this.selectedPOs.length == 0) { this.isSelectedDrag = false; }
+        this.selectedPOs = [...this.selectedPOs];
 
     }
+    // remove whole po
+    unselectPO(data) {
+        this.treeData.forEach(item => {
+            if (data.customerPONumber == item.text) {
+                item.items.forEach(subitem => {
+                    const matchingLineItem = data.lineItem.find(element => element.id == subitem.poLineItemId);
+                    if (matchingLineItem) {
+                        subitem.isSelected = undefined;
+                        subitem.balanceUnitQty = matchingLineItem.balanceUnitQty;
+                    }
+                });
+            }
+        });
+        this.selectedPOs = this.selectedPOs.filter(po => po.customerPONumber !== data.customerPONumber);
+        if (this.selectedPOs.length == 0) { this.isSelectedDrag = false; }
+        this.selectedPOs = [...this.selectedPOs];
+    }
+
+    public fetchChildrenForMultiple(node: any): Observable<any[]> {
+        //Return the items collection of the parent node as children.
+        return of(node.lineItem);
+    }
+
+    public hasChildrenForMultiple(node: any): boolean {
+        //Check if the parent node has children.
+        return node.lineItem && node.lineItem.length > 0;
+    }
+
+    expandAllNodeForMultiple() {
+        this.expandedKeysForMultiple = [];
+        for (let i = 0; i < this.selectedPOs.length; i++) {
+            this.expandedKeysForMultiple.push(i.toString());
+        }
+    }
+         //27/9/2023
+         checkMinMaxBookedQuantity(poLineItem){
+            this.bookedQuantityErrorMessage = "";
+            let policy;
+            this.service.buyerCompliance$.subscribe(x => {
+                this.buyerCompliance = x[0];
+                policy = x[0].bookingPolicies;
+            })
+            if (poLineItem != null)
+                    {
+                        var min = poLineItem.orderedUnitQty - (this.buyerCompliance.shortShipTolerancePercentage * poLineItem.orderedUnitQty);
+                        var max = poLineItem.orderedUnitQty + (this.buyerCompliance.overshipTolerancePercentage * poLineItem.orderedUnitQty);
+    
+                        for(let i = 0 ; i < policy.length;i++){
+    
+                            const isShortShipment = policy[i].fulfillmentAccuracyIds.includes(1);
+                            const isNormalShipment = policy[i].fulfillmentAccuracyIds.includes(2);
+                            const isOverShipment = policy[i].fulfillmentAccuracyIds.includes(4);
+                        // light 
+                        if (isShortShipment && poLineItem.fulfillmentUnitQty < min)
+                        {
+                            this.bookedQuantityErrorMessage =  "Min Booked Qty :" + min;
+                            break;
+                        }
+                        // normal 
+                        if (isNormalShipment &&  (poLineItem.fulfillmentUnitQty >= min && poLineItem.fulfillmentUnitQty <= max))
+                        {
+                            this.bookedQuantityErrorMessage = "Min Booked Qty :" + min + "Max Booked Qty :" + max;
+                            break;
+    
+                        }
+                        // over
+                        if (isOverShipment &&  poLineItem.fulfillmentUnitQty > max)
+                        {
+                            this.bookedQuantityErrorMessage = "Max Booked Qty :" + max;
+                            break;
+                        }
+                    }                        
+                }
+         }
 }

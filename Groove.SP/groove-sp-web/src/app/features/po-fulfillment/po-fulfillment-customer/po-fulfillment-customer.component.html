@@ -80,33 +80,55 @@
     </ng-template>
 </kendo-grid-column> -->
 
+<!--  27/9/2023 -->
 <kendo-grid-column field="fulfillmentUnitQty"
-    [headerClass]="'multiline-header'"
-    [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'fulfillmentUnitQty')">
-    <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
-        <label class="required" style="margin-bottom: unset;">{{'label.bookedQty' | translate}}</label>
-    </ng-template>
-    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
-        <p *ngIf="!editMode">{{dataItem.fulfillmentUnitQty | number:0}}</p>
-        <!-- input type set so after clicking we can edit 12/9/23 -->
-        <p *ngIf="editMode; else cancelEdit">
-            <kendo-numerictextbox #fulfillmentUnitQtyElement name="fulfillmentUnitQty" class="form-control"
-                [(ngModel)]="dataItem.fulfillmentUnitQty" [format]="'n0'" [decimals]="0" [min]='0'
-                [autoCorrect]='true' required appGreaterThan='0' [ngModelOptions]="{standalone: true}">
-            </kendo-numerictextbox>
-        </p>
-        <div *ngIf="fulfillmentUnitQtyErrors[rowIndex]" class="k-invalid-msg" style="font-size: 13px;">
-            {{fulfillmentUnitQtyErrors[rowIndex]}}
-        </div>
-    </ng-template>
-</kendo-grid-column>
+        [headerClass]="'multiline-header'"
+        [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'fulfillmentUnitQty')">
+        <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
+            <label class="required" style="margin-bottom: unset;">{{'label.bookedQty' | translate}}</label>
+        </ng-template>
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+            <p *ngIf="!editMode">{{dataItem.fulfillmentUnitQty | number:0}}</p>
+            <!-- input type set so after clicking we can edit 12/9/23 -->
+            <p *ngIf="editMode; else cancelEdit">
+               
+                <kendo-numerictextbox
+                                                #fulfillmentUnitQtyElement
+                                                name="fulfillmentUnitQty"
+                                                class="form-control"
+                                                [(ngModel)]="dataItem.fulfillmentUnitQty"
+                                                [format]="'n0'"
+                                                [decimals]="0"
+                                                [min]='0'
+                                                [autoCorrect]='true'
+                                                (ngModelChange)="onBookedQtyChanged(dataItem,rowIndex);"
+                                                required
+                                                appGreaterThan='0'
+                                                [ngModelOptions]="{standalone: true}"
+                                                >
+                                            </kendo-numerictextbox>
+            </p>
+            <div *ngIf="bookedQuantityErrorMessage[rowIndex]" class="k-invalid-msg" style="font-size: 13px;">
+                {{bookedQuantityErrorMessage[rowIndex]}}
+            </div>
+            <div *ngIf="fulfillmentUnitQtyErrors[rowIndex]" class="k-invalid-msg" style="font-size: 13px;">
+                {{fulfillmentUnitQtyErrors[rowIndex]}}
+            </div>
+        </ng-template>
+    </kendo-grid-column>
+    <!--  27/9/2023 -->
 <kendo-grid-column field="balanceUnitQty" title="{{'label.balanceQty' | translate}}"
     [headerClass]="'multiline-header'"
     [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'balanceUnitQty')">
-    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
-        {{dataItem.balanceUnitQty | number:0}}
-    </ng-template>
+    <!--  27/9/2023 -->
+    <p>
+        <input name="balanceUnitQty" type="text" 
+        [disabled]="true" [(ngModel)]="model.balanceUnitQty" />
+    </p>
+    <!--  27/9/2023 -->
 </kendo-grid-column>
+
+
 <!-- <kendo-grid-column field="bookedPackage"
                     title="{{'label.bookedPackage' | translate}}"
                     [headerClass]="'multiline-header'"
@@ -249,10 +271,10 @@
         <p *ngIf="!editMode">{{dataItem.hsCode}}</p>
         <p *ngIf="editMode; else cancelEdit">
             <input name="hsCode" type="text" [required]="isRequireHsCode" class="form-control"
-            [(ngModel)]="dataItem.hsCode" [ngModelOptions]="{standalone: true}"
-            [disabled]="productVerificationSetting.hsCodeVerification === verificationSetting.AsPerPO"
-            (ngModelChange)="validateInputForHsCode($event, rowIndex);"/>
-            </p>
+                [(ngModel)]="dataItem.hsCode" [ngModelOptions]="{standalone: true}"
+                [disabled]="productVerificationSetting.hsCodeVerification === verificationSetting.AsPerPO"
+                (ngModelChange)="validateInputForHsCode($event, rowIndex);"/>
+        </p>
         <div *ngIf="errors[rowIndex]" class="k-invalid-msg">
             {{errors[rowIndex]}}
         </div>

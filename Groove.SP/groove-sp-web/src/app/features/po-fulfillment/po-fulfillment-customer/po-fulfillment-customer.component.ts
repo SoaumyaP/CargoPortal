@@ -24,6 +24,13 @@ import { FormHelper } from 'src/app/core/helpers/form.helper';
     viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
 })
 export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
+    //  27/9/2023
+    treeDataCache: any[] = [];
+    errorMode:boolean=false;
+    isAutoCalculationMode: boolean = true;
+    @Input() public originBalance: number;
+    @Input() public originFulfillmentUnitQty: number;
+     //  27/9/2023
     @Input() model: any;
     @Input() parentIntegration$: Subject<IntegrationData>;
     @Input() formErrors: any;
@@ -85,7 +92,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
 
     viewSettingModuleIdType = ViewSettingModuleIdType
 
-    //buttons bulk edit /CR/ 14/9/23
+    //buttons bulk edit CR 14/9/23
     editMode: boolean = false;
     cancelEdit: boolean = false;
     packageUOMTypeOptions = DropDowns.PackageUOMStringType;
@@ -105,6 +112,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
     volumeErrors:string[]=[];
     grossWeightErrors:string[]=[];
     hsCodeErrors:string[]=[];
+    bookedQuantityErrorMessage:string[]=[];
     validationRules = {
         'fulfillmentUnitQty': {
             'required': 'label.bookedQty',
@@ -572,7 +580,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
 
     /**Handle action after new customer po added to the grid */
     customerAddHandler(modelPopup) {
-        //14-09-2023 changes for addition of Multiple po's /CR/
+        //14-09-2023 changes for addition of Multiple po's
         // modelPopup.poContainerType = this.availablePOsList.find(x => x.id === modelPopup.purchaseOrderId).containerType;
         modelPopup = modelPopup.map(item => {
             const foundItem = this.availablePOsList.find(x => x.id === item.purchaseOrderId);
@@ -583,7 +591,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
             }
         });
         modelPopup.isShowBookedPackageWarning = this.isShowBookedPackageWarning(modelPopup);
-        //14-09-2023 changes for addition of Multiple po's /CR/
+        //14-09-2023 changes for addition of Multiple po's
         // this.model.orders.push(modelPopup);
         for (let i = 0; i < modelPopup.length; i++) {
             this.model.orders.push(modelPopup[i]);
@@ -1023,8 +1031,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         if (this.allowMixedCarton) {
             let totalBookedPackage = 0;
             this.model.orders?.forEach(o => totalBookedPackage += (o.bookedPackage ?? 0));
-            if (totalBookedPackage <= 0) 
-            {
+            if (totalBookedPackage <= 0) {
                 result.status = false;
                 //Total quantity of Booked Package must be greater than 0.
                 result.message = this.translateService.instant('validation.totalBookedPackageMustGreaterThanZero');
@@ -1207,14 +1214,17 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         this.emitclickEditPo(this.editMode);
     }
     cancelBulkEdit() {
+        this.errorMode=false;
         this.clearAllError();
         this.editMode = false;
         this.bulkEditPO = false;
         this.cancelEdit = false;
+        this.bookedQuantityErrorMessage = [];
         this.model.orders = cloneDeep(this.oldData);
         this.emitclickEditPo(this.editMode);
     }
     bulkEditDataStore(datastore) {
+        this.errorMode=false;
         if(!(this.productVerificationSetting.productCodeVerification === this.verificationSetting.AsPerPO)){this.checkproductCode();}
         if(!(this.allowMixedCarton)){this.checkBookedPackage();}
         if(this.isRequirePackageUOM){this.checkPackageUOM();}
@@ -1230,6 +1240,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         this.emitclickEditPo(this.editMode);
         this.onSave();
         this.clearAllError();
+        this.bookedQuantityErrorMessage = [];
         }
     }
     onSave() {
@@ -1340,4 +1351,108 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         this.grossWeightErrors=[];
         this.hsCodeErrors=[];
       }
+      
+      //    27/9/2023
+    bindingData(item) {
+        this.model = item;
+        this.isAutoCalculationMode = true;
+        this.model.status = 1;
+        this.originBalance = this.model.balanceUnitQty;
+        this.originFulfillmentUnitQty = this.model.fulfillmentUnitQty || 0;
+        // calculate and auto-fill
+        this.model.fulfillmentUnitQty = this.model.balanceUnitQty;
+        this.model.balanceUnitQty = 0;
+        this.model.bookedPackage = Math.ceil(!this.model.outerQuantity || this.model.outerQuantity <= 0 ? 0 : this.model.fulfillmentUnitQty / this.model.outerQuantity);
+        const volume = MathHelper.calculateCBM(this.model.outerDepth, this.model.outerWidth, this.model.outerHeight) * this.model.bookedPackage;
+        this.model.volume = isNaN(volume) || volume === 0 ? null : MathHelper.roundToThreeDecimals(volume);
+        const grossWeight = this.model.outerGrossWeight * this.model.bookedPackage;
+        this.model.grossWeight = isNaN(grossWeight) || grossWeight === 0 ? null : grossWeight;
+    }
+   
+    onBookedQtyChanged(val,rowIndex) {
+        this.errorMode=true;
+        let originBalance = 0;
+        let originFulFillmentQty = 0;
+        this.oldData.forEach(item => {
+                if (val.poLineItemId == item.poLineItemId) {
+                    originBalance = item.balanceUnitQty;
+                    originFulFillmentQty = item.fulfillmentUnitQty
+                }
+        }); 
+        const bookedQty = StringHelper.isNullOrEmpty(val.fulfillmentUnitQty) ? 0 : val.fulfillmentUnitQty;
+        val.balanceUnitQty = originBalance - bookedQty + originFulFillmentQty;
+        this.checkMinMaxBookedQuantity(val,rowIndex);
+    }
+
+    onBookedPackageChanged() {
+        if (StringHelper.isNullOrEmpty(this.model.bookedPackage)) {
+            this.model.bookedPackage = 0;
+        }
+        if (this.isAutoCalculationMode) {
+            const volume = MathHelper.calculateCBM(this.model.outerDepth, this.model.outerWidth, this.model.outerHeight) * this.model.bookedPackage;
+            this.model.volume = isNaN(volume) || volume === 0 ? null : MathHelper.roundToThreeDecimals(volume);
+            const grossWeight = this.model.outerGrossWeight * this.model.bookedPackage;
+            this.model.grossWeight = isNaN(grossWeight) || grossWeight === 0 ? null : grossWeight; 
+        }
+    }
+
+    findCurrentNodeInTree(purchaseOrderId, poLineItemId) {
+        const poNodeIndex = this.treeDataCache.findIndex(x => x.purchaseOrderId === purchaseOrderId);
+        if (poNodeIndex < 0) {
+            return null;
+        }
+        const lineItemIndex = this.treeDataCache[poNodeIndex].items.findIndex(x => x.poLineItemId === poLineItemId);
+        if (lineItemIndex < 0) {
+            return null;
+        }
+        const result = this.treeDataCache[poNodeIndex].items[lineItemIndex];
+        return result;
+    }
+
+    onCalculationModeChanged() {
+       
+        this.isAutoCalculationMode = !this.isAutoCalculationMode;
+        if (this.isAutoCalculationMode && !StringHelper.isNullOrEmpty(this.model.fulfillmentUnitQty)) {
+            // populate data based on fulfillmentUnitQty
+            this.model.bookedPackage = Math.ceil(!this.model.outerQuantity || this.model.outerQuantity <= 0 ? 0 : this.model.fulfillmentUnitQty / this.model.outerQuantity);
+            this.onBookedPackageChanged();
+        }
+    }
+     // 27/9/2023
+     checkMinMaxBookedQuantity(poLineItem,index){
+        this.bookedQuantityErrorMessage[index] = "";
+        let policy = this.buyerCompliance.bookingPolicies;
+        let errorMessage = '';
+        if (poLineItem != null)
+                {
+                    var min = poLineItem.orderedUnitQty - (this.buyerCompliance.shortShipTolerancePercentage * poLineItem.orderedUnitQty);
+                    var max = poLineItem.orderedUnitQty + (this.buyerCompliance.overshipTolerancePercentage * poLineItem.orderedUnitQty);
+
+                    for(let i = 0 ; i < policy.length;i++){
+
+                        const isShortShipment = policy[i].fulfillmentAccuracyIds.includes(1);
+                        const isNormalShipment = policy[i].fulfillmentAccuracyIds.includes(2);
+                        const isOverShipment = policy[i].fulfillmentAccuracyIds.includes(4);
+                    // light 
+                    if (isShortShipment && poLineItem.fulfillmentUnitQty < min)
+                    {
+                        this.bookedQuantityErrorMessage[index] =  "Min Booked Qty :" + min;
+                        break;
+                    }
+                    // normal 
+                    if (isNormalShipment &&  (poLineItem.fulfillmentUnitQty >= min && poLineItem.fulfillmentUnitQty <= max))
+                    {
+                        this.bookedQuantityErrorMessage[index] = "Min Booked Qty :" + min + "Max Booked Qty :" + max;
+                        break;
+
+                    }
+                    // over
+                    if (isOverShipment &&  poLineItem.fulfillmentUnitQty > max)
+                    {
+                        this.bookedQuantityErrorMessage[index] = "Max Booked Qty :" + max;
+                        break;
+                    }
+                }                        
+            }
+     }
 }

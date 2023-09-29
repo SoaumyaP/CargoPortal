@@ -49,9 +49,12 @@
                                 <ng-template kendoTreeViewNodeTemplate let-dataItem>
 
                                     <!-- parent item -->
-                                    <span *ngIf="dataItem.items" class="node-item node-item-parent">
-                                        <span class="item-text">{{dataItem.text}}</span>
-                                    </span>
+                                    <!-- 27-09-2023 make parent node draggable -->
+                                    <span *ngIf="dataItem.items && !dataItem.isSelected" class="node-item node-item-parent" [attr.draggable]="!dataItem.disabled ? 'true' : 'false'"
+                                    (mousedown)="clickItemWholePO(dataItem)" (dragstart)="onDragStart($event)" [ngClass]="dataItem.disabled ? 'node-parent-selected' : ''"
+                                    (dragend)="onDragEnd($event)"   >
+                                    <span class="item-text">{{dataItem.text}}</span>
+                                 </span>
 
                                     <!-- child item -->
                                     <div *ngIf="!dataItem.items && !dataItem.isSelected && dataItem.isShown" class="node-item node-item-child" draggable="true"
@@ -88,25 +91,21 @@
                         <div class="hidden-in-view-maximum">
                             <label class="group-col-header " >{{'label.inputRequiredInformation' | translate}}</label>
 
-                            <div class="drop-container" (dragover)="allowDrop($event)" (drop)="onDrop($event)" *ngIf="!isSelectedDrag">
+                            <div class="drop-container" (dragover)="allowDrop($event)" (drop)="onDrop($event)" *ngIf="selectedPOs && selectedPOs.length == 0 && !isSelectedDrag">
                                 <img src="/assets/images/po-fulfillment/drag-empty.png" class="drop-image" />
                                 <span class="drop-text"><i>{{'label.dragAndDrop' | translate}}</i></span>
                             </div>
                         </div>
                         
-                        <div *ngIf="!isSelectedDrag" class="k-invalid-msg">
+                        <div *ngIf="selectedPOs && selectedPOs.length == 0 && !isSelectedDrag" class="k-invalid-msg">
                             {{'validation.requiredThisField' | translate}}
                         </div>
 
-                        <!-- 12-09-2023 changes for addition of Multiple po's /CR/ -->
+                        <!-- 12-09-2023 changes for addition of Multiple po's -->
                         <div [ngClass]="'drag-result-container'" (dragover)="allowDrop($event)" (drop)="onDrop($event)">
-                            <div *ngIf="selectedPOs && selectedPOs.length == 0 && !ifEditMode && isSelectedDrag" class="drag-result-content">
-                                <img src="/assets/images/po-fulfillment/drag-empty.png" class="drop-image" />
-                                <span class="drop-text"><i>{{'label.dragAndDrop' | translate}}</i></span>
-                            </div>
-                            <div class="drag-result-content" *ngIf="selectedPOs && selectedPOs.length > 0 && !ifEditMode && isSelectedDrag">
+                            <div class="drag-result-content" *ngIf="selectedPOs && selectedPOs.length > 0 && !ifEditMode">
                                 <div class="form-group">
-                                    <div class="row" *ngFor="let item of selectedPOs; index as no;">
+                                    <!-- <div class="row" *ngFor="let item of selectedPOs; index as no;">
                                         <div class="col-12">
                                             <div class="form-group">
                                                 <span class="po-remove" [title]="'label.unselectCurrentPO' | translate" (click)="unselectPO(item)">
@@ -116,6 +115,42 @@
                                                 </span>
                                             </div>
                                         </div>
+                                    </div> -->
+                                    <div class="drop-column-container">
+                                        <kendo-treeview [nodes]="selectedPOs" textField="text"
+                                            [hasChildren]="hasChildrenForMultiple" [children]="fetchChildrenForMultiple"
+                                            kendoTreeViewExpandable [(expandedKeys)]="expandedKeysForMultiple"
+                                            childrenField="lineItem">
+                                            <ng-template kendoTreeViewNodeTemplate let-dataItem>
+
+                                                <!-- parent item -->
+                                                <div *ngIf="dataItem.lineItem" class="node-item node-item-parent" >
+                                                    <span class="item-text">{{dataItem.customerPONumber}}</span>
+                                                    <span class="po-remove"
+                                                            [title]="'label.unselectCurrentPO' | translate"
+                                                            (click)="unselectPO(dataItem)">
+                                                            <fa-icon [icon]="faTimes" class="child-icon"></fa-icon>
+                                                        </span>
+                                                </div>
+
+                                                <!-- child item -->
+                                                <div class="drag-item-container">
+                                                    <div *ngIf="!dataItem.lineItem" class="node-item node-item-child">
+                                                        <span class="child-icon">
+                                                            <fa-icon [icon]="faEllipsisV"></fa-icon>
+                                                            <fa-icon [icon]="faEllipsisV"></fa-icon>
+                                                        </span>
+                                                        <span class="item-text">{{dataItem.productCode}} -
+                                                            ({{dataItem.balanceUnitQty}})</span>
+                                                            <span class="po-remove"
+                                                            [title]="'label.unselectCurrentPO' | translate"
+                                                            (click)="unselectPOLineItem(dataItem)">
+                                                            <fa-icon [icon]="faTimes" class="child-icon"></fa-icon>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </ng-template>
+                                        </kendo-treeview>
                                     </div>
                                 </div>
                             </div>
@@ -213,6 +248,7 @@
                                                 appGreaterThan='0'>
                                             </kendo-numerictextbox>
                                             <div *ngIf="formErrors['fulfillmentUnitQty']" class="k-invalid-msg">{{ formErrors['fulfillmentUnitQty'] }}</div>
+                                            <div *ngIf="bookedQuantityErrorMessage" class="k-invalid-msg">{{bookedQuantityErrorMessage}}</div>
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
