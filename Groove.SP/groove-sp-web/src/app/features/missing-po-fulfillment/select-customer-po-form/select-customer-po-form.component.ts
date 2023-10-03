@@ -913,8 +913,8 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
             policy = x[0].bookingPolicies;
         })
         if (poLineItem != null) {
-            var min = poLineItem.orderedUnitQty - (this.buyerCompliance.shortShipTolerancePercentage * poLineItem.orderedUnitQty);
-            var max = poLineItem.orderedUnitQty + (this.buyerCompliance.overshipTolerancePercentage * poLineItem.orderedUnitQty);
+            var min = Math.ceil(poLineItem.orderedUnitQty - (this.buyerCompliance.shortShipTolerancePercentage * poLineItem.orderedUnitQty));
+            var max = Math.trunc(poLineItem.orderedUnitQty + (this.buyerCompliance.overshipTolerancePercentage * poLineItem.orderedUnitQty));
 
             for (let i = 0; i < policy.length; i++) {
 

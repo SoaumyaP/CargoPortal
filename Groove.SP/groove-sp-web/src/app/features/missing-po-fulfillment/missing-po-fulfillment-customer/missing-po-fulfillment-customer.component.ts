@@ -1575,8 +1575,8 @@ export class MissingPOFulfillmentCustomerComponent implements OnInit, OnDestroy 
         let policy = this.buyerCompliance.bookingPolicies;
         if (poLineItem != null)
                 {
-                    var min = poLineItem.orderedUnitQty - (this.buyerCompliance.shortShipTolerancePercentage * poLineItem.orderedUnitQty);
-                    var max = poLineItem.orderedUnitQty + (this.buyerCompliance.overshipTolerancePercentage * poLineItem.orderedUnitQty);
+                    var min = Math.ceil(poLineItem.orderedUnitQty - (this.buyerCompliance.shortShipTolerancePercentage * poLineItem.orderedUnitQty));
+                    var max = Math.trunc(poLineItem.orderedUnitQty + (this.buyerCompliance.overshipTolerancePercentage * poLineItem.orderedUnitQty));
 
                     for(let i = 0 ; i < policy.length;i++){
 
