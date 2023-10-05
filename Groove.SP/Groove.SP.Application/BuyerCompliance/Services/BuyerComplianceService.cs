@@ -70,7 +70,8 @@ namespace Groove.SP.Application.BuyerComplianceService.Services
                 x.Include(m => m.ProductVerificationSetting)
                 .Include(m => m.PurchaseOrderVerificationSetting)
                 .Include(m => m.ShippingCompliance)
-                .Include(m => m.AgentAssignments);
+                .Include(m => m.AgentAssignments)
+                .Include(m => m.BookingPolicies);
 
             var result = await Repository.Query(b => b.OrganizationId == organizationId, null, includeProperties).ToListAsync();
             var complianceVMs = Mapper.Map<IEnumerable<BuyerComplianceViewModel>>(result);

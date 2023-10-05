@@ -1425,7 +1425,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
                 {
                     var min = Math.ceil(poLineItem.orderedUnitQty - (this.buyerCompliance.shortShipTolerancePercentage * poLineItem.orderedUnitQty));
                     var max = Math.trunc(poLineItem.orderedUnitQty + (this.buyerCompliance.overshipTolerancePercentage * poLineItem.orderedUnitQty));
-                    
+
                     for(let i = 0 ; i < policy.length;i++){
 
                         const isShortShipment = policy[i].fulfillmentAccuracyIds.includes(1);
