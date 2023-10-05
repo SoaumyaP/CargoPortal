@@ -24,13 +24,6 @@ import { FormHelper } from 'src/app/core/helpers/form.helper';
     viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
 })
 export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
-    //  27/9/2023
-    treeDataCache: any[] = [];
-    errorMode:boolean=false;
-    isAutoCalculationMode: boolean = true;
-    @Input() public originBalance: number;
-    @Input() public originFulfillmentUnitQty: number;
-     //  27/9/2023
     @Input() model: any;
     @Input() parentIntegration$: Subject<IntegrationData>;
     @Input() formErrors: any;
@@ -92,7 +85,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
 
     viewSettingModuleIdType = ViewSettingModuleIdType
 
-    //buttons bulk edit CR 14/9/23
+    //buttons bulk edit CR 14-09-2023
     editMode: boolean = false;
     cancelEdit: boolean = false;
     packageUOMTypeOptions = DropDowns.PackageUOMStringType;
@@ -141,7 +134,12 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         },
         'packageUOM': {}
     };
-    //buttons bulk edit CR 14/9/23
+    treeDataCache: any[] = [];
+    errorMode:boolean=false;
+    isAutoCalculationMode: boolean = true;
+    @Input() public originBalance: number;
+    @Input() public originFulfillmentUnitQty: number;
+    //buttons bulk edit CR 14-09-2023
 
     constructor(
         public service: POFulfillmentFormService,
@@ -180,7 +178,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         this._registerCustomerPOsRefreshedHandler();
         this._registerPOTypeChangedHandler();
         this._registerOnBuyerComplianceDataLoadedHandler();
-        // 15-09-2023 /CR/
+        // 15-09-2023
         this.service._buyerComplianceData$.subscribe(x=>{
             this.productVerificationSetting = x ? x[0].productVerificationSetting : null;
             if (this.productVerificationSetting && this.productVerificationSetting.isRequireGrossWeight) {
@@ -599,7 +597,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         this.customerFormMode = this.CustomerPOFormModeType.add;
         this.customerFormOpened = false;
 
-        //14-09-2023 changes for addition of Multiple po's /CR/
+        //14-09-2023 changes for addition of Multiple po's
         // this.availablePOsList.forEach(el => {
         //     el.lineItems.forEach(e => {
         //         if (e.id === modelPopup.poLineItemId) {
@@ -1203,13 +1201,13 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         this._subscriptions.map(x => x.unsubscribe());
     }
 
-    //14/9/23 added for grid edit functionality /CR/
+    //14-09-2023 added for grid edit functionality
 
     clickBulkEdit(datastore) {
         this.oldData = cloneDeep(datastore);
         this.bulkEditPO = true;
         this.editMode = true;
-        // to populate data in input field fail 14/9/23
+        // to populate data in input field fail 14-09-2023
         // this.editCustomerPO;
         this.emitclickEditPo(this.editMode);
     }
@@ -1352,7 +1350,7 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
         this.hsCodeErrors=[];
       }
       
-      //    27/9/2023
+      //    27-09-2023
     bindingData(item) {
         this.model = item;
         this.isAutoCalculationMode = true;
@@ -1418,16 +1416,16 @@ export class POFulfillmentCustomerComponent implements OnInit, OnDestroy {
             this.onBookedPackageChanged();
         }
     }
-     // 27/9/2023
+     // 27-09-2023
      checkMinMaxBookedQuantity(poLineItem,index){
         this.bookedQuantityErrorMessage[index] = "";
         let policy = this.buyerCompliance.bookingPolicies;
         let errorMessage = '';
         if (poLineItem != null)
                 {
-                    var min = poLineItem.orderedUnitQty - (this.buyerCompliance.shortShipTolerancePercentage * poLineItem.orderedUnitQty);
-                    var max = poLineItem.orderedUnitQty + (this.buyerCompliance.overshipTolerancePercentage * poLineItem.orderedUnitQty);
-
+                    var min = Math.ceil(poLineItem.orderedUnitQty - (this.buyerCompliance.shortShipTolerancePercentage * poLineItem.orderedUnitQty));
+                    var max = Math.trunc(poLineItem.orderedUnitQty + (this.buyerCompliance.overshipTolerancePercentage * poLineItem.orderedUnitQty));
+                    
                     for(let i = 0 ; i < policy.length;i++){
 
                         const isShortShipment = policy[i].fulfillmentAccuracyIds.includes(1);

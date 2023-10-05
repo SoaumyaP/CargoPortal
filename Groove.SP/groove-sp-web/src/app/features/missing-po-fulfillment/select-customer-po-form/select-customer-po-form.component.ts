@@ -10,14 +10,6 @@ import { MathHelper } from 'src/app/core/helpers/math.helper';
 import { debounceTime, tap } from 'rxjs/operators';
 import { OrganizationPreferenceService } from '../../organization-preference/Organization-preference.service';
 
-//12-09-2023 changes for addition of Multiple po's 
-// interface SelectPurchaseOrderModel {
-//     id: number;
-//     poNumber: string;
-//     poKey: string;
-//     itemsCount: number;
-//     poLineItemId:number
-// }
 @Component({
     selector: 'app-select-customer-po-form',
     templateUrl: './select-customer-po-form.component.html',
@@ -139,7 +131,7 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
     wholePo: any;
     bookedQuantityErrorMessage = "";
     buyerCompliance: any = {};
-
+    poNotFound:String='';
     //12-09-2023 changes for addition of Multiple po's 
 
     get ifEditMode(): boolean {
@@ -211,7 +203,7 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
         if (this.isRequirePackageUOM) {
             this.validationRules['packageUOM']['required'] = 'label.packageUOM';
         }
-        // 15-09-2023 /CR/
+        // 15-09-2023
         this.service.buyerCompliance$.subscribe(x => {
             this.service._buyerComplianceData$.next(x);
         });
@@ -387,6 +379,7 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
         //     currentSelectedPO.isSelected = false;
         //     currentSelectedPO.balanceUnitQty = this.model.fulfillmentUnitQty + this.model.balanceUnitQty;
         // }
+
         this.selectedDragItem.id = 0;
         // const newSelectedNode = this.findCurrentNodeInTree(this.selectedDragItem.purchaseOrderId, this.selectedDragItem.poLineItemId);
         // newSelectedNode.isSelected = true;
@@ -655,7 +648,6 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
 
     /**Access the cache to store new data
      * Otherwise, load data from cache.
-     * /CR/
     */
     private _integrateWithTreeDataCache(treeData: Array<any>) {
         this.existingPo.push(treeData);
@@ -667,6 +659,36 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
             } else {
                 treeData[index] = existed;
             }
+        }
+        // 04-10-2023
+        this.poNotFound = '';
+        if (this.searchTerm.includes(',')) {
+        // Split the searchTerm into an array using a comma
+        const searchTermArray = this.searchTerm.trim().split(',');
+        const notFoundValues = [];
+        for (let i = 0; i < searchTermArray.length; i++) {
+        if(searchTermArray[i]){
+        // Remove leading/trailing spaces
+        const searchTerm = searchTermArray[i].trim();
+        // Check if the searchTerm is present in this.treeData
+        const foundPO = this.treeData.find(item => item.text === searchTerm);
+        if (foundPO && !foundPO.disabled) {
+            this.wholePo = true;
+            this.isSelectedDrag = true;
+            this.clickItemWholePO(foundPO);
+            this.onDrop();
+        }else{
+            if(foundPO && foundPO.disabled){
+            }else if(!foundPO){
+                notFoundValues.push(searchTerm);
+            }
+        }
+        }
+        }
+        // If there are not found values, construct the message
+        if (notFoundValues.length > 0) {
+        this.poNotFound = 'PO not found: ' + notFoundValues.join(', ');
+        }
         }
     }
 
@@ -798,7 +820,7 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
         this.resetForm();
         this.resetCurrentForm();
         this.close.emit();
-        //12-09-2023 changes for addition of Multiple po's /CR/
+        //12-09-2023 changes for addition of Multiple po's
         this.selectedPOs = [];
     }
 
@@ -840,7 +862,7 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
                     break;
             }
         }
-        //12-09-2023 changes for addition of Multiple po's /CR/
+        //12-09-2023 changes for addition of Multiple po's
         this.selectedPOs = [];
     }
 
@@ -904,7 +926,7 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
         }
     }
 
-    //27/9/2023
+    //27-9/-023
     checkMinMaxBookedQuantity(poLineItem) {
         this.bookedQuantityErrorMessage = "";
         let policy;
@@ -913,8 +935,8 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
             policy = x[0].bookingPolicies;
         })
         if (poLineItem != null) {
-            var min = poLineItem.orderedUnitQty - (this.buyerCompliance.shortShipTolerancePercentage * poLineItem.orderedUnitQty);
-            var max = poLineItem.orderedUnitQty + (this.buyerCompliance.overshipTolerancePercentage * poLineItem.orderedUnitQty);
+            var min = Math.ceil(poLineItem.orderedUnitQty - (this.buyerCompliance.shortShipTolerancePercentage * poLineItem.orderedUnitQty));
+            var max = Math.trunc(poLineItem.orderedUnitQty + (this.buyerCompliance.overshipTolerancePercentage * poLineItem.orderedUnitQty));
 
             for (let i = 0; i < policy.length; i++) {
 

@@ -1,5 +1,5 @@
 <div class="text-right top-bar-container float-right" *ngIf="isEditable">
-    <!-- bulk edit buttons start 14/9/23 /CR/ -->
+    <!-- bulk edit buttons start 14-09-2023 -->
     <button type="button" class="btn header-button small-button" (click)="clickBulkEdit(model.orders)"
         *ngIf="!bulkEditPO">
         <span class="icon-circle-label">Bulk Edit</span>
@@ -12,7 +12,7 @@
         *ngIf="bulkEditPO">
         <span class="icon-circle-label">Save Bulk Edit</span>
     </button>
-    <!-- bulk edit buttons end 14/9/23 -->
+    <!-- bulk edit buttons end 14-09-2023 -->
     <button type="button" class="btn header-button small-button" (click)="addCustomerPO()"
         [disabled]="isDisableAddCustomerPO || editMode">
         <div class="icon-circle">
@@ -33,15 +33,6 @@
                 routerLink="/purchase-orders/{{dataItem.purchaseOrderId}}">{{dataItem.customerPONumber}}</a></ng-template>
     </ng-template>
 </kendo-grid-column>
-<!-- <kendo-grid-column field="productCode"
-                    title="{{'label.productCode' | translate}}"
-                    class="organization-email"
-                    [headerClass]="'multiline-header'"
-                    [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'productCode')">
-    <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
-        <a class="k-link" routerLinkActive="active" (click)="openCustomerDetailPopup(dataItem)">{{dataItem.productCode}}</a>
-    </ng-template>
-</kendo-grid-column> -->
 
 <kendo-grid-column field="productCode" class="organization-email"
     [headerClass]="'multiline-header'"
@@ -52,7 +43,7 @@
     <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
         <a *ngIf="!editMode" class="k-link" routerLinkActive="active"
             (click)="openCustomerDetailPopup(dataItem)">{{dataItem.productCode}}</a>
-        <!-- input type set so after clicking we can edit 12/9/23 -->
+        <!-- input type set so after clicking we can edit 12-09-2023 -->
         <p *ngIf="editMode; else cancelEdit">
             <input name="productCode" type="text" [(ngModel)]="dataItem.productCode"
                 [ngModelOptions]="{standalone: true}" class="form-control"
@@ -71,16 +62,7 @@
         {{dataItem.orderedUnitQty | number:0}}
     </ng-template>
 </kendo-grid-column>
-<!-- <kendo-grid-column field="fulfillmentUnitQty"
-                    title="{{'label.bookedQty' | translate}}"
-                    [headerClass]="'multiline-header'"
-                    [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'fulfillmentUnitQty')">
-    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
-        {{dataItem.fulfillmentUnitQty | number:0}}
-    </ng-template>
-</kendo-grid-column> -->
-
-<!--  27/9/2023 -->
+<!--  27-09-2023 -->
 <kendo-grid-column field="fulfillmentUnitQty"
         [headerClass]="'multiline-header'"
         [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'fulfillmentUnitQty')">
@@ -89,24 +71,12 @@
         </ng-template>
         <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
             <p *ngIf="!editMode">{{dataItem.fulfillmentUnitQty | number:0}}</p>
-            <!-- input type set so after clicking we can edit 12/9/23 -->
+            <!-- input type set so after clicking we can edit 12-09-2023 -->
             <p *ngIf="editMode; else cancelEdit">
-               
-                <kendo-numerictextbox
-                                                #fulfillmentUnitQtyElement
-                                                name="fulfillmentUnitQty"
-                                                class="form-control"
-                                                [(ngModel)]="dataItem.fulfillmentUnitQty"
-                                                [format]="'n0'"
-                                                [decimals]="0"
-                                                [min]='0'
-                                                [autoCorrect]='true'
-                                                (ngModelChange)="onBookedQtyChanged(dataItem,rowIndex);"
-                                                required
-                                                appGreaterThan='0'
-                                                [ngModelOptions]="{standalone: true}"
-                                                >
-                                            </kendo-numerictextbox>
+                <kendo-numerictextbox #fulfillmentUnitQtyElement name="fulfillmentUnitQty"
+                class="form-control" [(ngModel)]="dataItem.fulfillmentUnitQty" [format]="'n0'" [decimals]="0" [min]='0'
+                [autoCorrect]='true' (ngModelChange)="onBookedQtyChanged(dataItem,rowIndex);" required appGreaterThan='0' [ngModelOptions]="{standalone: true}">
+                </kendo-numerictextbox>
             </p>
             <div *ngIf="bookedQuantityErrorMessage[rowIndex]" class="k-invalid-msg" style="font-size: 13px;">
                 {{bookedQuantityErrorMessage[rowIndex]}}
@@ -116,39 +86,17 @@
             </div>
         </ng-template>
     </kendo-grid-column>
-    <!--  27/9/2023 -->
+    <!--  27-09-2023 -->
 <kendo-grid-column field="balanceUnitQty" title="{{'label.balanceQty' | translate}}"
     [headerClass]="'multiline-header'"
     [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'balanceUnitQty')">
-    <!--  27/9/2023 -->
+    <!--  27-09-2023 -->
     <p>
         <input name="balanceUnitQty" type="text" 
         [disabled]="true" [(ngModel)]="model.balanceUnitQty" />
     </p>
-    <!--  27/9/2023 -->
+    <!--  27-09-2023 -->
 </kendo-grid-column>
-
-
-<!-- <kendo-grid-column field="bookedPackage"
-                    title="{{'label.bookedPackage' | translate}}"
-                    [headerClass]="'multiline-header'"
-                    [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'bookedPackage')">
-    <ng-template #infoTooltipTemplate let-anchor>
-        <span class="tooltip-warning">{{ anchor.nativeElement.getAttribute('data-tooltip') }}</span>
-    </ng-template>
-    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
-        <span class="icon-top" [class.text-danger]="dataItem.isShowBookedPackageWarning">
-            {{dataItem.bookedPackage | number:0}}
-            <span *ngIf="dataItem.isShowBookedPackageWarning"
-            kendoTooltip [tooltipTemplate]="infoTooltipTemplate" filter="fa-icon" position="top"
-                class="icon-info">
-                <fa-icon attr.data-tooltip="{{'label.hoverBookedPackageIconWarning' | translate}}"
-                [icon]="faInfoCircle" [styles]="{'color': '#FF8A00'}"></fa-icon>
-            </span>
-        </span>
-    </ng-template>
-</kendo-grid-column> -->
-
 <kendo-grid-column field="bookedPackage"
     [headerClass]="'multiline-header'"
     [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'bookedPackage')">
@@ -161,7 +109,7 @@
     </ng-template>
     <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
         <span class="icon-top" [class.text-danger]="dataItem.isShowBookedPackageWarning">
-            <!-- input type set so after clicking we can edit 12/9/23 -->
+            <!-- input type set so after clicking we can edit 12-09-2023 -->
             <p *ngIf="!editMode">{{dataItem.bookedPackage | number:0}}</p>
             <p *ngIf="editMode; else cancelEdit">
                 <kendo-numerictextbox #bookedPackageElement name="bookedPackage" class="form-control"
@@ -176,14 +124,14 @@
         </span>
     </ng-template>
 </kendo-grid-column>
-<!-- 12/9/23 adding column for UOM -->
+<!-- 12-09-2023 adding column for UOM -->
 <kendo-grid-column field="UOM" [headerClass]="'multiline-header'"
     [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'packageUOM')">
     <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
         <label [ngClass]="isRequirePackageUOM ? 'required' : ''" style="margin-bottom: unset;">{{'label.packageUOM' | translate}}</label>
     </ng-template>
     <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
-        <!-- input type set so after clicking we can edit 12/9/23 -->
+        <!-- input type set so after clicking we can edit 12-09-2023 -->
         <p *ngIf="!editMode"> {{dataItem.packageUOM}}</p>
         <p *ngIf="editMode; else cancelEdit">
             <kendo-dropdownlist name="packageUOM" [required]="isRequirePackageUOM" [valuePrimitive]="true"
@@ -202,20 +150,16 @@
         </div>
     </ng-template>
 </kendo-grid-column>
-<!-- 12/9/23 adding column for UOM -->
+<!-- 12-09-2023 adding column for UOM -->
 
 <kendo-grid-column field="volume" [headerClass]="'multiline-header'"
     [hidden]="!isVisibleField(viewSettingModuleIdType.FREIGHTBOOKING_DETAIL_CUSTOMER_POS, 'volume')">
     <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
         <label [ngClass]="this.productVerificationSetting.isRequireVolume ? 'required' : ''" style="margin-bottom: unset;">{{'label.volumeCBM' | translate}}</label>
     </ng-template>
-    <!-- no tooltip for volume 15/9/2023 -->
-    <!-- <ng-template #infoTooltipTemplate let-anchor>
-        <span class="tooltip-warning">{{ anchor.nativeElement.getAttribute('data-tooltip') }}</span>
-         </ng-template> -->
+    <!-- no tooltip for volume 15-09-2023 -->
     <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
-        <!-- <span class="icon-top" [class.text-danger]="dataItem.volume"> -->
-        <!-- input type set so after clicking we can edit 15/9/23 -->
+        <!-- input type set so after clicking we can edit 15-09-2023 -->
         <p *ngIf="!editMode">{{dataItem.volume | number:'0.3-3'}}</p>
         <p *ngIf="editMode; else cancelEdit">
             <kendo-numerictextbox #volume name="volume" class="form-control" [(ngModel)]="dataItem.volume"
@@ -235,13 +179,9 @@
     <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
         <label [ngClass]="this.productVerificationSetting.isRequireGrossWeight ? 'required' : ''" style="margin-bottom: unset;">{{'label.grossWeightKGS' | translate}}</label>
     </ng-template>
-    <!-- no tooltip for volume 15/9/2023 -->
-    <!-- <ng-template #infoTooltipTemplate let-anchor>
-        <span class="tooltip-warning">{{ anchor.nativeElement.getAttribute('data-tooltip') }}</span>
-         </ng-template> -->
+    <!-- no tooltip for volume 15-09-2023 -->
     <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
-        <!-- <span class="icon-top" [class.text-danger]="dataItem.volume"> -->
-        <!-- input type set so after clicking we can edit 15/9/23 -->
+        <!-- input type set so after clicking we can edit 15-09-2023 -->
         <p *ngIf="!editMode">{{dataItem.grossWeight | number:'0.2-2'}}</p>
         <p *ngIf="editMode; else cancelEdit">
             <kendo-numerictextbox #grossWeight name="grossWeight" class="form-control"
@@ -261,13 +201,9 @@
     <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
         <label [ngClass]="isRequireHsCode ? 'required' : ''" style="margin-bottom: unset;">{{'label.hsCode' | translate}}</label>
     </ng-template>
-    <!-- no tooltip for volume 15/9/2023 -->
-    <!-- <ng-template #infoTooltipTemplate let-anchor>
-        <span class="tooltip-warning">{{ anchor.nativeElement.getAttribute('data-tooltip') }}</span>
-         </ng-template> -->
+    <!-- no tooltip for volume 15-09-2023 -->
     <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
-        <!-- <span class="icon-top" [class.text-danger]="dataItem.volume"> -->
-        <!-- input type set so after clicking we can edit 15/9/23 -->
+        <!-- input type set so after clicking we can edit 15-09-2023 -->
         <p *ngIf="!editMode">{{dataItem.hsCode}}</p>
         <p *ngIf="editMode; else cancelEdit">
             <input name="hsCode" type="text" [required]="isRequireHsCode" class="form-control"
@@ -303,7 +239,7 @@
 <kendo-grid-column *ngIf="isEditable" title="{{'label.action' | translate}}" width="100px"
     headerClass="action-header" class="action-column-grid col-action" [headerClass]="'multiline-header'">
     <ng-template kendoGridCellTemplate let-dataItem>
-        <!-- 13/9/23 action button disabled on  bulk edit click -->
+        <!-- 13-09-2023 action button disabled on  bulk edit click -->
         <button [disabled]="editMode" attr.data-balloon="{{'tooltip.edit' | translate}}"
             *ngIf="dataItem.purchaseOrderId !== 0" data-balloon-pos="left" type="button"
             class="ml-0 btn grid-edit-icon-button tooltip-action"

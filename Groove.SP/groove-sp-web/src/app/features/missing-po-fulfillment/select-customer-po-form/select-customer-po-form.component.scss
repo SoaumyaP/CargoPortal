@@ -193,7 +193,7 @@
         }
     }
 }
-//  12-09-2023 changes for addition of Multiple po's /CR/
+//  12-09-2023 changes for addition of Multiple po's 
 .po-remove {
     cursor: pointer;
     padding: 5px 8px;
@@ -201,4 +201,12 @@
         color: red !important;
         font-size: 15px !important;
     }
+}
+.searchInputInfo{
+    color: #0bb573 !important;
+    margin-top:1% !important;
+}
+.poNotFoundText{
+    color: red !important;
+    margin-top:1% !important;
 }

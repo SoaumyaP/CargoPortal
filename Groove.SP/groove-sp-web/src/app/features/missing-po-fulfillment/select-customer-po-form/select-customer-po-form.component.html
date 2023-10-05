@@ -6,13 +6,34 @@
         <div class="container">
             <div class="form-group mb-0">
                 <div class="row">
+                    <div class="col-sm-12 hidden-in-view-maximum">
+                            <label class="group-col-header">{{'label.selectCustomerProduct' | translate}}
+                                <span class="k-i-loading k-icon loading" *ngIf="treeViewPagination.loadingData"></span>
+                            </label>
+                            <div class="filter-container">
+                                <kendo-dropdownlist name="filterProductOption" [valuePrimitive]="true"
+                                    [textField]="'label'" [valueField]="'value'" [(ngModel)]="searchBy"
+                                    [data]="searchByOptions" (ngModelChange)="_fetchPOsDataSource(false)"
+                                    class="form-control">
+                                    <ng-template kendoDropDownListValueTemplate let-dataItem>
+                                        {{ dataItem?.label | translate }}
+                                    </ng-template>
+                                    <ng-template kendoDropDownListItemTemplate let-dataItem>
+                                        {{ dataItem?.label | translate }}
+                                    </ng-template>
+                                </kendo-dropdownlist>
+                                <p class="searchInputInfo">By default partial search will be applied to the inputted PO value.  To search exact PO list, please input PO number with comma as separator for searching exact PO number for booking.  E.g. PO1, PO2, PO3.</p> 
+                            </div>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-sm-5 hidden-in-view-maximum">
-                        <label class="group-col-header">{{'label.selectCustomerProduct' | translate}}
+                        <!-- <label class="group-col-header">{{'label.selectCustomerProduct' | translate}}
                             <span class="k-i-loading k-icon loading" *ngIf="treeViewPagination.loadingData"></span>
-                        </label>
+                        </label> -->
 
                         <div class="drop-column-container">
-                            <div class="filter-container">
+                            <!-- <div class="filter-container">
                                 <kendo-dropdownlist name="filterProductOption"
                                         [valuePrimitive]="true"
                                         [textField]="'label'"
@@ -28,7 +49,7 @@
                                         {{ dataItem?.label | translate }}
                                     </ng-template>
                                 </kendo-dropdownlist>
-                            </div>
+                            </div> -->
 
                             <div class="filter-container">
                                 <input name="complianceName" type="text" class="form-control"
@@ -105,18 +126,8 @@
                         <div [ngClass]="'drag-result-container'" (dragover)="allowDrop($event)" (drop)="onDrop($event)">
                             <div class="drag-result-content" *ngIf="selectedPOs && selectedPOs.length > 0 && !ifEditMode">
                                 <div class="form-group">
-                                    <!-- <div class="row" *ngFor="let item of selectedPOs; index as no;">
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <span class="po-remove" [title]="'label.unselectCurrentPO' | translate" (click)="unselectPO(item)">
-                                                    <fa-icon [icon]="faTimes" class="child-icon"></fa-icon>
-                                                </span>
-                                                <span class="parent-text">{{no + 1}}. {{item.customerPONumber}} - {{item.productCode}}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div> -->
                                     <div class="drop-column-container">
+                                        <p class="poNotFoundText">{{poNotFound}}</p>
                                         <kendo-treeview [nodes]="selectedPOs" textField="text"
                                             [hasChildren]="hasChildrenForMultiple" [children]="fetchChildrenForMultiple"
                                             kendoTreeViewExpandable [(expandedKeys)]="expandedKeysForMultiple"

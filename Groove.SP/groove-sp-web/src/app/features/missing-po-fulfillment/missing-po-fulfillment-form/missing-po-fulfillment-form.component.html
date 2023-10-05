@@ -142,7 +142,6 @@
                 </section>
 
                 <!-- Customer PO -->
-                <!-- /CR/ -->
                 <section class="panel-group" id="customerPO" #customerPO [hidden]="isReloadMode || hiddenCustomerPOTab || !tabDisplay['customerPO']">
                     <label class="panel-header fs-14 float-left">{{'label.customerPO' | translate}}</label>
                     <app-missing-po-fulfillment-customer
@@ -301,7 +300,7 @@
 
             <app-attachment-upload-popup [formMode]="attachmentFormMode" [formOpened]="attachmentUploadPopupOpened" (close)="attachmentClosedHandler()"
                 (add)="attachmentAddedHandler($event)" (edit)="attachmentEditedHandler($event)" [model]="attachmentModel"></app-attachment-upload-popup>
-            <!-- /CR/ -->
+
             <div class="col-12 action-bar">
                 <button type="button" class="btn second-button" *ngIf="!isViewMode" (click)="onCancel()">{{'label.cancel' | translate}}</button>
                 <button type="submit" class="btn prim-button submit-btn" *ngIf="!isViewMode" [disabled]="!isReadyForSubmit || isBulkEditClick">{{(!isReloadMode ? 'label.save' : 'label.submit') | translate}}

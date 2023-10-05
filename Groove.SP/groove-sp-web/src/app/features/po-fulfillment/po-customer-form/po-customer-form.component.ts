@@ -10,14 +10,6 @@ import { MathHelper } from 'src/app/core/helpers/math.helper';
 import { debounceTime, tap } from 'rxjs/operators';
 import { OrganizationPreferenceService } from '../../organization-preference/Organization-preference.service';
 
-//14-09-2023 changes for addition of Multiple po's 
-interface SelectPurchaseOrderModel {
-    id: number;
-    poNumber: string;
-    poKey: string;
-    itemsCount: number;
-    poLineItemId: number
-}
 @Component({
     selector: 'app-po-customer-form',
     templateUrl: './po-customer-form.component.html',
@@ -61,6 +53,7 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
     };
     selectedDragItem = null;
     public expandedKeys: any[];
+
 
     CustomerPOFormModeType = {
         add: 0,
@@ -137,9 +130,9 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
     faTimes = faTimes;
     public expandedKeysForMultiple: any[];
     wholePo: any;
-    bookedQuantityErrorMessage="";
+    bookedQuantityErrorMessage = "";
     buyerCompliance: any = {};
-
+    poNotFound:String='';
 
     get ifEditMode(): boolean {
         return this.formMode === this.CustomerPOFormModeType.edit;
@@ -209,8 +202,8 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
         if (this.isRequirePackageUOM) {
             this.validationRules['packageUOM']['required'] = 'label.packageUOM';
         }
-        
-        // 15-09-2023 /CR/
+
+        // 15-09-2023
         this.service.buyerCompliance$.subscribe(x => {
             this.service._buyerComplianceData$.next(x);
         });
@@ -665,6 +658,36 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
                 treeData[index] = existed;
             }
         }
+        // 04-10-2023
+        this.poNotFound = '';
+        if (this.searchTerm.includes(',')) {
+        // Split the searchTerm into an array using a comma
+        const searchTermArray = this.searchTerm.trim().split(',');
+        const notFoundValues = [];
+        for (let i = 0; i < searchTermArray.length; i++) {
+        if(searchTermArray[i]){
+        // Remove leading/trailing spaces
+        const searchTerm = searchTermArray[i].trim();
+        // Check if the searchTerm is present in this.treeData
+        const foundPO = this.treeData.find(item => item.text === searchTerm);
+        if (foundPO && !foundPO.disabled) {
+            this.wholePo = true;
+            this.isSelectedDrag = true;
+            this.clickItemWholePO(foundPO);
+            this.onDrop();
+        }else{
+            if(foundPO && foundPO.disabled){
+            }else if(!foundPO){
+                notFoundValues.push(searchTerm);
+            }
+        }
+        }
+        }
+        // If there are not found values, construct the message
+        if (notFoundValues.length > 0) {
+        this.poNotFound = 'PO not found: ' + notFoundValues.join(', ');
+        }
+        }
     }
 
     // for edit mode
@@ -795,7 +818,7 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
         this.resetForm();
         this.resetCurrentForm();
         this.close.emit();
-        //14-09-2023 changes for addition of Multiple po's /CR/
+        //14-09-2023 changes for addition of Multiple po's
         this.selectedPOs = [];
     }
 
@@ -837,7 +860,7 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
                     break;
             }
         }
-        //14-09-2023 changes for addition of Multiple po's /CR/
+        //14-09-2023 changes for addition of Multiple po's
         this.selectedPOs = [];
     }
 
@@ -900,44 +923,40 @@ export class POCustomerFormComponent extends FormComponent implements OnChanges,
             this.expandedKeysForMultiple.push(i.toString());
         }
     }
-         //27/9/2023
-         checkMinMaxBookedQuantity(poLineItem){
-            this.bookedQuantityErrorMessage = "";
-            let policy;
-            this.service.buyerCompliance$.subscribe(x => {
-                this.buyerCompliance = x[0];
-                policy = x[0].bookingPolicies;
-            })
-            if (poLineItem != null)
-                    {
-                        var min = poLineItem.orderedUnitQty - (this.buyerCompliance.shortShipTolerancePercentage * poLineItem.orderedUnitQty);
-                        var max = poLineItem.orderedUnitQty + (this.buyerCompliance.overshipTolerancePercentage * poLineItem.orderedUnitQty);
-    
-                        for(let i = 0 ; i < policy.length;i++){
-    
-                            const isShortShipment = policy[i].fulfillmentAccuracyIds.includes(1);
-                            const isNormalShipment = policy[i].fulfillmentAccuracyIds.includes(2);
-                            const isOverShipment = policy[i].fulfillmentAccuracyIds.includes(4);
-                        // light 
-                        if (isShortShipment && poLineItem.fulfillmentUnitQty < min)
-                        {
-                            this.bookedQuantityErrorMessage =  "Min Booked Qty :" + min;
-                            break;
-                        }
-                        // normal 
-                        if (isNormalShipment &&  (poLineItem.fulfillmentUnitQty >= min && poLineItem.fulfillmentUnitQty <= max))
-                        {
-                            this.bookedQuantityErrorMessage = "Min Booked Qty :" + min + "Max Booked Qty :" + max;
-                            break;
-    
-                        }
-                        // over
-                        if (isOverShipment &&  poLineItem.fulfillmentUnitQty > max)
-                        {
-                            this.bookedQuantityErrorMessage = "Max Booked Qty :" + max;
-                            break;
-                        }
-                    }                        
+    //27-9-2023
+    checkMinMaxBookedQuantity(poLineItem) {
+        this.bookedQuantityErrorMessage = "";
+        let policy;
+        this.service.buyerCompliance$.subscribe(x => {
+            this.buyerCompliance = x[0];
+            policy = x[0].bookingPolicies;
+        })
+        if (poLineItem != null) {
+            var min = Math.ceil(poLineItem.orderedUnitQty - (this.buyerCompliance.shortShipTolerancePercentage * poLineItem.orderedUnitQty));
+            var max = Math.trunc(poLineItem.orderedUnitQty + (this.buyerCompliance.overshipTolerancePercentage * poLineItem.orderedUnitQty));
+
+            for (let i = 0; i < policy.length; i++) {
+
+                const isShortShipment = policy[i].fulfillmentAccuracyIds.includes(1);
+                const isNormalShipment = policy[i].fulfillmentAccuracyIds.includes(2);
+                const isOverShipment = policy[i].fulfillmentAccuracyIds.includes(4);
+                // light 
+                if (isShortShipment && poLineItem.fulfillmentUnitQty < min) {
+                    this.bookedQuantityErrorMessage = "Min Booked Qty :" + min;
+                    break;
                 }
-         }
+                // normal 
+                if (isNormalShipment && (poLineItem.fulfillmentUnitQty >= min && poLineItem.fulfillmentUnitQty <= max)) {
+                    this.bookedQuantityErrorMessage = "Min Booked Qty :" + min + "Max Booked Qty :" + max;
+                    break;
+
+                }
+                // over
+                if (isOverShipment && poLineItem.fulfillmentUnitQty > max) {
+                    this.bookedQuantityErrorMessage = "Max Booked Qty :" + max;
+                    break;
+                }
+            }
+        }
+    }
 }

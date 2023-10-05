@@ -26,13 +26,6 @@ export interface AddMissingPOFormModel {
     viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
 })
 export class MissingPOFulfillmentCustomerComponent implements OnInit, OnDestroy {
-    //  27/9/2023
-    treeDataCache: any[] = [];
-   
-    isAutoCalculationMode: boolean = true;
-    @Input() public originBalance: number;
-    @Input() public originFulfillmentUnitQty: number;
-     //  27/9/2023
     @Input() model: any;
     @Input() parentIntegration$: Subject<IntegrationData>;
     @Input() formErrors: any;
@@ -99,7 +92,7 @@ export class MissingPOFulfillmentCustomerComponent implements OnInit, OnDestroy 
 
     viewSettingModuleIdType = ViewSettingModuleIdType;
 
-    //buttons bulk edit /CR/ 12/9/23
+    //buttons bulk edit CR 12-09-2023
     editMode: boolean = false;
     cancelEdit: boolean = false;
     packageUOMTypeOptions = DropDowns.PackageUOMStringType;
@@ -148,8 +141,11 @@ export class MissingPOFulfillmentCustomerComponent implements OnInit, OnDestroy 
     grossWeightErrors:string[]=[];
     hsCodeErrors:string[]=[];
     bookedQuantityErrorMessage:string[]=[];
-
-    //buttons bulk edit CR 12/9/23
+    treeDataCache: any[] = [];
+    isAutoCalculationMode: boolean = true;
+    @Input() public originBalance: number;
+    @Input() public originFulfillmentUnitQty: number;
+    //buttons bulk edit CR 12-09-2023
 
     constructor(
         public service: MissingPOFulfillmentFormService,
@@ -1358,13 +1354,13 @@ export class MissingPOFulfillmentCustomerComponent implements OnInit, OnDestroy 
         this._subscriptions.map(x => x.unsubscribe());
     }
 
-    //12/9/23 added for grid edit functionality
+    //12-09-2023 added for grid edit functionality
 
     clickBulkEdit(datastore) {
         this.oldData = cloneDeep(datastore);
         this.bulkEditPO = true;
         this.editMode = true;
-        // to populate data in input field fail 14/9/23
+        // to populate data in input field fail 14-09-2023
         // this.editCustomerPO;
         this.emitclickEditPo(this.editMode);
     }
@@ -1503,7 +1499,7 @@ export class MissingPOFulfillmentCustomerComponent implements OnInit, OnDestroy 
         this.grossWeightErrors=[];
         this.hsCodeErrors=[];
       }
-       //    27/9/2023
+    //27-9-2023
     bindingData(item) {
         this.model = item;
         this.isAutoCalculationMode = true;
@@ -1568,15 +1564,15 @@ export class MissingPOFulfillmentCustomerComponent implements OnInit, OnDestroy 
             this.onBookedPackageChanged();
         }
     }
-     // 27/9/2023
-     // 27/9/2023
+     //27-9-2023
+     //27-9-2023
      checkMinMaxBookedQuantity(poLineItem,index){
         this.bookedQuantityErrorMessage[index] = "";
         let policy = this.buyerCompliance.bookingPolicies;
         if (poLineItem != null)
                 {
-                    var min = poLineItem.orderedUnitQty - (this.buyerCompliance.shortShipTolerancePercentage * poLineItem.orderedUnitQty);
-                    var max = poLineItem.orderedUnitQty + (this.buyerCompliance.overshipTolerancePercentage * poLineItem.orderedUnitQty);
+                    var min = Math.ceil(poLineItem.orderedUnitQty - (this.buyerCompliance.shortShipTolerancePercentage * poLineItem.orderedUnitQty));
+                    var max = Math.trunc(poLineItem.orderedUnitQty + (this.buyerCompliance.overshipTolerancePercentage * poLineItem.orderedUnitQty));
 
                     for(let i = 0 ; i < policy.length;i++){
 
