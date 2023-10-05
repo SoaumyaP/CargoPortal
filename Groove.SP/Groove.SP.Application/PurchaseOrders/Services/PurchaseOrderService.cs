@@ -848,10 +848,12 @@ namespace Groove.SP.Application.PurchaseOrders.Services
         /// <returns></returns>
         public async Task<IEnumerable<BookingPOViewModel>> GetCustomerPOListBySearching(int skip, int take, string searchType, string searchTerm, long selectedPOId, POType selectedPOType, string affiliates, long customerOrgId, string customerOrgCode, long supplierOrgId, string supplierCompanyName, IdentityInfo currentUser, bool replacedByOrganizationReferences)
         {
-            var storedProcedureName = "";
-            List<SqlParameter> filterParameter;
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var storedProcedureName = "";
+                List<SqlParameter> filterParameter;
 
-            filterParameter = new List<SqlParameter>
+                filterParameter = new List<SqlParameter>
                 {
                      new SqlParameter
                     {
@@ -925,20 +927,20 @@ namespace Groove.SP.Application.PurchaseOrders.Services
                     }
                 };
 
-            if (currentUser.IsInternal)
-            {
-                // It is internal user
-                // Not replace HS code, Chinese description
-                storedProcedureName = "[spu_GetCustomerPurchaseOrderList_InternalUsers]";
+                if (currentUser.IsInternal)
+                {
+                    // It is internal user
+                    // Not replace HS code, Chinese description
+                    storedProcedureName = "[spu_GetCustomerPurchaseOrderList_InternalUsers]";
 
 
-            }
-            else
-            {
-                affiliates = affiliates.Replace("[", "").Replace("]", "");
-                storedProcedureName = "[spu_GetCustomerPurchaseOrderList_ExternalUsers]";
-                filterParameter.AddRange(
-                    new[] {
+                }
+                else
+                {
+                    affiliates = affiliates.Replace("[", "").Replace("]", "");
+                    storedProcedureName = "[spu_GetCustomerPurchaseOrderList_ExternalUsers]";
+                    filterParameter.AddRange(
+                        new[] {
                         new SqlParameter
                         {
                             ParameterName = "@CurrentUserOrganizationId",
@@ -961,169 +963,470 @@ namespace Groove.SP.Application.PurchaseOrders.Services
                             DbType = DbType.Int64,
                             Direction = ParameterDirection.Input
                         }
-                    });
+                        });
+                }
+
+                Func<DbDataReader, IEnumerable<BookingPOViewModel>> mapping = (reader) =>
+                {
+                    var mappedData = new List<BookingPOViewModel>();
+                    var mappedContacts = new List<PurchaseOrderContactViewModel>();
+                    var mappedLineItems = new List<BookingPOLineItemViewModel>();
+
+                    while (reader.Read())
+                    {
+                        var cargoReadyDate = reader[0];
+                        var carrierCode = reader[1];
+                        var carrierName = reader[2];
+                        var containerType = reader[3];
+                        var expectedDeliveryDate = reader[4];
+                        var expectedShipDate = reader[5];
+                        var id = reader[6];
+                        var incoterm = reader[7];
+                        var modeOfTransport = reader[8];
+                        var poNumber = reader[9];
+                        var shipFrom = reader[10];
+                        var shipFromId = reader[11];
+                        var shipTo = reader[12];
+                        var shipToId = reader[13];
+                        var status = reader[14];
+                        var poType = reader[15];
+                        var rowCount = reader[16];
+
+                        var newRow = new BookingPOViewModel
+                        {
+                            Id = (long)id,
+                            PONumber = poNumber?.ToString(),
+                            ModeOfTransport = modeOfTransport?.ToString(),
+                            ShipFromId = (long?)(shipFromId != DBNull.Value ? shipFromId : null),
+                            ShipFrom = shipFrom?.ToString(),
+                            ShipToId = (long?)(shipToId != DBNull.Value ? shipToId : null),
+                            ShipTo = shipTo?.ToString(),
+                            Incoterm = incoterm?.ToString(),
+                            CarrierCode = carrierCode?.ToString(),
+                            CarrierName = carrierName?.ToString(),
+                            CargoReadyDate = (DateTime?)(cargoReadyDate != DBNull.Value ? cargoReadyDate : null),
+                            POType = Enum.Parse<POType>(poType.ToString()),
+                            ExpectedShipDate = (DateTime?)(expectedShipDate != DBNull.Value ? expectedShipDate : null),
+                            ExpectedDeliveryDate = (DateTime?)(expectedDeliveryDate != DBNull.Value ? expectedDeliveryDate : null),
+                            Status = Enum.Parse<PurchaseOrderStatus>(status.ToString()),
+                            ContainerType = (containerType != DBNull.Value ? Enum.Parse<EquipmentType>(containerType.ToString()) : (EquipmentType?)null),
+                            RecordCount = (long)rowCount
+                        };
+                        mappedData.Add(newRow);
+                    }
+                    reader.NextResult();
+                    while (reader.Read())
+                    {
+                        var id = reader[0];
+                        var purchaseOrderId = reader[1];
+                        var organizationId = reader[2];
+                        var organizationCode = reader[3];
+                        var organizationRole = reader[4];
+                        var companyName = reader[5];
+                        var addressLine1 = reader[6];
+                        var addressLine2 = reader[7];
+                        var addressLine3 = reader[8];
+                        var addressLine4 = reader[9];
+                        var department = reader[10];
+                        var contactName = reader[11];
+                        var name = reader[12];
+                        var contactNumber = reader[13];
+                        var contactEmail = reader[14];
+                        var references = reader[15];
+
+                        var newRow = new PurchaseOrderContactViewModel
+                        {
+                            Id = (long)id,
+                            PurchaseOrderId = (long)purchaseOrderId,
+                            OrganizationId = (long)organizationId,
+                            OrganizationCode = organizationCode?.ToString(),
+                            OrganizationRole = organizationRole?.ToString(),
+                            CompanyName = companyName?.ToString(),
+                            AddressLine1 = addressLine1?.ToString(),
+                            AddressLine2 = addressLine2?.ToString(),
+                            AddressLine3 = addressLine3?.ToString(),
+                            AddressLine4 = addressLine4?.ToString(),
+                            Department = department?.ToString(),
+                            ContactName = contactName?.ToString(),
+                            Name = name?.ToString(),
+                            ContactNumber = contactNumber?.ToString(),
+                            ContactEmail = contactEmail?.ToString(),
+                            References = references?.ToString()
+                        };
+                        mappedContacts.Add(newRow);
+                    }
+                    reader.NextResult();
+                    while (reader.Read())
+                    {
+                        var id = reader[0];
+                        var purchaseOrderId = reader[1];
+                        var balanceUnitQty = reader[2];
+                        var bookedUnitQty = reader[3];
+                        var commodity = reader[4];
+                        var countryCodeOfOrigin = reader[5];
+                        var currencyCode = reader[6];
+                        var descriptionOfGoods = reader[7];
+                        var hsCode = reader[8];
+                        var chineseDescription = reader[9];
+                        var lineOrder = reader[10];
+                        var orderedUnitQty = reader[11];
+                        var packageUOM = reader[12];
+                        var productCode = reader[13];
+                        var gridValue = reader[14];
+                        var productName = reader[15];
+                        var unitPrice = reader[16];
+                        var unitUOM = reader[17];
+                        var shippingMarks = reader[18];
+                        var outerDepth = reader[19];
+                        var outerHeight = reader[20];
+                        var outerWidth = reader[21];
+                        var outerQuantity = reader[22];
+                        var innerQuantity = reader[23];
+                        var outerGrossWeight = reader[24];
+
+
+                        var newRow = new BookingPOLineItemViewModel
+                        {
+                            Id = (long)id,
+                            PurchaseOrderId = (long)purchaseOrderId,
+                            BalanceUnitQty = (int?)(balanceUnitQty != DBNull.Value ? balanceUnitQty : null),
+                            BookedUnitQty = (int?)(bookedUnitQty != DBNull.Value ? bookedUnitQty : null),
+                            Commodity = commodity?.ToString(),
+                            CountryCodeOfOrigin = countryCodeOfOrigin?.ToString(),
+                            CurrencyCode = currencyCode?.ToString(),
+                            DescriptionOfGoods = descriptionOfGoods?.ToString(),
+                            HSCode = hsCode?.ToString(),
+                            ChineseDescription = chineseDescription?.ToString(),
+                            LineOrder = (int)lineOrder,
+                            OrderedUnitQty = (int?)(orderedUnitQty != DBNull.Value ? orderedUnitQty : null),
+                            PackageUOM = (packageUOM != DBNull.Value ? Enum.Parse<PackageUOMType>(packageUOM.ToString()) : (PackageUOMType?)null),
+                            ProductCode = productCode?.ToString(),
+                            GridValue = gridValue?.ToString(),
+                            ProductName = productName?.ToString(),
+                            UnitPrice = (decimal?)(unitPrice != DBNull.Value ? unitPrice : null),
+                            UnitUOM = Enum.Parse<UnitUOMType>(unitUOM.ToString()),
+                            ShippingMarks = shippingMarks?.ToString(),
+                            OuterDepth = (decimal?)(outerDepth != DBNull.Value ? outerDepth : null),
+                            OuterHeight = (decimal?)(outerHeight != DBNull.Value ? outerHeight : null),
+                            OuterWidth = (decimal?)(outerWidth != DBNull.Value ? outerWidth : null),
+                            OuterQuantity = (int?)(outerQuantity != DBNull.Value ? outerQuantity : null),
+                            InnerQuantity = (int?)(innerQuantity != DBNull.Value ? innerQuantity : null),
+                            OuterGrossWeight = (decimal?)(outerGrossWeight != DBNull.Value ? outerGrossWeight : null)
+                        };
+                        mappedLineItems.Add(newRow);
+                    }
+
+                    foreach (var item in mappedData)
+                    {
+                        item.Contacts = mappedContacts.Where(x => x.PurchaseOrderId == item.Id).ToList();
+                        item.LineItems = mappedLineItems.Where(x => x.PurchaseOrderId == item.Id).ToList();
+                    }
+
+                    return mappedData;
+                };
+                var result = await _dataQuery.GetDataByStoredProcedureAsync(storedProcedureName, mapping, filterParameter.ToArray());
+                return result;
+            }
+            else
+            {
+                var storedProcedureName = "";
+                List<SqlParameter> filterParameter;
+
+                var searchTerms = searchTerm.Split(',');
+                var resultData = new List<BookingPOViewModel>();
+
+
+                foreach (var term in searchTerms)
+                {
+                    if (string.IsNullOrEmpty(term.Trim()))
+                    {
+                        continue;
+                    }
+                    filterParameter = new List<SqlParameter>
+                {
+                     new SqlParameter
+                    {
+                        ParameterName = "@CustomerOrganizationId",
+                        Value = customerOrgId,
+                        DbType = DbType.Int64,
+                        Direction = ParameterDirection.Input
+                    },
+                    new SqlParameter
+                    {
+                        ParameterName = "@CustomerOrganizationCode",
+                        Value = customerOrgCode,
+                        DbType = DbType.String,
+                        Direction = ParameterDirection.Input
+                    },
+                    new SqlParameter
+                    {
+                        ParameterName = "@SearchType",
+                        Value = searchType,
+                        DbType = DbType.String,
+                        Direction = ParameterDirection.Input
+                    },
+                    new SqlParameter
+                    {
+                        ParameterName = "@SearchTerm",
+                        Value = term.Trim(),
+                        DbType = DbType.String,
+                        Direction = ParameterDirection.Input
+                    },
+                    new SqlParameter
+                    {
+                        ParameterName = "@SupplierOrganizationId",
+                        Value = supplierOrgId,
+                        DbType = DbType.Int64,
+                        Direction = ParameterDirection.Input
+                    },
+                     new SqlParameter
+                    {
+                        ParameterName = "@SupplierCompanyName",
+                        Value = supplierCompanyName,
+                        DbType = DbType.String,
+                        Direction = ParameterDirection.Input
+                    },
+                    new SqlParameter
+                    {
+                        ParameterName = "@SelectedPOId",
+                        Value = selectedPOId,
+                        DbType = DbType.Int64,
+                        Direction = ParameterDirection.Input
+                    },
+                    new SqlParameter
+                    {
+                        ParameterName = "@SelectedPOType",
+                        Value = (int)selectedPOType,
+                        DbType = DbType.Int32,
+                        Direction = ParameterDirection.Input
+                    },
+                    new SqlParameter
+                    {
+                        ParameterName = "@Skip",
+                        Value = skip,
+                        DbType = DbType.Int32,
+                        Direction = ParameterDirection.Input
+                    },
+                    new SqlParameter
+                    {
+                        ParameterName = "@Take",
+                        Value = take,
+                        DbType = DbType.Int32,
+                        Direction = ParameterDirection.Input
+                    }
+                };
+
+                    if (currentUser.IsInternal)
+                    {
+                        // It is internal user
+                        // Not replace HS code, Chinese description
+                        storedProcedureName = "[spu_GetCustomerPurchaseOrderList_InternalUsers]";
+
+
+                    }
+                    else
+                    {
+                        affiliates = affiliates.Replace("[", "").Replace("]", "");
+                        storedProcedureName = "[spu_GetCustomerPurchaseOrderList_ExternalUsers]";
+                        filterParameter.AddRange(
+                            new[] {
+                        new SqlParameter
+                        {
+                            ParameterName = "@CurrentUserOrganizationId",
+                            Value = currentUser.OrganizationId,
+                            DbType = DbType.Int64,
+                            Direction = ParameterDirection.Input
+                        },
+                        new SqlParameter
+                        {
+                            ParameterName = "@Affiliates",
+                            Value = affiliates,
+                            DbType = DbType.String,
+                            Direction = ParameterDirection.Input
+                        },
+                        new SqlParameter
+                        {
+                            ParameterName = "@PreferredOrganizationId",
+                            // if no need to replace, set = -1
+                            Value = replacedByOrganizationReferences ? currentUser.OrganizationId : -1,
+                            DbType = DbType.Int64,
+                            Direction = ParameterDirection.Input
+                        }
+                            });
+
+                    }
+
+                    Func<DbDataReader, IEnumerable<BookingPOViewModel>> mapping = (reader) =>
+                    {
+                        var mappedData = new List<BookingPOViewModel>();
+                        var mappedContacts = new List<PurchaseOrderContactViewModel>();
+                        var mappedLineItems = new List<BookingPOLineItemViewModel>();
+
+                        while (reader.Read())
+                        {
+                            var cargoReadyDate = reader[0];
+                            var carrierCode = reader[1];
+                            var carrierName = reader[2];
+                            var containerType = reader[3];
+                            var expectedDeliveryDate = reader[4];
+                            var expectedShipDate = reader[5];
+                            var id = reader[6];
+                            var incoterm = reader[7];
+                            var modeOfTransport = reader[8];
+                            var poNumber = reader[9];
+                            var shipFrom = reader[10];
+                            var shipFromId = reader[11];
+                            var shipTo = reader[12];
+                            var shipToId = reader[13];
+                            var status = reader[14];
+                            var poType = reader[15];
+                            var rowCount = reader[16];
+
+                            var newRow = new BookingPOViewModel
+                            {
+                                Id = (long)id,
+                                PONumber = poNumber?.ToString(),
+                                ModeOfTransport = modeOfTransport?.ToString(),
+                                ShipFromId = (long?)(shipFromId != DBNull.Value ? shipFromId : null),
+                                ShipFrom = shipFrom?.ToString(),
+                                ShipToId = (long?)(shipToId != DBNull.Value ? shipToId : null),
+                                ShipTo = shipTo?.ToString(),
+                                Incoterm = incoterm?.ToString(),
+                                CarrierCode = carrierCode?.ToString(),
+                                CarrierName = carrierName?.ToString(),
+                                CargoReadyDate = (DateTime?)(cargoReadyDate != DBNull.Value ? cargoReadyDate : null),
+                                POType = Enum.Parse<POType>(poType.ToString()),
+                                ExpectedShipDate = (DateTime?)(expectedShipDate != DBNull.Value ? expectedShipDate : null),
+                                ExpectedDeliveryDate = (DateTime?)(expectedDeliveryDate != DBNull.Value ? expectedDeliveryDate : null),
+                                Status = Enum.Parse<PurchaseOrderStatus>(status.ToString()),
+                                ContainerType = (containerType != DBNull.Value ? Enum.Parse<EquipmentType>(containerType.ToString()) : (EquipmentType?)null),
+                                RecordCount = (long)rowCount
+                            };
+                            mappedData.Add(newRow);
+                        }
+                        reader.NextResult();
+                        while (reader.Read())
+                        {
+                            var id = reader[0];
+                            var purchaseOrderId = reader[1];
+                            var organizationId = reader[2];
+                            var organizationCode = reader[3];
+                            var organizationRole = reader[4];
+                            var companyName = reader[5];
+                            var addressLine1 = reader[6];
+                            var addressLine2 = reader[7];
+                            var addressLine3 = reader[8];
+                            var addressLine4 = reader[9];
+                            var department = reader[10];
+                            var contactName = reader[11];
+                            var name = reader[12];
+                            var contactNumber = reader[13];
+                            var contactEmail = reader[14];
+                            var references = reader[15];
+
+                            var newRow = new PurchaseOrderContactViewModel
+                            {
+                                Id = (long)id,
+                                PurchaseOrderId = (long)purchaseOrderId,
+                                OrganizationId = (long)organizationId,
+                                OrganizationCode = organizationCode?.ToString(),
+                                OrganizationRole = organizationRole?.ToString(),
+                                CompanyName = companyName?.ToString(),
+                                AddressLine1 = addressLine1?.ToString(),
+                                AddressLine2 = addressLine2?.ToString(),
+                                AddressLine3 = addressLine3?.ToString(),
+                                AddressLine4 = addressLine4?.ToString(),
+                                Department = department?.ToString(),
+                                ContactName = contactName?.ToString(),
+                                Name = name?.ToString(),
+                                ContactNumber = contactNumber?.ToString(),
+                                ContactEmail = contactEmail?.ToString(),
+                                References = references?.ToString()
+                            };
+                            mappedContacts.Add(newRow);
+                        }
+                        reader.NextResult();
+                        while (reader.Read())
+                        {
+                            var id = reader[0];
+                            var purchaseOrderId = reader[1];
+                            var balanceUnitQty = reader[2];
+                            var bookedUnitQty = reader[3];
+                            var commodity = reader[4];
+                            var countryCodeOfOrigin = reader[5];
+                            var currencyCode = reader[6];
+                            var descriptionOfGoods = reader[7];
+                            var hsCode = reader[8];
+                            var chineseDescription = reader[9];
+                            var lineOrder = reader[10];
+                            var orderedUnitQty = reader[11];
+                            var packageUOM = reader[12];
+                            var productCode = reader[13];
+                            var gridValue = reader[14];
+                            var productName = reader[15];
+                            var unitPrice = reader[16];
+                            var unitUOM = reader[17];
+                            var shippingMarks = reader[18];
+                            var outerDepth = reader[19];
+                            var outerHeight = reader[20];
+                            var outerWidth = reader[21];
+                            var outerQuantity = reader[22];
+                            var innerQuantity = reader[23];
+                            var outerGrossWeight = reader[24];
+
+
+                            var newRow = new BookingPOLineItemViewModel
+                            {
+                                Id = (long)id,
+                                PurchaseOrderId = (long)purchaseOrderId,
+                                BalanceUnitQty = (int?)(balanceUnitQty != DBNull.Value ? balanceUnitQty : null),
+                                BookedUnitQty = (int?)(bookedUnitQty != DBNull.Value ? bookedUnitQty : null),
+                                Commodity = commodity?.ToString(),
+                                CountryCodeOfOrigin = countryCodeOfOrigin?.ToString(),
+                                CurrencyCode = currencyCode?.ToString(),
+                                DescriptionOfGoods = descriptionOfGoods?.ToString(),
+                                HSCode = hsCode?.ToString(),
+                                ChineseDescription = chineseDescription?.ToString(),
+                                LineOrder = (int)lineOrder,
+                                OrderedUnitQty = (int?)(orderedUnitQty != DBNull.Value ? orderedUnitQty : null),
+                                PackageUOM = (packageUOM != DBNull.Value ? Enum.Parse<PackageUOMType>(packageUOM.ToString()) : (PackageUOMType?)null),
+                                ProductCode = productCode?.ToString(),
+                                GridValue = gridValue?.ToString(),
+                                ProductName = productName?.ToString(),
+                                UnitPrice = (decimal?)(unitPrice != DBNull.Value ? unitPrice : null),
+                                UnitUOM = Enum.Parse<UnitUOMType>(unitUOM.ToString()),
+                                ShippingMarks = shippingMarks?.ToString(),
+                                OuterDepth = (decimal?)(outerDepth != DBNull.Value ? outerDepth : null),
+                                OuterHeight = (decimal?)(outerHeight != DBNull.Value ? outerHeight : null),
+                                OuterWidth = (decimal?)(outerWidth != DBNull.Value ? outerWidth : null),
+                                OuterQuantity = (int?)(outerQuantity != DBNull.Value ? outerQuantity : null),
+                                InnerQuantity = (int?)(innerQuantity != DBNull.Value ? innerQuantity : null),
+                                OuterGrossWeight = (decimal?)(outerGrossWeight != DBNull.Value ? outerGrossWeight : null)
+                            };
+                            mappedLineItems.Add(newRow);
+                        }
+
+                        foreach (var item in mappedData)
+                        {
+                            item.Contacts = mappedContacts.Where(x => x.PurchaseOrderId == item.Id).ToList();
+                            item.LineItems = mappedLineItems.Where(x => x.PurchaseOrderId == item.Id).ToList();
+                        }
+
+                        return mappedData;
+                    };
+                    var result = await _dataQuery.GetDataByStoredProcedureAsync(storedProcedureName, mapping, filterParameter.ToArray());
+                    foreach (var item in result)
+                    {
+                        // Check if the row's Id already exists in resultData
+                        if (!resultData.Any(existingItem => existingItem.Id == item.Id))
+                        {
+                            resultData.Add(item);
+                        }
+                    }
+                }
+                return resultData;
             }
 
-            Func<DbDataReader, IEnumerable<BookingPOViewModel>> mapping = (reader) =>
-            {
-                var mappedData = new List<BookingPOViewModel>();
-                var mappedContacts = new List<PurchaseOrderContactViewModel>();
-                var mappedLineItems = new List<BookingPOLineItemViewModel>();
-
-                while (reader.Read())
-                {
-                    var cargoReadyDate = reader[0];
-                    var carrierCode = reader[1];
-                    var carrierName = reader[2];
-                    var containerType = reader[3];
-                    var expectedDeliveryDate = reader[4];
-                    var expectedShipDate = reader[5];
-                    var id = reader[6];
-                    var incoterm = reader[7];
-                    var modeOfTransport = reader[8];
-                    var poNumber = reader[9];
-                    var shipFrom = reader[10];
-                    var shipFromId = reader[11];
-                    var shipTo = reader[12];
-                    var shipToId = reader[13];
-                    var status = reader[14];
-                    var poType = reader[15];
-                    var rowCount = reader[16];
-
-                    var newRow = new BookingPOViewModel
-                    {
-                        Id = (long)id,
-                        PONumber = poNumber?.ToString(),
-                        ModeOfTransport = modeOfTransport?.ToString(),
-                        ShipFromId = (long?)(shipFromId != DBNull.Value ? shipFromId : null),
-                        ShipFrom = shipFrom?.ToString(),
-                        ShipToId = (long?)(shipToId != DBNull.Value ? shipToId : null),
-                        ShipTo = shipTo?.ToString(),
-                        Incoterm = incoterm?.ToString(),
-                        CarrierCode = carrierCode?.ToString(),
-                        CarrierName = carrierName?.ToString(),
-                        CargoReadyDate = (DateTime?)(cargoReadyDate != DBNull.Value ? cargoReadyDate : null),
-                        POType = Enum.Parse<POType>(poType.ToString()),
-                        ExpectedShipDate = (DateTime?)(expectedShipDate != DBNull.Value ? expectedShipDate : null),
-                        ExpectedDeliveryDate = (DateTime?)(expectedDeliveryDate != DBNull.Value ? expectedDeliveryDate : null),
-                        Status = Enum.Parse<PurchaseOrderStatus>(status.ToString()),
-                        ContainerType = (containerType != DBNull.Value ? Enum.Parse<EquipmentType>(containerType.ToString()) : (EquipmentType?)null),
-                        RecordCount = (long)rowCount
-                    };
-                    mappedData.Add(newRow);
-                }
-                reader.NextResult();
-                while (reader.Read())
-                {
-                    var id = reader[0];
-                    var purchaseOrderId = reader[1];
-                    var organizationId = reader[2];
-                    var organizationCode = reader[3];
-                    var organizationRole = reader[4];
-                    var companyName = reader[5];
-                    var addressLine1 = reader[6];
-                    var addressLine2 = reader[7];
-                    var addressLine3 = reader[8];
-                    var addressLine4 = reader[9];
-                    var department = reader[10];
-                    var contactName = reader[11];
-                    var name = reader[12];
-                    var contactNumber = reader[13];
-                    var contactEmail = reader[14];
-                    var references = reader[15];
-
-                    var newRow = new PurchaseOrderContactViewModel
-                    {
-                        Id = (long)id,
-                        PurchaseOrderId = (long)purchaseOrderId,
-                        OrganizationId = (long)organizationId,
-                        OrganizationCode = organizationCode?.ToString(),
-                        OrganizationRole = organizationRole?.ToString(),
-                        CompanyName = companyName?.ToString(),
-                        AddressLine1 = addressLine1?.ToString(),
-                        AddressLine2 = addressLine2?.ToString(),
-                        AddressLine3 = addressLine3?.ToString(),
-                        AddressLine4 = addressLine4?.ToString(),
-                        Department = department?.ToString(),
-                        ContactName = contactName?.ToString(),
-                        Name = name?.ToString(),
-                        ContactNumber = contactNumber?.ToString(),
-                        ContactEmail = contactEmail?.ToString(),
-                        References = references?.ToString()
-                    };
-                    mappedContacts.Add(newRow);
-                }
-                reader.NextResult();
-                while (reader.Read())
-                {
-                    var id = reader[0];
-                    var purchaseOrderId = reader[1];
-                    var balanceUnitQty = reader[2];
-                    var bookedUnitQty = reader[3];
-                    var commodity = reader[4];
-                    var countryCodeOfOrigin = reader[5];
-                    var currencyCode = reader[6];
-                    var descriptionOfGoods = reader[7];
-                    var hsCode = reader[8];
-                    var chineseDescription = reader[9];
-                    var lineOrder = reader[10];
-                    var orderedUnitQty = reader[11];
-                    var packageUOM = reader[12];
-                    var productCode = reader[13];
-                    var gridValue = reader[14];
-                    var productName = reader[15];
-                    var unitPrice = reader[16];
-                    var unitUOM = reader[17];
-                    var shippingMarks = reader[18];
-                    var outerDepth = reader[19];
-                    var outerHeight = reader[20];
-                    var outerWidth = reader[21];
-                    var outerQuantity = reader[22];
-                    var innerQuantity = reader[23];
-                    var outerGrossWeight = reader[24];
-
-
-                    var newRow = new BookingPOLineItemViewModel
-                    {
-                        Id = (long)id,
-                        PurchaseOrderId = (long)purchaseOrderId,
-                        BalanceUnitQty = (int?)(balanceUnitQty != DBNull.Value ? balanceUnitQty : null),
-                        BookedUnitQty = (int?)(bookedUnitQty != DBNull.Value ? bookedUnitQty : null),
-                        Commodity = commodity?.ToString(),
-                        CountryCodeOfOrigin = countryCodeOfOrigin?.ToString(),
-                        CurrencyCode = currencyCode?.ToString(),
-                        DescriptionOfGoods = descriptionOfGoods?.ToString(),
-                        HSCode = hsCode?.ToString(),
-                        ChineseDescription = chineseDescription?.ToString(),
-                        LineOrder = (int)lineOrder,
-                        OrderedUnitQty = (int?)(orderedUnitQty != DBNull.Value ? orderedUnitQty : null),
-                        PackageUOM = (packageUOM != DBNull.Value ? Enum.Parse<PackageUOMType>(packageUOM.ToString()) : (PackageUOMType?)null),
-                        ProductCode = productCode?.ToString(),
-                        GridValue = gridValue?.ToString(),
-                        ProductName = productName?.ToString(),
-                        UnitPrice = (decimal?)(unitPrice != DBNull.Value ? unitPrice : null),
-                        UnitUOM = Enum.Parse<UnitUOMType>(unitUOM.ToString()),
-                        ShippingMarks = shippingMarks?.ToString(),
-                        OuterDepth = (decimal?)(outerDepth != DBNull.Value ? outerDepth : null),
-                        OuterHeight = (decimal?)(outerHeight != DBNull.Value ? outerHeight : null),
-                        OuterWidth = (decimal?)(outerWidth != DBNull.Value ? outerWidth : null),
-                        OuterQuantity = (int?)(outerQuantity != DBNull.Value ? outerQuantity : null),
-                        InnerQuantity = (int?)(innerQuantity != DBNull.Value ? innerQuantity : null),
-                        OuterGrossWeight = (decimal?)(outerGrossWeight != DBNull.Value ? outerGrossWeight : null)
-                    };
-                    mappedLineItems.Add(newRow);
-                }
-
-                foreach (var item in mappedData)
-                {
-                    item.Contacts = mappedContacts.Where(x => x.PurchaseOrderId == item.Id).ToList();
-                    item.LineItems = mappedLineItems.Where(x => x.PurchaseOrderId == item.Id).ToList();
-                }
-
-                return mappedData;
-            };
-            var result = await _dataQuery.GetDataByStoredProcedureAsync(storedProcedureName, mapping, filterParameter.ToArray());
-            return result;
         }
 
         private async Task<IEnumerable<POLineItemArticleMasterViewModel>> GetPOLineItemArticleMasterList(long customerOrgId, List<PurchaseOrderModel> selectedPOList)
