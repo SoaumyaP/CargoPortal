@@ -173,7 +173,7 @@
         </ng-template>
         <!-- no tooltip for volume 15-09-2023 -->
         <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
-\            <!-- input type set so after clicking we can edit 15-09-2023 -->
+            <!-- input type set so after clicking we can edit 15-09-2023 -->
             <p *ngIf="!editMode">{{dataItem.volume | number:'0.3-3'}}</p>
             <p *ngIf="editMode; else cancelEdit">
                 <kendo-numerictextbox #volume name="volume" class="form-control" [(ngModel)]="dataItem.volume"

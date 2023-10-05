@@ -86,6 +86,11 @@
             padding-left: 10px;
         }
 
+        .node-parent-selected{
+            cursor: inherit;
+            background-color: #F8F9FC;
+        }
+
         .node-item-child {
             margin-left: -38px;
             padding: 5px;
