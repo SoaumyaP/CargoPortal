@@ -662,34 +662,37 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
         }
         // 04-10-2023
         this.poNotFound = '';
-        if (this.searchTerm.includes(',')) {
-        // Split the searchTerm into an array using a comma
-        const searchTermArray = this.searchTerm.trim().split(',');
-        const notFoundValues = [];
-        for (let i = 0; i < searchTermArray.length; i++) {
-        if(searchTermArray[i]){
-        // Remove leading/trailing spaces
-        const searchTerm = searchTermArray[i].trim();
-        // Check if the searchTerm is present in this.treeData
-        const foundPO = this.treeData.find(item => item.text === searchTerm);
-        if (foundPO && !foundPO.disabled) {
-            this.wholePo = true;
-            this.isSelectedDrag = true;
-            this.clickItemWholePO(foundPO);
-            this.onDrop();
-        }else{
-            if(foundPO && foundPO.disabled){
-            }else if(!foundPO){
-                notFoundValues.push(searchTerm);
-            }
+        if(this.searchTerm){
+            if (this.searchTerm.includes(',')) {
+                // Split the searchTerm into an array using a comma
+                const searchTermArray = this.searchTerm.trim().split(',');
+                const notFoundValues = [];
+                for (let i = 0; i < searchTermArray.length; i++) {
+                if(searchTermArray[i]){
+                // Remove leading/trailing spaces
+                const searchTerm = searchTermArray[i].trim();
+                // Check if the searchTerm is present in this.treeData
+                const foundPO = this.treeData.find(item => item.text === searchTerm);
+                if (foundPO && !foundPO.disabled) {
+                    this.wholePo = true;
+                    this.isSelectedDrag = true;
+                    this.clickItemWholePO(foundPO);
+                    this.onDrop();
+                }else{
+                    if(foundPO && foundPO.disabled){
+                    }else if(!foundPO){
+                        notFoundValues.push(searchTerm);
+                    }
+                }
+                }
+                }
+                // If there are not found values, construct the message
+                if (notFoundValues.length > 0) {
+                this.poNotFound = 'PO not found: ' + notFoundValues.join(', ');
+                }
+                }
         }
-        }
-        }
-        // If there are not found values, construct the message
-        if (notFoundValues.length > 0) {
-        this.poNotFound = 'PO not found: ' + notFoundValues.join(', ');
-        }
-        }
+        
     }
 
     // for edit mode
@@ -851,7 +854,11 @@ export class SelectCustomerPOFormComponent extends FormComponent implements OnCh
                     // Loop through selectedPOs and extract line items
                     this.selectedPOs.forEach(po => {
                         // Iterate through line items and set balanceQuantity to 0
-                        const modifiedLineItems = po.lineItem.map(lineItem => ({ ...lineItem, balanceUnitQty: 0 }));
+                        const modifiedLineItems = po.lineItem.map(lineItem => {
+                            // Create a copy of the lineItem without the 'id' property
+                            const { id, ...lineItemWithoutId } = lineItem;
+                            return { ...lineItemWithoutId, balanceUnitQty: 0 };
+                        });
                         allLineItems.push(...modifiedLineItems);
                     });
                     this.add.emit(allLineItems);
