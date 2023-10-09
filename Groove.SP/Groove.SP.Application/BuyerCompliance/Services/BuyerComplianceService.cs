@@ -71,6 +71,7 @@ namespace Groove.SP.Application.BuyerComplianceService.Services
                 .Include(m => m.PurchaseOrderVerificationSetting)
                 .Include(m => m.ShippingCompliance)
                 .Include(m => m.AgentAssignments)
+                // CR for min-max validation 29/09/23
                 .Include(m => m.BookingPolicies);
 
             var result = await Repository.Query(b => b.OrganizationId == organizationId, null, includeProperties).ToListAsync();
