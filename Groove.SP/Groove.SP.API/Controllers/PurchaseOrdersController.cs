@@ -75,9 +75,9 @@ namespace Groove.SP.API.Controllers
         [HttpGet]
         [Route("search")]
         [AppAuthorize(AppPermissions.PO_List)]
-        public async Task<IActionResult> Get([DataSourceRequest] DataSourceRequest request, string affiliates, string customerRelationships = "", bool isExport = false, string statisticKey = "", long? organizationId = 0, string statisticFilter = "", string statisticValue = "")
+        public async Task<IActionResult> Get([DataSourceRequest] DataSourceRequest request, string affiliates, string customerRelationships = "", bool isExport = false, string statisticKey = "", long? organizationId = 0, string statisticFilter = "", string statisticValue = "", long? id = null)
         {
-            var viewModels = await _purchaseOrderListService.ListAsync(request, CurrentUser.IsInternal, affiliates, customerRelationships, organizationId, statisticKey, statisticFilter, statisticValue, null, isExport);
+            var viewModels = await _purchaseOrderListService.ListAsync(request, CurrentUser.IsInternal, affiliates, customerRelationships, organizationId, id, statisticKey, statisticFilter, statisticValue, null, isExport);
             if (isExport)
             {
                 viewModels.Data = _mapper.Map<IEnumerable<PurchaseOrderListViewModel>>(viewModels.Data);
@@ -115,9 +115,9 @@ namespace Groove.SP.API.Controllers
         [HttpGet]
         [Route("search/{itemNo}")]
         [AppAuthorize(AppPermissions.PO_List)]
-        public async Task<IActionResult> GetListFromQuickSearchAsync([DataSourceRequest] DataSourceRequest request, string affiliates, string customerRelationships = "", bool isExport = false, string statisticKey = "", long? organizationId = 0, string statisticFilter = "", string statisticValue = "", string itemNo = "")
+        public async Task<IActionResult> GetListFromQuickSearchAsync([DataSourceRequest] DataSourceRequest request, string affiliates, string customerRelationships = "", bool isExport = false, string statisticKey = "", long? organizationId = 0, string statisticFilter = "", string statisticValue = "", string itemNo = "", long? id = null)
         {
-            var viewModels = await _purchaseOrderListService.ListAsync(request, CurrentUser.IsInternal, affiliates, customerRelationships, organizationId, statisticKey, statisticFilter, statisticValue, itemNo, isExport);
+            var viewModels = await _purchaseOrderListService.ListAsync(request, CurrentUser.IsInternal, affiliates, customerRelationships, organizationId,id, statisticKey, statisticFilter, statisticValue, itemNo, isExport);
             if (isExport)
             {
                 viewModels.Data = _mapper.Map<IEnumerable<PurchaseOrderListViewModel>>(viewModels.Data);

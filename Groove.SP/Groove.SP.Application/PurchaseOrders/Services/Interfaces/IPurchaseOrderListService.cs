@@ -11,7 +11,7 @@ namespace Groove.SP.Application.PurchaseOrders.Services.Interfaces
     public interface IPurchaseOrderListService : IServiceBase<PurchaseOrderModel, PurchaseOrderListViewModel>
     {
         Task<Core.Data.DataSourceResult> ListAsync(Core.Data.DataSourceRequest request, bool isInternal, string affiliates, string supplierCustomerRelationships,
-            long? delegatedOrganizationId = 0, string statisticKey = "", string statisticFilter = "", string statisticValue = "", string itemNo = "", bool isExport = false);
+            long? delegatedOrganizationId = 0, long? id = null, string statisticKey = "", string statisticFilter = "", string statisticValue = "", string itemNo = "", bool isExport = false);
 
         /// <summary>
         /// This method to get all POs belonging to selected Principal organization

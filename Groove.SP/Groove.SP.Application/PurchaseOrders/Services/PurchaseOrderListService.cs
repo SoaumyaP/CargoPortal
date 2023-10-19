@@ -33,7 +33,7 @@ namespace Groove.SP.Application.PurchaseOrders.Services
             { "stageName", "stage" }
         };
 
-        public async Task<Core.Data.DataSourceResult> ListAsync(DataSourceRequest request, bool isInternal, string affiliates, string supplierCustomerRelationships, long? delegatedOrganizationId = 0, string statisticKey = "", string statisticFilter = "", string statisticValue = "", string itemNo = "", bool isExport = false)
+        public async Task<Core.Data.DataSourceResult> ListAsync(DataSourceRequest request, bool isInternal, string affiliates, string supplierCustomerRelationships, long? delegatedOrganizationId = 0, long? id = null, string statisticKey = "", string statisticFilter = "", string statisticValue = "", string itemNo = "", bool isExport = false)
         {
             var listOfAffiliates = new List<long>();
 
@@ -211,7 +211,8 @@ namespace Groove.SP.Application.PurchaseOrders.Services
                                 po.ContainerType,
 								po.PORemark,
 		                        STG.StageName,
-		                        STA.StatusName
+		                        STA.StatusName,
+                                0  as [check]
 	                        FROM PurchaseOrders po WITH (NOLOCK)
 	                        OUTER APPLY
 	                        (
@@ -389,7 +390,7 @@ namespace Groove.SP.Application.PurchaseOrders.Services
 
 							) STA
 
-                            WHERE [OrganizationId] IN ({ affiliates.Replace("[", "").Replace("]", "")})
+                            WHERE [OrganizationId] IN ({affiliates.Replace("[", "").Replace("]", "")})
                                 AND CargoReadyDate >= '{dates["FromDate"]}'  AND CargoReadyDate <= '{dates["ToDate"]}'";
                             break;
                         case "inOriginDC":
@@ -447,7 +448,7 @@ namespace Groove.SP.Application.PurchaseOrders.Services
 
 							) STA
 
-                            WHERE [OrganizationId] IN ({ affiliates.Replace("[", "").Replace("]", "")})
+                            WHERE [OrganizationId] IN ({affiliates.Replace("[", "").Replace("]", "")})
                                 AND ActivityDate >= '{dates["FromDate"]}' AND ActivityDate <= '{dates["ToDate"]}'";
                             break;
                         case "poIssuedInThisWeek":
@@ -501,7 +502,7 @@ namespace Groove.SP.Application.PurchaseOrders.Services
 
 							) STA
 
-                            WHERE [OrganizationId] IN ({ affiliates.Replace("[", "").Replace("]", "")})
+                            WHERE [OrganizationId] IN ({affiliates.Replace("[", "").Replace("]", "")})
                                AND  POIssueDate >= '{dates["FromDate"]}' AND POIssueDate <= '{dates["ToDate"]}'";
                             break;
                         case "categorizedSupplier":
@@ -548,7 +549,8 @@ namespace Groove.SP.Application.PurchaseOrders.Services
 	                            BCOM.IsProgressCargoReadyDate AS IsProgressCargoReadyDates,
 	                            BCOM.ProgressNotifyDay,
 	                            STG.StageName,
-	                            STA.StatusName
+	                            STA.StatusName,
+                                0  as [check]
                             FROM
                             (
 	                            SELECT 
@@ -625,7 +627,190 @@ namespace Groove.SP.Application.PurchaseOrders.Services
                 // user role = shipper
                 else
                 {
-                    sql =
+                    if (id != null)
+                    {
+                        sql =
+                        @$"
+                            SELECT 
+                                 po.Id, 
+                                 IIF(BCOM.IsAllowShowAdditionalInforPOListing = 1, CONCAT(po.PONumber,'~',ProductCode,'~',GridValue,'~',LineOrder), po.PONumber) as PONumber,
+                                 po.CustomerReferences, po.POIssueDate,
+                                 po.Status, po.Stage, po.CargoReadyDate, po.CreatedDate, po.CreatedBy,
+                                 po.OrganizationRole, po.POType,
+                                 po.ProductionStarted,
+                                 po.ModeOfTransport,
+                                 po.ShipFrom,
+                                 po.ShipTo,
+                                 po.Incoterm,
+                                 po.ExpectedDeliveryDate,
+                                 po.ExpectedShipDate,
+                                 po.ContainerType,
+                                 po.PORemark,
+                                SUP.*, PRIN.*, BCOM.*, STG.StageName, STA.StatusName,
+		                        --BCOM.AllowToBookIn,
+		                        CASE
+                                WHEN
+                                (
+                                    PO.Status = 1
+            
+                                    AND (PO.POType = (Select POType from PurchaseOrders where Id = {id}))
+                                    AND (BCOM.IsProgressCargoReadyDates = 0 OR NOT (BCOM.IsProgressCargoReadyDates = 1 AND BCOM.IsCompulsory = 1 AND po.ProductionStarted = 0))
+			                        AND POLB.BalanceUnitQty > 0
+			                        AND (SPCM.AllowMultiplePOPerFulfillment = 1 OR PO.Id = {id})
+			                        AND(SUP.SupplierId =(SELECT TOP(1) sc.OrganizationId FROM PurchaseOrderContacts sc WHERE sc.PurchaseOrderId = {id} AND sc.OrganizationRole = 'Supplier'))
+			                        AND(PRIN.CustomerId =(SELECT TOP(1) sc.OrganizationId FROM PurchaseOrderContacts sc WHERE sc.PurchaseOrderIdsc.PurchaseOrderId = {id} AND sc.OrganizationRole = 'Principal'))
+			                        AND(CONS.ConsigneeId =(SELECT TOP(1) sc.OrganizationId FROM PurchaseOrderContacts sc WHERE sc.PurchaseOrderId = {id} AND sc.OrganizationRole = 'Consignee'))
+			                        AND
+				                        -- Check buyer compliance settings on purchase order verifications
+				                        (
+					                        {id} != PO.Id
+					                        AND	((VERS.ExpectedShipDateVerification != 10) OR (PO.ExpectedShipDate = (Select ExpectedShipDate From PurchaseOrders where Id={id})))
+					                        AND ((VERS.ExpectedDeliveryDateVerification != 10) OR (PO.ExpectedDeliveryDate = (Select ExpectedDeliveryDate From PurchaseOrders where Id={id})))
+					                        AND ((VERS.ConsigneeVerification != 10) OR (CONS.ConsigneeId =(SELECT TOP(1) sc.OrganizationId FROM PurchaseOrderContacts sc WHERE sc.PurchaseOrderId = {id} AND sc.OrganizationRole = 'Consignee')))
+					                        AND ((VERS.ShipFromLocationVerification != 10) OR ( PO.ShipFromId = (Select ShipFromId From PurchaseOrders where Id={id})))
+					                        AND ((VERS.ShipToLocationVerification != 10) OR ( PO.ShipToId = (Select ShipToId From PurchaseOrders where Id={id})))
+					                        AND ((VERS.ModeOfTransportVerification != 10) OR (PO.ModeOfTransport = (Select ModeOfTransport From PurchaseOrders where Id={id})))
+					                        AND ((VERS.IncotermVerification != 10) OR ( PO.Incoterm = (Select Incoterm From PurchaseOrders where Id={id})))
+					                        AND ((VERS.PreferredCarrierVerification != 10) OR ( PO.CarrierCode= (Select CarrierCode From PurchaseOrders where Id={id})))
+					                        AND ((BT.CheckPOExWorkDate = 0) OR (PO.CargoReadyDate IS NULL) 
+						                        OR ((Select CargoReadyDate From PurchaseOrders where Id={id}) IS NULL) 
+						                        OR (CAST(PO.CargoReadyDate AS DATE) = CAST((Select CargoReadyDate From PurchaseOrders where Id={id}) AS DATE)))
+				                        )
+                                ) THEN 1
+                                ELSE 0
+                             END as [check]
+                             FROM
+                             (
+                                 SELECT 
+                                     po.Id, po.PONumber,po.CustomerReferences, po.POIssueDate,
+                                     po.Status, po.Stage, po.CargoReadyDate, po.CreatedDate, po.CreatedBy,
+                                     pc.OrganizationRole, po.POType,
+                                     po.ProductionStarted,
+                                     po.ModeOfTransport,
+                                     po.ShipFrom,
+		                             po.ShipFromId,
+                                     po.ShipTo,
+		                             po.ShipToId,
+                                     po.Incoterm,
+		                             po.CarrierCode,
+                                     po.ExpectedDeliveryDate,
+                                     po.ExpectedShipDate,
+                                     po.ContainerType,
+                                     po.PORemark
+                                 FROM PurchaseOrders po WITH (NOLOCK)
+                                 INNER JOIN PurchaseOrderContacts pc WITH (NOLOCK) on po.Id = pc.PurchaseOrderId
+                                 WHERE pc.OrganizationId = {delegatedOrganizationId} 
+                             ) PO
+                             CROSS APPLY
+                             (
+                                 SELECT TOP(1) sc.CompanyName AS Supplier, sc.OrganizationId AS SupplierId
+                                 FROM PurchaseOrderContacts sc WITH (NOLOCK)
+                                 WHERE PO.Id = sc.PurchaseOrderId AND sc.OrganizationRole = 'Supplier'
+                             ) SUP
+                             CROSS APPLY
+                             (
+                                 SELECT TOP(1) sc.OrganizationId AS CustomerId
+                                 FROM PurchaseOrderContacts sc WITH (NOLOCK)
+                                 WHERE PO.Id = sc.PurchaseOrderId AND sc.OrganizationRole = 'Principal'
+                             ) PRIN
+                             CROSS APPLY
+                             (
+                                 SELECT TOP(1) sc.OrganizationId AS ConsigneeId
+                                 FROM PurchaseOrderContacts sc WITH (NOLOCK)
+                                 WHERE PO.Id = sc.PurchaseOrderId AND sc.OrganizationRole = 'Consignee'
+                             ) CONS
+                             CROSS APPLY
+                             (
+                                 SELECT 
+		                             BC.Id,
+                                     BC.IsProgressCargoReadyDate AS IsProgressCargoReadyDates,
+                                     BC.ProgressNotifyDay,
+                                     BC.IsAllowShowAdditionalInforPOListing,
+		                             BC.IsCompulsory,
+		                             BC.AllowToBookIn
+                                 FROM BuyerCompliances BC (NOLOCK)
+                                 WHERE BC.OrganizationId = PRIN.CustomerId
+                                     AND BC.Stage = 1
+                             ) BCOM
+                             OUTER APPLY
+                             (
+	                                    SELECT TOP 1 ProductCode, GridValue, LineOrder , BalanceUnitQty
+	                                    FROM POLineItems POL 
+	                                    WHERE POL.PurchaseOrderId = PO.Id AND BCOM.IsAllowShowAdditionalInforPOListing = 1		
+			                            order by BalanceUnitQty desc
+                             ) POL
+                             OUTER APPLY 
+                             (
+                                 SELECT CASE		WHEN Stage = 10 THEN 'label.draft'
+                                                 WHEN Stage = 20 THEN 'label.released'
+                                                 WHEN Stage = 30 THEN 'label.booked'
+                                                 WHEN Stage = 40 THEN 'label.bookingConfirmed'
+                                                 WHEN Stage = 45 THEN 'label.cargoReceived'
+                                                 WHEN Stage = 50 THEN 'label.shipmentDispatch'
+                                                 WHEN Stage = 60 THEN 'label.closed'
+                                                 WHEN Stage = 70 THEN 'label.completed'
+                                                 ELSE '' END AS [StageName]
+
+                             ) STG
+                             OUTER APPLY 
+                             (
+                                 SELECT CASE		WHEN Status = 1 THEN 'label.active'
+                                                 WHEN Status = 0 THEN 'label.cancel'
+                                                 ELSE '' END AS [StatusName]
+
+                             ) STA
+                              OUTER APPLY
+                             (
+	                                    SELECT TOP 1  BalanceUnitQty
+	                                    FROM POLineItems POL 
+	                                    WHERE POL.PurchaseOrderId = PO.Id
+			                            order by BalanceUnitQty desc
+                             ) POLB
+                             Outer Apply
+                             (
+                             SELECT SPC.AllowMultiplePOPerFulfillment 
+		                            FROM ShippingCompliances SPC WITH (NOLOCK)
+			                            INNER JOIN BuyerCompliances BC ON SPC.BuyerComplianceId = BC.Id AND BC.[Status] = 1 AND BC.OrganizationId = PRIN.CustomerId
+                             )SPCM
+                             Outer Apply
+                             (
+                             SELECT			VER.ExpectedShipDateVerification,
+				                            VER.ExpectedDeliveryDateVerification,
+				                            VER.ConsigneeVerification,
+				                            VER.ShipperVerification,
+				                            VER.ShipFromLocationVerification,
+				                            VER.ShipToLocationVerification,
+				                            VER.ModeOfTransportVerification,
+				                            VER.IncotermVerification,
+				                            VER.PreferredCarrierVerification
+		                            FROM PurchaseOrderVerificationSettings VER WITH (NOLOCK)
+		                            WHERE VER.BuyerComplianceId = (Select BC.ID From BuyerCompliances BC inner join PurchaseOrderContacts PC on PC.OrganizationId = BC.OrganizationId AND PC.OrganizationRole = 'Principal' where PC.PurchaseOrderId ={id})
+                             )VERS
+                             OUTER APPLY
+                             (SELECT Count(1) AS CheckPOExWorkDate
+                                    FROM BookingTimelesses BT
+                                    WHERE
+			                            BT.BuyerComplianceId = (Select BC.ID From BuyerCompliances BC inner join PurchaseOrderContacts PC on PC.OrganizationId = BC.OrganizationId AND PC.OrganizationRole = 'Principal' where PC.PurchaseOrderId ={id})
+			                            AND BT.DateForComparison = 10
+                                        AND EXISTS
+                                            (    SELECT 1
+                                                FROM BookingPolicies BP
+                                                WHERE BT.BuyerComplianceId = BP.BuyerComplianceId AND BP.BookingTimeless != 0
+                                            )
+                            )BT
+                             WHERE
+                                 (PO.OrganizationRole = 'Delegation'
+                                 OR (
+                                     PO.OrganizationRole = 'Supplier' 
+                                     AND CAST(SUP.SupplierID AS NVARCHAR(20)) + ',' + CAST(PRIN.CustomerId AS NVARCHAR(20)) IN (SELECT tmp.[Value] 
+                                     FROM dbo.fn_SplitStringToTable('{supplierCustomerRelationships}', ';') tmp )
+                          ))";
+
+
+                    }
+                    else
+                    {
+                        sql =
                         @$"
                             SELECT 
                                     po.Id, 
@@ -642,7 +827,19 @@ namespace Groove.SP.Application.PurchaseOrders.Services
                                     po.ExpectedShipDate,
                                     po.ContainerType,
                                     po.PORemark,
-                                   SUP.*, PRIN.*, BCOM.*, STG.StageName, STA.StatusName
+                                   SUP.*, PRIN.*, BCOM.*, STG.StageName, STA.StatusName,
+                                    CASE
+                                    WHEN
+                                        (
+                                        PO.Status = 1
+            
+                                        AND (PO.POType = 10 OR PO.POType =BCOM.AllowToBookIn)
+                                        AND (BCOM.IsProgressCargoReadyDates = 0 OR NOT (BCOM.IsProgressCargoReadyDates = 1 AND BCOM.IsCompulsory = 1 AND po.ProductionStarted = 0))
+			                            AND POLB.BalanceUnitQty > 0
+                                        ) THEN 1
+                                    ELSE 0
+                                    END as [check]
+
                             FROM
                             (
 	                            SELECT 
@@ -679,7 +876,9 @@ namespace Groove.SP.Application.PurchaseOrders.Services
 		                        SELECT 
 			                        BC.IsProgressCargoReadyDate AS IsProgressCargoReadyDates,
 			                        BC.ProgressNotifyDay,
-                                    BC.IsAllowShowAdditionalInforPOListing
+                                    BC.IsAllowShowAdditionalInforPOListing,
+		                            BC.IsCompulsory,
+		                            BC.AllowToBookIn
 		                        FROM BuyerCompliances BC (NOLOCK)
 		                        WHERE BC.OrganizationId = PRIN.CustomerId
                                     AND BC.Stage = 1
@@ -710,6 +909,13 @@ namespace Groove.SP.Application.PurchaseOrders.Services
 					                            ELSE '' END AS [StatusName]
 
                             ) STA
+                              OUTER APPLY
+                             (
+	                                    SELECT TOP 1  BalanceUnitQty
+	                                    FROM POLineItems POL 
+	                                    WHERE POL.PurchaseOrderId = PO.Id
+			                            order by BalanceUnitQty desc
+                             ) POLB
                             WHERE
 	                            (PO.OrganizationRole = 'Delegation'
 	                            OR (
@@ -717,12 +923,14 @@ namespace Groove.SP.Application.PurchaseOrders.Services
 		                            AND CAST(SUP.SupplierID AS NVARCHAR(20)) + ',' + CAST(PRIN.CustomerId AS NVARCHAR(20)) IN (SELECT tmp.[Value] 
 		                            FROM dbo.fn_SplitStringToTable('{supplierCustomerRelationships}', ';') tmp )
 	                            ))";
-                    if (!string.IsNullOrEmpty(itemNo))
-                    {
-                        sql += @$"
+                        if (!string.IsNullOrEmpty(itemNo))
+                        {
+                            sql += @$"
                             AND EXISTS (SELECT 1 FROM POLineItems POI WHERE  POI.PurchaseOrderId = PO.Id AND POI.ProductCode like '%{itemNo.Split("~")[1]}%')
                            ";
+                        }
                     }
+
                 }
             }
 
