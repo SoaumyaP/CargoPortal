@@ -16,5 +16,5 @@ Groove.CSFE/Groove.CSFE.CommonAPI/Logs/
 Groove.CSFE/Groove.CSFE.IdentityServer/Logs/
 groove-sp-full/packages/
 Groove.CSFE/Groove.CSFE.Supplemental/Logs/
-Groove.CSFE/Groove.CSFE.Supplemental/appsettings.Development.json
+#Groove.CSFE/Groove.CSFE.Supplemental/appsettings.Development.json
 
